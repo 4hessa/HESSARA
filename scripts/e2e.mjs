@@ -174,7 +174,14 @@ try {
   await shot(page, "10-models-detail-light-desktop");
   await axe(page, "النماذج + نافذة التفاصيل");
   await page.keyboard.press("Escape");
-  await page.goto(BASE + "/media"); await shot(page, "11-media-light-desktop", true); await axe(page, "الميديا");
+  await page.goto(BASE + "/media");
+  await page.locator("#m-q").fill("LLM");
+  const links = await page.locator("article.card a.video-thumb").evaluateAll((as) => as.map((a) => a.href));
+  check("الميديا: نتائج البحث روابط مباشرة إلى يوتيوب", links.length > 3 && links.every((h) => /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}$/.test(h)), `${links.length} نتيجة`);
+  await page.locator("article.card").first().getByRole("button", { name: /إضافة الفيديو إلى المفضلة/ }).click();
+  await page.getByText("أُضيف إلى المفضلة.").waitFor();
+  check("الميديا: حفظ فيديو", true);
+  await shot(page, "11-media-light-desktop"); await axe(page, "الميديا");
   await page.goto(BASE + "/profile"); await shot(page, "12-profile-light-desktop", true); await axe(page, "الملف الشخصي");
   await page.getByRole("switch", { name: /تذكير راحة العين/ }).uncheck();
   await page.getByText("حُفظ التغيير.").waitFor();

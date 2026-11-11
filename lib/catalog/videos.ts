@@ -12,6 +12,7 @@ export type Video = {
   paths: string[];
   durationSec?: number | null;
   published?: string | null;
+  views?: number | null; // كما عرضها يوتيوب وقت التحقق؛ مؤشر مساعد لا دليل جودة
   verifiedAt: string;
 };
 

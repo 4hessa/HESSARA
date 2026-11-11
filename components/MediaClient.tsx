@@ -30,6 +30,7 @@ export function MediaClient({ videos, saved }: { videos: Video[]; saved: string[
     const order = CATEGORIES.map((c) => c.id);
     if (sort === "title") out.sort((a, b) => a.title.localeCompare(b.title));
     else if (sort === "channel") out.sort((a, b) => a.channel.localeCompare(b.channel));
+    else if (sort === "views") out.sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
     else if (sort === "duration") out.sort((a, b) => (a.durationSec ?? 1e9) - (b.durationSec ?? 1e9));
     else out.sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category));
     return out;
@@ -59,7 +60,7 @@ export function MediaClient({ videos, saved }: { videos: Video[]; saved: string[
         {sel("المجال", cat, setCat, [["all", "كل المجالات"], ...CATEGORIES.map((c) => [c.id, c.name] as [string, string])])}
         {sel("اللغة", lang, setLang, [["all", "الكل"], ["ar", "العربية"], ["en", "الإنجليزية"]])}
         {sel("المستوى", level, setLevel, [["all", "الكل"], ["مبتدئ", "مبتدئ"], ["متوسط", "متوسط"], ["متقدم", "متقدم"]])}
-        {sel("الترتيب", sort, setSort, [["category", "حسب المجال"], ["title", "العنوان"], ["channel", "القناة"], ["duration", "الأقصر أولًا"]])}
+        {sel("الترتيب", sort, setSort, [["category", "حسب المجال"], ["title", "العنوان"], ["channel", "القناة"], ["views", "الأكثر مشاهدة وقت التحقق"], ["duration", "الأقصر أولًا"]])}
       </div>
       <div className="row-between">
         <p className="t-small muted" role="status">{list.length} فيديو</p>
@@ -77,7 +78,7 @@ export function MediaClient({ videos, saved }: { videos: Video[]; saved: string[
                 <h3 className="t-h4" dir="auto"><a href={videoUrl(v.id)} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>{v.title}</a></h3>
                 <FavButton kind="video" id={v.id} initial={saved.includes(v.id)} label="الفيديو" />
               </div>
-              <p className="t-caption" dir="auto">{v.channel}{v.published ? ` · ${v.published.slice(0, 4)}` : ""}</p>
+              <p className="t-caption"><bdi>{v.channel}</bdi>{v.views ? ` · ${new Intl.NumberFormat("ar", { notation: "compact" }).format(v.views)} مشاهدة وقت التحقق` : ""}</p>
               <div className="chips"><span className="badge">{CATEGORIES.find((c) => c.id === v.category)?.name}</span><span className="badge">{v.level}</span><span className="badge">{v.lang === "ar" ? "العربية" : "الإنجليزية"}</span></div>
             </article>
           ))}

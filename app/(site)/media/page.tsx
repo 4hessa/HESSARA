@@ -15,7 +15,7 @@ export default async function MediaPage() {
     <div className="container page">
       <div className="page-head">
         <h1 className="t-h2">ميديا هسّارة</h1>
-        <p className="muted" style={{ maxWidth: "72ch" }}>مكتبة فيديوهات تعليمية من يوتيوب، تفتح كلها في مصدرها الأصلي. لا يُنشر فيديو هنا إلا بعد التحقق آليًا من وجوده عبر واجهة التضمين الرسمية ليوتيوب، ولا تعرض المنصة أعداد مشاهدات أو إعجابات لأنها لم تُجمع من مصدر موثّق.</p>
+        <p className="muted" style={{ maxWidth: "72ch" }}>مكتبة فيديوهات تعليمية من يوتيوب، تفتح كلها في مصدرها الأصلي. لا يُنشر فيديو هنا إلا بعد التحقق آليًا من وجوده عبر واجهة التضمين الرسمية ليوتيوب. عدد المشاهدات المعروض هو ما أظهره يوتيوب يوم التحقق، وهو مؤشر مساعد لا دليل على الجودة. المستوى تقدير آلي من العنوان، ولم تُراجَع الفيديوهات بالمشاهدة الكاملة.</p>
       </div>
       <details className="card" style={{ marginBottom: "var(--s-5)" }} open={VIDEOS.length === 0}>
         <summary style={{ cursor: "pointer" }}><strong>حالة اكتمال المكتبة: {VIDEOS.length} من {TARGET_TOTAL} فيديو متحقق منه</strong>{remaining > 0 && <span className="muted"> — المتبقي {remaining}</span>}</summary>
@@ -28,7 +28,7 @@ export default async function MediaPage() {
       </details>
       {VIDEOS.length === 0 ? (
         <div className="empty"><Icon name="media" size={28} />
-          <p style={{ maxWidth: "60ch" }}>لا فيديوهات منشورة بعد. قائمة المرشّحين جاهزة في المستودع، لكن التحقق من الروابط يتطلب اتصالًا بيوتيوب لم يكن متاحًا في بيئة البناء. لن تُعرض روابط غير متحقق منها.</p></div>
+          <p style={{ maxWidth: "60ch" }}>لا فيديوهات منشورة بعد. شغّل سكربت التحقق لنشر المرشّحين. لن تُعرض روابط غير متحقق منها.</p></div>
       ) : <MediaClient videos={VIDEOS} saved={saved} />}
     </div>
   );

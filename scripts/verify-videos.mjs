@@ -3,9 +3,11 @@
 // العنوان واسم القناة يؤخذان من يوتيوب لا من ملف المرشّحين. المدة وتاريخ النشر يُجلبان
 // من صفحة المشاهدة إن أمكن، وإلا يُتركان فارغين (لا تُخمَّن أي قيمة).
 // التشغيل: npm run videos:verify   — يتطلب اتصالًا بـ www.youtube.com
+// (خلف وسيط شبكة: NODE_USE_ENV_PROXY=1 npm run videos:verify)
 import fs from "node:fs";
 
 const candidates = JSON.parse(fs.readFileSync("data/video-candidates.json", "utf8"));
+const curation = JSON.parse(fs.readFileSync("data/video-curation.json", "utf8"));
 const today = new Date().toISOString().slice(0, 10);
 const ok = [], rejected = [];
 const seen = new Set();
@@ -20,6 +22,8 @@ async function meta(id) {
 }
 
 for (const c of candidates) {
+  if (curation.excluded[c.id]) { rejected.push({ id: c.id, reason: `مستبعد بالمراجعة اليدوية: ${curation.excluded[c.id]}` }); continue; }
+  Object.assign(c, curation.overrides[c.id] ?? {});
   if (seen.has(c.id)) { rejected.push({ id: c.id, reason: "مكرر" }); continue; }
   seen.add(c.id);
   try {
@@ -27,7 +31,11 @@ for (const c of candidates) {
     if (!r.ok) { rejected.push({ id: c.id, reason: `oEmbed ${r.status}` }); continue; }
     const j = await r.json();
     if (!new RegExp(c.expect, "i").test(`${j.title} ${j.author_name}`)) { rejected.push({ id: c.id, reason: `العنوان لا يطابق المتوقع: ${j.title}` }); continue; }
-    ok.push({ id: c.id, title: j.title, channel: j.author_name, category: c.category, lang: c.lang, level: c.level, paths: c.paths, ...(await meta(c.id)), verifiedAt: today });
+    // اللغة تُحدَّد من العنوان الأصلي الذي يعيده يوتيوب (نتائج البحث قد تعرض عناوين مترجمة آليًا).
+    const lang = /[\u0600-\u06FF]/.test(j.title) ? "ar" : "en";
+    const m = c.durationSec ? { durationSec: c.durationSec, published: null } : await meta(c.id);
+    ok.push({ id: c.id, title: j.title, channel: j.author_name, category: c.category, lang, level: c.level, paths: c.paths, ...m, views: c.views ?? null, verifiedAt: today });
+    await new Promise((r) => setTimeout(r, 150));
     console.log("✓", c.id, j.title);
   } catch (e) { rejected.push({ id: c.id, reason: `تعذر الاتصال: ${e.cause?.code ?? e.name}` }); }
 }
