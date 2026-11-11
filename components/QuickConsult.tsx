@@ -1,0 +1,91 @@
+"use client";
+// حقل بدء الاستشارة (الصفحة التعريفية ولوحة المستخدم ومسار «استشارة جديدة»).
+// للزائر: يُحفظ النص مؤقتًا في تخزين جلسة المتصفح فقط، بإفصاح ظاهر، ثم يُستعاد بعد الدخول.
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { AdvisorPicker, defaultModel, type Advisor } from "./AdvisorPicker";
+import { api, useApp } from "./app";
+import { Icon } from "./Icon";
+
+export const DRAFT_KEY = "hs_draft";
+export const pendingKey = (id: string) => `hs_pending:${id}`;
+
+export function QuickConsult({ examples, initialAgent, initialModel, initialText, autoFocus, restoreDraft }: {
+  examples?: string[]; initialAgent?: string | null; initialModel?: string | null; initialText?: string; autoFocus?: boolean; restoreDraft?: boolean;
+}) {
+  const { user, models } = useApp();
+  const router = useRouter();
+  const [text, setText] = useState(initialText ?? "");
+  const [advisor, setAdvisor] = useState<Advisor>({ modelId: defaultModel(models, initialModel ?? user?.prefModel), agentId: initialAgent ?? user?.prefAgent ?? null });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const ta = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    try {
+      const d = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "null");
+      if (d?.text && (restoreDraft || !user)) {
+        setText(d.text);
+        if (user && d.advisor && models.some((m) => m.id === d.advisor.modelId && m.status !== "not_configured")) setAdvisor(d.advisor);
+        if (user) sessionStorage.removeItem(DRAFT_KEY);
+      }
+    } catch { /* لا مسودة */ }
+  }, [restoreDraft, user, models]);
+
+  useEffect(() => {
+    const el = ta.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, window.innerHeight * 0.4)}px`;
+  }, [text]);
+
+  async function submit() {
+    const value = text.trim();
+    if (!value || busy) return;
+    setError("");
+    if (!user) {
+      try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ text: value, advisor })); } catch { /* يُكمل دون حفظ */ }
+      router.push("/login?next=/consult/new");
+      return;
+    }
+    setBusy(true);
+    const r = await api<{ id: string }>("/api/consultations", { body: { text: value, ...advisor } });
+    if (!r.ok) { setBusy(false); setError(r.data.error ?? "تعذر بدء الاستشارة."); return; }
+    try { sessionStorage.setItem(pendingKey(r.data.id), value); } catch { /* سيُطلب من المستخدم إعادة الإرسال */ }
+    router.push(`/consult/${r.data.id}`);
+  }
+
+  return (
+    <div className="stack-sm">
+      <form className="composer" onSubmit={(e) => { e.preventDefault(); submit(); }}>
+        <label htmlFor="quick-consult" className="sr-only">نص الاستشارة</label>
+        <textarea id="quick-consult" ref={ta} value={text} autoFocus={autoFocus} maxLength={12000} rows={2}
+          placeholder="اشرح المشكلة التي تواجهك، وسنساعدك في تحليلها..."
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); submit(); } }}
+          aria-describedby="quick-consult-hint" />
+        <div className="composer-bar">
+          <AdvisorPicker value={advisor} onChange={setAdvisor} />
+          <span className="grow" />
+          <button type="submit" className="btn btn-primary btn-sm" disabled={!text.trim() || busy}>
+            {busy ? <span className="spinner" /> : <Icon name="send" size={18} />}
+            {busy ? "جارٍ البدء…" : "أرسل"}
+          </button>
+        </div>
+      </form>
+      {error && <p className="field-error" role="alert"><Icon name="alert" size={16} /> {error}</p>}
+      <p id="quick-consult-hint" className="t-caption">
+        {user
+          ? <>اضغط <kbd className="ltr">Ctrl + Enter</kbd> للإرسال. إرفاق الملفات غير متاح في هذه النسخة.</>
+          : "ستُطلب منك خطوة تسجيل الدخول، ويُحفظ نصك مؤقتًا في متصفحك فقط حتى تكملها."}
+      </p>
+      {examples && examples.length > 0 && (
+        <div className="chips" aria-label="أمثلة">
+          {examples.map((ex) => (
+            <button key={ex} type="button" className="chip" onClick={() => { setText(ex); ta.current?.focus(); }}>{ex}</button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
