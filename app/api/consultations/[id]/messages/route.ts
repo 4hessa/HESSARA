@@ -9,6 +9,7 @@ import { ProviderError } from "@/lib/providers/types";
 
 type Ctx = { params: Promise<{ id: string }> };
 const MAX_HISTORY = 40;
+const MAX_GENERATION_MS = 5 * 60_000; // سقف زمني حتى لا يحتجز مزوّد معلّق الاتصال إلى ما لا نهاية
 
 export const POST = authed<Ctx>(async (req, user, ctx) => {
   const { id } = await ctx.params;
@@ -69,7 +70,7 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
           model: model.apiModel,
           system: systemPrompt(c.agent_id),
           messages: history.map((m) => ({ role: m.role, content: m.content })),
-          signal: abort.signal,
+          signal: AbortSignal.any([abort.signal, AbortSignal.timeout(MAX_GENERATION_MS)]),
         })) {
           text += chunk;
           send({ t: "d", v: chunk });

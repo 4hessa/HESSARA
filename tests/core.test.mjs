@@ -43,3 +43,14 @@ test("المحكّم المنظّم القاعدي: لا يحكم بالاستي
   assert.ok(r.verdicts.every((v) => v.status !== "pass"));
   assert.equal(r.verdicts[1].status, "fail");
 });
+
+test("diff: مدخلان كثيرا الأسطر لا يحجزان ذاكرة غير محدودة", () => {
+  const a = "a\n".repeat(10000), b = "b\n".repeat(10000);
+  const before = process.memoryUsage().heapUsed + process.memoryUsage().arrayBuffers;
+  const t = Date.now();
+  const parts = diffWords(a, b);
+  const grown = process.memoryUsage().heapUsed + process.memoryUsage().arrayBuffers - before;
+  assert.equal(parts.length, 2);
+  assert.ok(Date.now() - t < 500, "زمن محدود");
+  assert.ok(grown < 50 * 1024 * 1024, "ذاكرة محدودة");
+});

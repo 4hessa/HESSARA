@@ -1,11 +1,11 @@
 // معاينة عامة للزوار: المحرك التجريبي فقط، دون تخزين ودون أي مزوّد خارجي.
 import { systemPrompt } from "@/lib/consult";
-import { clientKey, fail, rateLimit, readJson, sameOrigin, str } from "@/lib/http";
+import { fail, ipLimit, readJson, sameOrigin, str } from "@/lib/http";
 import { demoAdapter } from "@/lib/providers/demo";
 
 export async function POST(req: Request) {
   if (!sameOrigin(req)) return fail(403, "مصدر الطلب غير مسموح.");
-  if (!rateLimit(`demo:${clientKey(req)}`, 20, 60_000)) return fail(429, "طلبات كثيرة. انتظر قليلًا.");
+  if (!ipLimit(req, "demo", 20, 60_000)) return fail(429, "طلبات كثيرة. انتظر قليلًا.");
   const text = str((await readJson(req))?.text, 2000);
   if (!text) return fail(400, "اكتب سؤالًا (حتى ٢٠٠٠ حرف).");
   const enc = new TextEncoder();

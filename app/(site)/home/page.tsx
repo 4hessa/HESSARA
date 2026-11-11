@@ -40,7 +40,7 @@ export default async function Home() {
             {pref ? <>نموذجك المفضل: <bdi><strong>{pref.name}</strong></bdi> — يُختار تلقائيًا في كل استشارة جديدة.</> : <>لم تحدد نموذجًا مفضلًا بعد. <Link className="link" href="/models">اختر من النماذج</Link></>}
           </p>
         </div>
-        <QuickConsult autoFocus />
+        <QuickConsult />
         <div className="chips" aria-label="ابدأ من مهمة">
           {STARTERS.map((s) => <Link key={s.label} href={s.href} className="chip"><Icon name={s.icon} size={16} /> {s.label}</Link>)}
         </div>

@@ -1,0 +1,372 @@
+[
+ {
+  "id": "LPZh9BOjkQs",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero",
+   "how-llm"
+  ],
+  "expect": "Language Models|3Blue1Brown"
+ },
+ {
+  "id": "5sLYAQS9sWQ",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero",
+   "how-llm"
+  ],
+  "expect": "Language Model|IBM"
+ },
+ {
+  "id": "5NgNicANyqM",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": "CS50|Artificial Intelligence"
+ },
+ {
+  "id": "zjkBMFhNj_g",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero",
+   "how-llm"
+  ],
+  "expect": "Large Language Models|Karpathy"
+ },
+ {
+  "id": "fNk_zzaMoSs",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Vectors|linear algebra"
+ },
+ {
+  "id": "kjBOesZCoqc",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Linear transformations|matri"
+ },
+ {
+  "id": "WUvTyaaNkzM",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "calculus"
+ },
+ {
+  "id": "HZGCoVF3YvM",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Bayes"
+ },
+ {
+  "id": "rfscVS0vtbw",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Python"
+ },
+ {
+  "id": "_uQrJ0TkZlc",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Python"
+ },
+ {
+  "id": "QUT1VHiLmmI",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "NumPy"
+ },
+ {
+  "id": "vmEHCJofslg",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "Pandas"
+ },
+ {
+  "id": "i_LwzRVP7bg",
+  "category": "ml",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Machine Learning"
+ },
+ {
+  "id": "NWONeJKn6kc",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [],
+  "expect": "Machine Learning"
+ },
+ {
+  "id": "7eh4d6sabA0",
+  "category": "ml",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "Machine Learning"
+ },
+ {
+  "id": "jGwO_UgTS7I",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [],
+  "expect": "CS229|Machine Learning"
+ },
+ {
+  "id": "Gv9_4yMHFhI",
+  "category": "ml",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "StatQuest|Machine Learning"
+ },
+ {
+  "id": "aircAruvnKk",
+  "category": "dl",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero",
+   "how-llm"
+  ],
+  "expect": "neural network"
+ },
+ {
+  "id": "IHZwWFHWa-w",
+  "category": "dl",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "Gradient descent"
+ },
+ {
+  "id": "Ilg3gGewQ5U",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "backpropagation"
+ },
+ {
+  "id": "VMj-3S1tku0",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "micrograd|backpropagation"
+ },
+ {
+  "id": "CqOfi41LfDw",
+  "category": "dl",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "Neural Network|StatQuest"
+ },
+ {
+  "id": "PaCmpygFfXo",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "makemore|language model"
+ },
+ {
+  "id": "7xTGNNLPyMI",
+  "category": "llm",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "LLMs|ChatGPT|Karpathy"
+ },
+ {
+  "id": "kCc8FmEb1nY",
+  "category": "llm",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "train-small",
+   "how-llm"
+  ],
+  "expect": "build GPT"
+ },
+ {
+  "id": "9vM4p9NN0Ts",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "LLM|Stanford"
+ },
+ {
+  "id": "UU1WVnMk4E8",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "LLM|Language Model"
+ },
+ {
+  "id": "T-D1OfcDW1M",
+  "category": "llm",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "host"
+  ],
+  "expect": "Retrieval|RAG"
+ },
+ {
+  "id": "wjZofJX0v4M",
+  "category": "transformers",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "GPT|Transformer"
+ },
+ {
+  "id": "eMlx5fFNoYc",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "Attention"
+ },
+ {
+  "id": "zduSFxRajkE",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "how-llm",
+   "train-small"
+  ],
+  "expect": "Tokenizer"
+ },
+ {
+  "id": "zxQyTK8quyY",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "Transformer"
+ },
+ {
+  "id": "4Bdc55j80l8",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "Transformer"
+ },
+ {
+  "id": "iDulhoQ2pro",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [],
+  "expect": "Attention"
+ },
+ {
+  "id": "eC6Hd1hFvos",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "Fine-?tun"
+ },
+ {
+  "id": "l8pRSuU81PU",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "GPT-2|reproduce"
+ },
+ {
+  "id": "F8NKVhkZZWI",
+  "category": "agents",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "agent"
+  ],
+  "expect": "Agent"
+ },
+ {
+  "id": "sal78ACtGTc",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": "Agent"
+ }
+]

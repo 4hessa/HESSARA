@@ -256,6 +256,12 @@ try {
   check("أمان: المدخلات تُعرض نصًا ولا تُنفَّذ (XSS)", !(await page.evaluate(() => window.__xss)));
   const big = await ctx.request.post(BASE + "/api/consultations", { data: { text: "ا".repeat(13000), modelId: "hessara-demo" } });
   check("أمان: حد حجم الرسالة مطبَّق", big.status() === 400);
+  const huge = await fetch(BASE + "/api/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "a@b.co", password: "x".repeat(300000) }) });
+  check("أمان: جسم طلب متضخم يُرفض قبل المصادقة", huge.status === 400 || huge.status === 401);
+  const rv = await ctx.request.post(BASE + "/api/reviews", { data: { text: "a\n".repeat(9000), mode: "technical" } });
+  const t0 = Date.now();
+  const rvd = await ctx.request.post(`${BASE}/api/reviews/${(await rv.json()).id}/revise`, { data: { revised: "b\n".repeat(9000) } });
+  check("أمان: مقارنة مدخلين كثيري الأسطر محدودة الزمن والذاكرة", rvd.ok() && Date.now() - t0 < 3000, `${Date.now() - t0}ms`);
   const bundle = fs.readdirSync(".next/static", { recursive: true }).filter((f) => String(f).endsWith(".js")).map((f) => fs.readFileSync(path.join(".next/static", String(f)), "utf8")).join("");
   check("أمان: لا أسماء مفاتيح خدمات ولا تعليمات النظام في حزمة المتصفح", !/ANTHROPIC_API_KEY|OPENAI_API_KEY|sk-ant-|أنت مستشار تقني ضمن منصة/.test(bundle));
 

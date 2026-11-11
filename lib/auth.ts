@@ -9,23 +9,29 @@ const SESSION_DAYS = 30;
 export const newId = () => crypto.randomBytes(12).toString("base64url");
 const sha = (s: string) => crypto.createHash("sha256").update(s).digest("hex");
 
-export function hashPassword(password: string): string {
+// scrypt غير المتزامن حتى لا يحجب حلقة الأحداث عن بقية المستخدمين.
+const scrypt = (password: string, salt: Buffer) =>
+  new Promise<Buffer>((resolve, reject) => crypto.scrypt(password, salt, 64, (e, k) => (e ? reject(e) : resolve(k))));
+
+export async function hashPassword(password: string): Promise<string> {
   const salt = crypto.randomBytes(16);
-  const hash = crypto.scryptSync(password, salt, 64);
-  return `${salt.toString("hex")}:${hash.toString("hex")}`;
+  return `${salt.toString("hex")}:${(await scrypt(password, salt)).toString("hex")}`;
 }
 
-export function verifyPassword(password: string, stored: string): boolean {
-  const [saltHex, hashHex] = stored.split(":");
+const DUMMY = `${"00".repeat(16)}:${"00".repeat(64)}`;
+/** عند غياب الحساب يُحسب تجزئة وهمية حتى لا يكشف زمن الاستجابة وجود البريد. */
+export async function verifyPassword(password: string, stored: string | undefined): Promise<boolean> {
+  const [saltHex, hashHex] = (stored ?? DUMMY).split(":");
   if (!saltHex || !hashHex) return false;
-  const hash = crypto.scryptSync(password, Buffer.from(saltHex, "hex"), 64);
+  const hash = await scrypt(password, Buffer.from(saltHex, "hex"));
   const expected = Buffer.from(hashHex, "hex");
-  return expected.length === hash.length && crypto.timingSafeEqual(hash, expected);
+  return !!stored && expected.length === hash.length && crypto.timingSafeEqual(hash, expected);
 }
 
 export async function createSession(userId: string) {
   const token = crypto.randomBytes(32).toString("base64url");
   const expires = Date.now() + SESSION_DAYS * 864e5;
+  run("DELETE FROM sessions WHERE expires_at < ?", Date.now());
   run("INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?,?,?)", sha(token), userId, expires);
   (await cookies()).set(COOKIE, token, {
     httpOnly: true,

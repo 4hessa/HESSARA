@@ -1,4 +1,5 @@
 import { firstLlm } from "../providers";
+import { ProviderError } from "../providers/types";
 import { heuristicReview } from "./heuristic";
 import { llmReview } from "./llm";
 import { modeById, type ReviewResult } from "./types";
@@ -18,7 +19,7 @@ export async function runReview(opts: {
       return await llmReview(llm, opts.mode, opts.text, criteria, opts.signal);
     } catch (e) {
       const r = heuristicReview(opts.mode, opts.text, criteria);
-      r.limits.unshift(`تعذرت المراجعة بالنموذج اللغوي (${(e as Error).message}) فاستُخدم المراجع القاعدي بديلًا.`);
+      r.limits.unshift(`تعذرت المراجعة بالنموذج اللغوي (${e instanceof ProviderError ? e.message : "خطأ في تحليل مخرجات النموذج"}) فاستُخدم المراجع القاعدي بديلًا.`);
       return r;
     }
   }

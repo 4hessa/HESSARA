@@ -53,7 +53,7 @@ export const PATCH = authed(async (req, user) => {
 // حذف الحساب وكل بياناته (المحادثات والمراجعات والمفضلات تُحذف بالتتابع).
 export const DELETE = authed(async (req, user) => {
   const b = await readJson(req);
-  if (typeof b?.password !== "string" || !verifyPassword(b.password, user.pass_hash))
+  if (typeof b?.password !== "string" || !(await verifyPassword(b.password, user.pass_hash)))
     return fail(403, "كلمة المرور غير صحيحة.");
   run("DELETE FROM users WHERE id = ?", user.id);
   await destroySession();

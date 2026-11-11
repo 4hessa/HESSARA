@@ -6,7 +6,7 @@ import type { UserRow } from "./db";
 export const LIMITS = {
   message: 12_000, // أحرف لكل رسالة
   reviewInput: 20_000,
-  body: 64_000, // بايت لكل طلب
+  body: 96_000, // بايت لكل طلب (نص المراجعة ٢٠ ألف حرف عربي ≈ ٤٠ ألف بايت × نسختين)
   name: 60,
 };
 
@@ -25,12 +25,23 @@ export function sameOrigin(req: Request): boolean {
   }
 }
 
+/** يقرأ جسم الطلب بحد أقصى صارم: يُرفض قبل التخزين في الذاكرة إن تجاوز الحد (حماية قبل المصادقة). */
 export async function readJson<T = Record<string, unknown>>(req: Request): Promise<T | null> {
   try {
-    const text = await req.text();
-    if (text.length > LIMITS.body) return null;
-    const v = JSON.parse(text);
-    return v && typeof v === "object" ? (v as T) : null;
+    const declared = Number(req.headers.get("content-length") || 0);
+    if (declared > LIMITS.body || !req.body) return null;
+    const reader = req.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > LIMITS.body) { await reader.cancel(); return null; }
+      chunks.push(value);
+    }
+    const v = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    return v && typeof v === "object" && !Array.isArray(v) ? (v as T) : null;
   } catch {
     return null;
   }
@@ -62,8 +73,17 @@ export function rateLimit(key: string, max: number, windowMs: number): boolean {
   return b.n <= max;
 }
 
-export const clientKey = (req: Request) =>
-  (req.headers.get("x-forwarded-for") || "local").split(",")[0].trim();
+/**
+ * عنوان العميل لأغراض تحديد المعدل. ترويسة X-Forwarded-For يكتبها العميل نفسه ما لم يكن أمام
+ * الخادم وسيط موثوق، لذا لا تُعتمد إلا عند ضبط HESSARA_TRUST_PROXY=1 (ويؤخذ آخر عنوان أضافه الوسيط).
+ * دون ذلك تُحسب الحدود على مستوى الخادم كله بسقف أعلى.
+ */
+const TRUST_PROXY = process.env.HESSARA_TRUST_PROXY === "1";
+export function ipLimit(req: Request, name: string, max: number, windowMs: number): boolean {
+  if (!TRUST_PROXY) return rateLimit(`${name}:all`, max * 20, windowMs);
+  const hops = (req.headers.get("x-forwarded-for") || "").split(",").map((h) => h.trim()).filter(Boolean);
+  return rateLimit(`${name}:${hops[hops.length - 1] || "unknown"}`, max, windowMs);
+}
 
 export const str = (v: unknown, max: number): string | null =>
   typeof v === "string" && v.trim().length > 0 && v.length <= max ? v : null;

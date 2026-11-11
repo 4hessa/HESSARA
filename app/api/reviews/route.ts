@@ -38,7 +38,7 @@ export const POST = authed(async (req, user) => {
     mode: mode.id, text, criteria,
     engine: b?.engine === "heuristic" ? "heuristic" : "auto",
     preferredModel: user.pref_model,
-    signal: req.signal,
+    signal: AbortSignal.any([req.signal, AbortSignal.timeout(120_000)]),
   });
   const id = newId();
   run("INSERT INTO reviews (id, user_id, consultation_id, message_id, mode, criteria, input, result, engine, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
