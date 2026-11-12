@@ -1,13 +1,13 @@
 ---
-import Base from '../layouts/Base.astro';
-import Cards from '../components/Cards.astro';
-import Steps from '../components/Steps.astro';
-import Cta from '../components/Cta.astro';
+import Base from '../../layouts/Base.astro';
+import Cards from '../../components/Cards.astro';
+import Steps from '../../components/Steps.astro';
+import Cta from '../../components/Cta.astro';
 const rows = [
-  ['Guide', 'Getting started with your first advisory session', 'Set up a workspace, frame a question, and invite your first specialist.'],
-  ['Reference', 'Model registry and capability overview', 'What each HESSARA model is tuned for and how to choose between them.'],
-  ['Playbook', 'Running a multi-agent consultation', 'Roles, hand-offs, and review points for a structured deliberation.'],
-  ['Policy', 'Security, privacy, and data handling', 'How workspace data is stored, who can reach it, and how to export or remove it.'],
+  ['Guide', 'Getting started with your first advisory session', 'Set up a workspace, frame a question, and invite your first specialist.', '/resources/getting-started/'],
+  ['Reference', 'Model registry and capability overview', 'What each HESSARA model is tuned for and how to choose between them.', '/resources/model-registry/'],
+  ['Playbook', 'Running a multi-agent consultation', 'Roles, hand-offs, and review points for a structured deliberation.', '/resources/multi-agent-playbook/'],
+  ['Policy', 'Security, privacy, and data handling', 'How workspace data is stored, who can reach it, and how to export or remove it.', '/resources/security/'],
 ];
 ---
 <Base
@@ -54,8 +54,8 @@ const rows = [
     <p class="eyebrow">Library</p>
     <h2 class="title">Popular Resources</h2>
     <div class="rows">
-      {rows.map(([k, t, d]) => (
-        <a class="row" href="#cta">
+      {rows.map(([k, t, d, href]) => (
+        <a class="row" href={href}>
           <span class="row__k">{k}</span>
           <span><span class="row__t">{t}</span><p class="row__d">{d}</p></span>
           <span class="row__a" aria-hidden="true">→</span>

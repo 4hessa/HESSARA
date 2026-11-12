@@ -9,7 +9,8 @@ import Cta from '../components/Cta.astro';
   description="Deep-level advisory and multi-agent deliberation. Engage specialized AI consultants to dissect complex problems, simulate outcomes, and architect actionable roadmaps."
   current="/consulting/"
   cta={{ label: 'Start Consultation', href: '#cta' }}
-  art={{ name: 'consulting', kind: 'fade', y: '-12.5rem' }}
+  art={{ name: 'consulting', kind: 'fade', y: '-10.1rem', fade: '--art-h:46.1rem;--f1:88%;--f2:95%;--f3:100%' }}
+  heroTop="40rem"
 >
   <Fragment slot="hero">
     <h1>AI-Powered Strategic Consulting</h1>
@@ -50,5 +51,5 @@ import Cta from '../components/Cta.astro';
     <Mock variant="consult" />
   </section>
 
-  <Cta title="Ready to consult with HESSARA intelligence?" actions={[{ label: 'Book AI Session', href: '/resources/' }]} />
+  <Cta title="Ready to consult with HESSARA intelligence?" actions={[{ label: 'Book AI Session', href: '/contact/' }]} />
 </Base>

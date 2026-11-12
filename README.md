@@ -12,6 +12,10 @@ Marketing site for HESSARA, an AI-powered advisory platform. Static site built w
 | `/consulting/` | AI Consulting |
 | `/insights/` | Insights |
 | `/resources/` | Resources |
+| `/insights/<slug>/` | Insight articles (Markdown) |
+| `/resources/<slug>/` | Resource documents (Markdown) |
+| `/about/`, `/contact/`, `/careers/`, `/programs/` | Company pages |
+| `/privacy/`, `/terms/` | Legal templates, pending review |
 
 ## Develop
 
@@ -29,7 +33,9 @@ The build output is written to `dist/`.
 ## Structure
 
 - `src/layouts/Base.astro` – page shell: navigation, hero slot, centre column, footer.
-- `src/components/` – artwork (`Art`), cards, process steps, product mock-ups, call-to-action, icons.
+- `src/layouts/Prose.astro` – layout for long-form Markdown pages. A `draft` field in the front matter shows a notice at the top of the page.
+- `src/data/site.ts` – navigation, footer links, and the public contact address (`contactEmail`, empty until confirmed).
+- `src/components/ – artwork (`Art`), cards, process steps, product mock-ups, call-to-action, icons.
 - `src/styles/global.css` – design tokens and all styles. The layout is drawn on a 90rem canvas (1440px design width) and scales with the viewport.
 - `public/art/` – responsive hero artwork (AVIF + WebP, 1280px to 5120px wide).
 
@@ -42,3 +48,7 @@ node scripts/build-art.mjs path/to/masters
 ```
 
 Masters are named after their page (`home.png`, `platform.png`, `models.png`, `consulting.png`, `insights.png`, `resources.png`) and are not stored in the repository.
+
+Each hero is positioned from the page's `art` prop: `kind` (`frame` shows the whole image, `fade` shows a fixed-height window), `y` (vertical offset) and a `fade` string carrying `--art-h` (window height) and the mask stops `--f1`/`--f2`/`--f3`. Heights are given in `rem`, which tracks the viewport width, so a window set to `90 / aspect` rem matches the image exactly at any screen size.
+
+The Insights master was extended sideways from a portrait original so that the hero sits at a usable height; its dark room continues into black at both edges.

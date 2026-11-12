@@ -1,12 +1,12 @@
 ---
-import Base from '../layouts/Base.astro';
-import Cards from '../components/Cards.astro';
-import Cta from '../components/Cta.astro';
+import Base from '../../layouts/Base.astro';
+import Cards from '../../components/Cards.astro';
+import Cta from '../../components/Cta.astro';
 const rows = [
-  ['Research Note', 'How multi-agent deliberation changes the shape of a strategy review', 'Where a council of specialist models helps, and where a single careful analyst is still the better tool.'],
-  ['Field Report', 'Grounding answers in evidence: what citation-first reasoning looks like', 'A practical look at tracing each claim in a recommendation back to the document it came from.'],
-  ['Briefing', 'Scenario simulation for leadership teams: a working method', 'Framing assumptions, ranges, and decision points before any model is asked to forecast.'],
-  ['Research Note', 'Choosing between a general model and a domain-tuned one', 'A short framework for matching the model to the question, the stakes, and the data at hand.'],
+  ['Research Note', 'How multi-agent deliberation changes the shape of a strategy review', 'Where a council of specialist models helps, and where a single careful analyst is still the better tool.', '/insights/multi-agent-deliberation/'],
+  ['Field Report', 'Grounding answers in evidence: what citation-first reasoning looks like', 'A practical look at tracing each claim in a recommendation back to the document it came from.', '/insights/citation-first-reasoning/'],
+  ['Briefing', 'Scenario simulation for leadership teams: a working method', 'Framing assumptions, ranges, and decision points before any model is asked to forecast.', '/insights/scenario-simulation/'],
+  ['Research Note', 'Choosing between a general model and a domain-tuned one', 'A short framework for matching the model to the question, the stakes, and the data at hand.', '/insights/general-vs-domain-models/'],
 ];
 ---
 <Base
@@ -14,8 +14,8 @@ const rows = [
   description="Research notes, field reports, and briefings from HESSARA on AI-assisted advisory, reasoning, and decision-making."
   current="/insights/"
   cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
-  art={{ name: 'insights', y: '-2.5rem' }}
-  heroTop="42.5rem"
+  art={{ name: 'insights', kind: 'fade', fade: '--art-h:42rem;--f1:80%;--f2:90%;--f3:100%' }}
+  heroTop="44rem"
 >
   <Fragment slot="hero">
     <h1>Insights That Light the Way</h1>
@@ -43,8 +43,8 @@ const rows = [
     <p class="eyebrow">Latest</p>
     <h2 class="title">Recent Thinking</h2>
     <div class="rows">
-      {rows.map(([k, t, d]) => (
-        <a class="row" href="#cta">
+      {rows.map(([k, t, d, href]) => (
+        <a class="row" href={href}>
           <span class="row__k">{k}</span>
           <span><span class="row__t">{t}</span><p class="row__d">{d}</p></span>
           <span class="row__a" aria-hidden="true">→</span>
