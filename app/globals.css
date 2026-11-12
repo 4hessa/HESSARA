@@ -198,7 +198,7 @@ bdi, .ltr { unicode-bidi: isolate; }
 .chip:hover { background: var(--surface-2); }
 .chip[aria-pressed="true"], .chip[aria-selected="true"], .chip[aria-current="true"] { background: var(--accent-soft); border-color: var(--accent-ink); color: var(--accent-ink); font-weight: 600; }
 .icon-tile { width: 44px; height: 44px; border-radius: var(--r-control); background: var(--accent-soft); color: var(--accent-ink); display: grid; place-items: center; flex: none; }
-.vendor-mark { width: 44px; height: 44px; border-radius: var(--r-control); border: 1px solid var(--border); background: var(--surface-2); display: grid; place-items: center; font-family: var(--font-mono); font-weight: 600; font-size: .9375rem; flex: none; direction: ltr; }
+.vendor-mark { width: 44px; height: 44px; border-radius: var(--r-control); border: 1px solid var(--border); background: var(--surface-2); display: grid; place-items: center; font-family: var(--font-mono); font-weight: 400; font-size: .9375rem; flex: none; direction: ltr; }
 .vendor-mark.sm { width: 24px; height: 24px; font-size: .6875rem; border-radius: 6px; }
 .list-check { display: grid; gap: 6px; }
 .list-check li { display: grid; grid-template-columns: 20px 1fr; gap: var(--s-2); font-size: .9375rem; }
@@ -293,7 +293,7 @@ dialog.sheet.start { margin-inline-start: 0; margin-inline-end: auto; border-inl
 .hero-art .hot { color: var(--accent-ink); }
 .steps { counter-reset: step; }
 .step { position: relative; }
-.step-num { font-family: var(--font-mono); font-size: .8125rem; color: var(--accent-ink); font-weight: 600; direction: ltr; text-align: end; }
+.step-num { font-family: var(--font-mono); font-size: .8125rem; color: var(--accent-ink); font-weight: 400; direction: ltr; text-align: end; }
 .compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--s-4); align-items: stretch; }
 .compare-arrow { display: grid; place-items: center; color: var(--accent-ink); }
 .quote { border-inline-start: 3px solid var(--border-strong); padding-inline-start: var(--s-3); color: var(--text-2); font-size: .9375rem; }

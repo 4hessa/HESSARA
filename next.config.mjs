@@ -18,6 +18,8 @@ const nextConfig = {
   poweredByHeader: false,
   async headers() {
     return [
+      { source: "/fonts/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
+      { source: "/brand/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=604800" }] },
       {
         source: "/:path*",
         headers: [

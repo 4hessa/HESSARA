@@ -1,11 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
-import "@fontsource/ibm-plex-sans-arabic/400.css";
-import "@fontsource/ibm-plex-sans-arabic/500.css";
-import "@fontsource/ibm-plex-sans-arabic/600.css";
-import "@fontsource/ibm-plex-sans-arabic/700.css";
-import "@fontsource/ibm-plex-mono/400.css";
-import "@fontsource/ibm-plex-mono/600.css";
+import "./fonts.css";
 import "./globals.css";
 import { AppProvider } from "@/components/app";
 import { currentUser, toPublic } from "@/lib/auth";
@@ -31,6 +26,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const user = await currentUser();
   return (
     <html lang="ar" dir="rtl" data-theme={theme} suppressHydrationWarning>
+      <head>
+        <link rel="preload" href="/fonts/plex-arabic-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/plex-arabic-700.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+      </head>
       <body>
         <AppProvider user={user ? toPublic(user) : null} models={listModels()}>{children}</AppProvider>
       </body>
