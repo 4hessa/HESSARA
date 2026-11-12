@@ -46,8 +46,8 @@ export const PATCH = authed(async (req, user) => {
   if ("personalize" in b) put("personalize", b.personalize ? 1 : 0);
   if ("externalConsent" in b) put("external_consent", b.externalConsent ? 1 : 0);
   if (!set.length) return fail(400, "لا تغييرات.");
-  run(`UPDATE users SET ${set.join(", ")} WHERE id = ?`, ...vals, user.id);
-  return ok({ user: toPublic(get<UserRow>("SELECT * FROM users WHERE id = ?", user.id)!) });
+  await run(`UPDATE users SET ${set.join(", ")} WHERE id = ?`, ...vals, user.id);
+  return ok({ user: toPublic((await get<UserRow>("SELECT * FROM users WHERE id = ?", user.id))!) });
 });
 
 // حذف الحساب وكل بياناته (المحادثات والمراجعات والمفضلات تُحذف بالتتابع).
@@ -61,7 +61,7 @@ export const DELETE = authed(async (req, user) => {
     return fail(403, "كلمة المرور غير صحيحة.");
   }
   clearFailures(key);
-  run("DELETE FROM users WHERE id = ?", user.id);
+  await run("DELETE FROM users WHERE id = ?", user.id);
   await destroySession();
   return ok();
 });

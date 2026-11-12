@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LabClient } from "@/components/LabClient";
-import { all, type ReviewRow } from "@/lib/db";
+import { all, get, type ReviewRow } from "@/lib/db";
 import { requireUser } from "@/lib/guard";
 import { firstLlm } from "@/lib/providers";
 
@@ -12,8 +12,8 @@ export default async function LabPage({ searchParams }: { searchParams: Promise<
   const raw = (await searchParams).review;
   const sp = { review: typeof raw === "string" ? raw.slice(0, 40) : undefined };
   const user = await requireUser(sp.review ? `/lab?review=${sp.review}` : "/lab");
-  const rows = all<ReviewRow>("SELECT * FROM reviews WHERE user_id = ? ORDER BY created_at DESC LIMIT 10", user.id);
-  const initial = sp.review ? all<ReviewRow>("SELECT * FROM reviews WHERE id = ? AND user_id = ?", sp.review, user.id)[0] : undefined;
+  const rows = await all<ReviewRow>("SELECT * FROM reviews WHERE user_id = ? ORDER BY created_at DESC LIMIT 10", user.id);
+  const initial = sp.review ? await get<ReviewRow>("SELECT * FROM reviews WHERE id = ? AND user_id = ?", sp.review, user.id) : undefined;
   return (
     <div className="container page">
       <div className="page-head">

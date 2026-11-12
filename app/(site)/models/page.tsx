@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "النماذج" };
 
 export default async function ModelsPage() {
   const user = await currentUser();
-  const favs = user ? all<{ ref: string }>("SELECT ref FROM favorites WHERE user_id = ? AND kind = 'model'", user.id).map((f) => f.ref) : [];
+  const favs = user ? (await all<{ ref: string }>("SELECT ref FROM favorites WHERE user_id = ? AND kind = 'model'", user.id)).map((f) => f.ref) : [];
   return (
     <div className="container page">
       <div className="page-head">

@@ -3,9 +3,9 @@ import { all, get, type ConsultRow, type MessageRow } from "@/lib/db";
 import { authed, fail } from "@/lib/http";
 
 export const GET = authed<{ params: Promise<{ id: string }> }>(async (_req, user, ctx) => {
-  const c = get<ConsultRow>("SELECT * FROM consultations WHERE id = ? AND user_id = ?", (await ctx.params).id, user.id);
+  const c = await get<ConsultRow>("SELECT * FROM consultations WHERE id = ? AND user_id = ?", (await ctx.params).id, user.id);
   if (!c) return fail(404, "الاستشارة غير موجودة.");
-  const msgs = all<MessageRow>("SELECT * FROM messages WHERE consultation_id = ? ORDER BY created_at, rowid", c.id);
+  const msgs = await all<MessageRow>("SELECT * FROM messages WHERE consultation_id = ? ORDER BY created_at, id", c.id);
   const md = [
     `# ${c.title}`,
     `تاريخ الإنشاء: ${new Date(c.created_at).toISOString()}`,

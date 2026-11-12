@@ -31,8 +31,8 @@ export async function verifyPassword(password: string, stored: string | undefine
 export async function createSession(userId: string) {
   const token = crypto.randomBytes(32).toString("base64url");
   const expires = Date.now() + SESSION_DAYS * 864e5;
-  run("DELETE FROM sessions WHERE expires_at < ?", Date.now());
-  run("INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?,?,?)", sha(token), userId, expires);
+  await run("DELETE FROM sessions WHERE expires_at < ?", Date.now());
+  await run("INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?,?,?)", sha(token), userId, expires);
   (await cookies()).set(COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
@@ -45,20 +45,20 @@ export async function createSession(userId: string) {
 export async function destroySession() {
   const jar = await cookies();
   const token = jar.get(COOKIE)?.value;
-  if (token) run("DELETE FROM sessions WHERE token_hash = ?", sha(token));
+  if (token) await run("DELETE FROM sessions WHERE token_hash = ?", sha(token));
   jar.delete(COOKIE);
 }
 
 export async function currentUser(): Promise<UserRow | null> {
   const token = (await cookies()).get(COOKIE)?.value;
   if (!token) return null;
-  const row = get<UserRow & { expires_at: number }>(
+  const row = await get<UserRow & { expires_at: number }>(
     "SELECT u.*, s.expires_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?",
     sha(token),
   );
   if (!row) return null;
   if (row.expires_at < Date.now()) {
-    run("DELETE FROM sessions WHERE token_hash = ?", sha(token));
+    await run("DELETE FROM sessions WHERE token_hash = ?", sha(token));
     return null;
   }
   return row;

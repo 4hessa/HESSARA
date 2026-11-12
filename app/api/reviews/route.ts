@@ -6,7 +6,7 @@ import { runReview } from "@/lib/review";
 import { modeById } from "@/lib/review/types";
 
 export const GET = authed(async (_req, user) =>
-  ok({ reviews: all<ReviewRow>("SELECT * FROM reviews WHERE user_id = ? ORDER BY created_at DESC LIMIT 50", user.id) }),
+  ok({ reviews: await all<ReviewRow>("SELECT * FROM reviews WHERE user_id = ? ORDER BY created_at DESC LIMIT 50", user.id) }),
 );
 
 export const POST = authed(async (req, user) => {
@@ -26,10 +26,10 @@ export const POST = authed(async (req, user) => {
   let consultationId: string | null = null;
   let messageId: string | null = null;
   if (typeof b?.consultationId === "string") {
-    if (!get("SELECT 1 FROM consultations WHERE id = ? AND user_id = ?", b.consultationId, user.id)) return fail(404, "الاستشارة غير موجودة.");
+    if (!await get("SELECT 1 FROM consultations WHERE id = ? AND user_id = ?", b.consultationId, user.id)) return fail(404, "الاستشارة غير موجودة.");
     consultationId = b.consultationId;
     if (typeof b.messageId === "string") {
-      if (!get("SELECT 1 FROM messages WHERE id = ? AND consultation_id = ?", b.messageId, consultationId)) return fail(404, "الرسالة غير موجودة.");
+      if (!await get("SELECT 1 FROM messages WHERE id = ? AND consultation_id = ?", b.messageId, consultationId)) return fail(404, "الرسالة غير موجودة.");
       messageId = b.messageId;
     }
   }
@@ -44,10 +44,10 @@ export const POST = authed(async (req, user) => {
     signal: AbortSignal.any([req.signal, AbortSignal.timeout(120_000)]),
   });
   const id = newId();
-  run("INSERT INTO reviews (id, user_id, consultation_id, message_id, mode, criteria, input, result, engine, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
+  await run("INSERT INTO reviews (id, user_id, consultation_id, message_id, mode, criteria, input, result, engine, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
     id, user.id, consultationId, messageId, mode.id, JSON.stringify(criteria), text, JSON.stringify(result), result.engine, Date.now());
   if (consultationId)
-    run("INSERT INTO actions (id, user_id, consultation_id, kind, detail, created_at) VALUES (?,?,?,?,?,?)",
+    await run("INSERT INTO actions (id, user_id, consultation_id, kind, detail, created_at) VALUES (?,?,?,?,?,?)",
       newId(), user.id, consultationId, "review", `مراجعة «${mode.name}» — ${result.engineLabel}`, Date.now());
   return ok({ id, result });
 });

@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const key = `login-fail:${email}`;
   if (!ipLimit(req, "login", 30, 15 * 60_000) || isBlocked(key, 10))
     return fail(429, "محاولات كثيرة. انتظر ربع ساعة ثم حاول مجددًا.");
-  const user = email ? get<UserRow>("SELECT * FROM users WHERE email = ?", email) : undefined;
+  const user = email ? await get<UserRow>("SELECT * FROM users WHERE email = ?", email) : undefined;
   // رسالة واحدة للحالتين حتى لا يُكشف وجود الحساب.
   if (!(await verifyPassword(password, user?.pass_hash)) || !user) {
     noteFailure(key, 15 * 60_000);

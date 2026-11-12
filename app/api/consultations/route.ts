@@ -14,10 +14,11 @@ export const GET = authed(async (req, user) => {
   if (saved) where.push("c.saved = 1");
   if (q) {
     const like = `%${q.replace(/[%_\\]/g, "\\$&")}%`;
-    where.push("(c.title LIKE ? ESCAPE '\\' OR EXISTS (SELECT 1 FROM messages m WHERE m.consultation_id = c.id AND m.content LIKE ? ESCAPE '\\'))");
+    // LOWER على الطرفين: LIKE حساس لحالة الأحرف في Postgres وغير حساس في SQLite.
+    where.push("(LOWER(c.title) LIKE LOWER(?) ESCAPE '\\' OR EXISTS (SELECT 1 FROM messages m WHERE m.consultation_id = c.id AND LOWER(m.content) LIKE LOWER(?) ESCAPE '\\'))");
     params.push(like, like);
   }
-  const rows = all<ConsultRow>(`SELECT c.* FROM consultations c WHERE ${where.join(" AND ")} ORDER BY c.updated_at DESC LIMIT 100`, ...params);
+  const rows = await all<ConsultRow>(`SELECT c.* FROM consultations c WHERE ${where.join(" AND ")} ORDER BY c.updated_at DESC LIMIT 100`, ...params);
   return ok({ consultations: rows });
 });
 
@@ -30,7 +31,7 @@ export const POST = authed(async (req, user) => {
   const agentId = typeof b?.agentId === "string" && agentById(b.agentId) ? b.agentId : null;
   const id = newId();
   const now = Date.now();
-  run("INSERT INTO consultations (id, user_id, title, model_id, agent_id, created_at, updated_at) VALUES (?,?,?,?,?,?,?)",
+  await run("INSERT INTO consultations (id, user_id, title, model_id, agent_id, created_at, updated_at) VALUES (?,?,?,?,?,?,?)",
     id, user.id, titleFrom(typeof b?.title === "string" && b.title.trim() ? b.title : text), modelId, agentId, now, now);
   return ok({ id });
 });

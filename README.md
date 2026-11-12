@@ -27,6 +27,7 @@ npm run dev                  # http://localhost:3000
 | `npm run build && npm start` | بناء وتشغيل الإنتاج |
 | `npm test` | اختبارات الوحدات (محرك المراجعة، أداة المقارنة) |
 | `npm run e2e` | الاختبار الشامل: المسار، الاستجابة، الإتاحة، الأمان (بعد `npm run build`) |
+| `E2E_DB=pglite npm run e2e` | الاختبار نفسه على مسار PostgreSQL |
 | `npm run typecheck` | فحص الأنواع |
 | `npm run videos:verify` | التحقق من مرشّحي الفيديو عبر يوتيوب وكتابة `data/videos.json` |
 
@@ -39,7 +40,7 @@ app/            صفحات Next.js (App Router) ومسارات الواجهة ا
   api/          auth · me · consultations · reviews · models · favorites · demo
 components/     مكونات الواجهة (نظام التصميم في app/globals.css)
 lib/
-  db.ts         طبقة البيانات (SQLite) — كل استعلام مقيَّد بمعرّف المستخدم
+  db.ts         طبقة البيانات (SQLite محليًا، PostgreSQL عبر DATABASE_URL) — كل استعلام مقيَّد بمعرّف المستخدم
   auth.ts       scrypt + جلسات برموز عشوائية مجزّأة
   providers/    طبقة توجيه النماذج: موائم لكل مزوّد خلف عقد واحد
   catalog/      فهارس النماذج والوكلاء والفيديوهات

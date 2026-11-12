@@ -8,7 +8,7 @@ import { ProviderError } from "@/lib/providers/types";
 
 export const POST = authed<{ params: Promise<{ id: string }> }>(async (req, user, ctx) => {
   if (!rateLimit(`revise:${user.id}`, 10, 60_000)) return fail(429, "طلبات كثيرة. انتظر قليلًا.");
-  const r = get<ReviewRow>("SELECT * FROM reviews WHERE id = ? AND user_id = ?", (await ctx.params).id, user.id);
+  const r = await get<ReviewRow>("SELECT * FROM reviews WHERE id = ? AND user_id = ?", (await ctx.params).id, user.id);
   if (!r) return fail(404, "المراجعة غير موجودة.");
   const b = await readJson(req);
   let revised = b?.generate === true ? null : str(b?.revised, LIMITS.reviewInput);
@@ -26,6 +26,6 @@ export const POST = authed<{ params: Promise<{ id: string }> }>(async (req, user
     }
     if (!revised) return fail(502, "أعاد النموذج نصًا فارغًا.");
   }
-  run("UPDATE reviews SET revised = ? WHERE id = ?", revised, r.id);
+  await run("UPDATE reviews SET revised = ? WHERE id = ?", revised, r.id);
   return ok({ revised, source, diff: diffWords(r.input, revised) });
 });

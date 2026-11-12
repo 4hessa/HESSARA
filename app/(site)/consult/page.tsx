@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "الاستشارات" };
 export default async function ConsultIndex({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
   const user = await requireUser("/consult");
   const saved = (await searchParams).saved === "1";
-  const items = all<ConsultRow>("SELECT * FROM consultations WHERE user_id = ? ORDER BY updated_at DESC LIMIT 100", user.id);
+  const items = await all<ConsultRow>("SELECT * FROM consultations WHERE user_id = ? ORDER BY updated_at DESC LIMIT 100", user.id);
   return (
     <div className="container page" style={{ maxWidth: 860 }}>
       <div className="page-head">

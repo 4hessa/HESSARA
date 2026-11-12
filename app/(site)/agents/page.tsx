@@ -12,8 +12,8 @@ export const metadata: Metadata = { title: "الوكلاء المتخصصون" }
 
 export default async function AgentsPage() {
   const user = await currentUser();
-  const favs = user ? all<{ ref: string }>("SELECT ref FROM favorites WHERE user_id = ? AND kind = 'agent'", user.id).map((f) => f.ref) : [];
-  const log = user ? all<{ detail: string; created_at: number }>("SELECT detail, created_at FROM actions WHERE user_id = ? ORDER BY created_at DESC LIMIT 8", user.id) : [];
+  const favs = user ? (await all<{ ref: string }>("SELECT ref FROM favorites WHERE user_id = ? AND kind = 'agent'", user.id)).map((f) => f.ref) : [];
+  const log = user ? await all<{ detail: string; created_at: number }>("SELECT detail, created_at FROM actions WHERE user_id = ? ORDER BY created_at DESC LIMIT 8", user.id) : [];
   return (
     <div className="container page">
       <div className="page-head">

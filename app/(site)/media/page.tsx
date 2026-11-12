@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "ميديا هسّارة" };
 
 export default async function MediaPage() {
   const user = await currentUser();
-  const saved = user ? all<{ ref: string }>("SELECT ref FROM favorites WHERE user_id = ? AND kind = 'video'", user.id).map((f) => f.ref) : [];
+  const saved = user ? (await all<{ ref: string }>("SELECT ref FROM favorites WHERE user_id = ? AND kind = 'video'", user.id)).map((f) => f.ref) : [];
   const remaining = TARGET_TOTAL - VIDEOS.length;
   return (
     <div className="container page">

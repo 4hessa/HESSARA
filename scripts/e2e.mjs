@@ -13,13 +13,15 @@ const BASE = `http://localhost:${PORT}`;
 const OUT = path.resolve("test-output");
 fs.mkdirSync(OUT, { recursive: true });
 const dbPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "hessara-")), "e2e.db");
+// E2E_DB=pglite يشغّل الاختبار نفسه على مسار Postgres (محرك PGlite داخل العملية).
+const dbEnv = process.env.E2E_DB === "pglite" ? { HESSARA_PGLITE: "1" } : { HESSARA_DB_PATH: dbPath };
 const axeSource = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 const results = [];
 const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`); };
 
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)], {
-  env: { ...process.env, HESSARA_DB_PATH: dbPath, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: "15", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
+  env: { ...process.env, ...dbEnv, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: "15", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 let serverLog = "";

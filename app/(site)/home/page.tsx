@@ -21,11 +21,11 @@ const STARTERS = [
 
 export default async function Home() {
   const user = await requireUser("/home");
-  const recent = all<ConsultRow>("SELECT * FROM consultations WHERE user_id = ? ORDER BY updated_at DESC LIMIT 5", user.id);
-  const saved = all<ConsultRow>("SELECT * FROM consultations WHERE user_id = ? AND saved = 1 ORDER BY updated_at DESC LIMIT 5", user.id);
-  const favs = all<{ kind: string; ref: string }>("SELECT kind, ref FROM favorites WHERE user_id = ?", user.id);
+  const recent = await all<ConsultRow>("SELECT * FROM consultations WHERE user_id = ? ORDER BY updated_at DESC LIMIT 5", user.id);
+  const saved = await all<ConsultRow>("SELECT * FROM consultations WHERE user_id = ? AND saved = 1 ORDER BY updated_at DESC LIMIT 5", user.id);
+  const favs = await all<{ kind: string; ref: string }>("SELECT kind, ref FROM favorites WHERE user_id = ?", user.id);
   const favAgents = [...new Set([user.pref_agent, ...favs.filter((f) => f.kind === "agent").map((f) => f.ref)])].map((id) => agentById(id)).filter((a) => !!a);
-  const usedModels = all<{ model_id: string }>("SELECT model_id FROM consultations WHERE user_id = ? GROUP BY model_id ORDER BY MAX(updated_at) DESC LIMIT 4", user.id)
+  const usedModels = (await all<{ model_id: string }>("SELECT model_id FROM consultations WHERE user_id = ? GROUP BY model_id ORDER BY MAX(updated_at) DESC LIMIT 4", user.id))
     .map((r) => modelById(r.model_id)).filter((m) => !!m);
   const savedVideos = favs.filter((f) => f.kind === "video").map((f) => VIDEOS.find((v) => v.id === f.ref)).filter((v) => !!v);
   const videos = (savedVideos.length ? savedVideos : user.personalize ? VIDEOS.slice(0, 3) : []).slice(0, 3);

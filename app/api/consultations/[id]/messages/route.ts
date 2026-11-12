@@ -7,6 +7,8 @@ import { authed, fail, LIMITS, rateLimit, readJson, str } from "@/lib/http";
 import { recordCheck, resolveModel } from "@/lib/providers";
 import { ProviderError } from "@/lib/providers/types";
 
+export const maxDuration = 300; // ثوانٍ: أقصى مدة للدالة على الاستضافة عديمة الحالة
+
 type Ctx = { params: Promise<{ id: string }> };
 const MAX_HISTORY = 40;
 const MAX_CONCURRENT = 3; // بثّ متزامن لكل مستخدم
@@ -16,7 +18,7 @@ const MAX_GENERATION_MS = 5 * 60_000; // سقف زمني حتى لا يحتجز 
 
 export const POST = authed<Ctx>(async (req, user, ctx) => {
   const { id } = await ctx.params;
-  const c = get<ConsultRow>("SELECT * FROM consultations WHERE id = ? AND user_id = ?", id, user.id);
+  const c = await get<ConsultRow>("SELECT * FROM consultations WHERE id = ? AND user_id = ?", id, user.id);
   if (!c) return fail(404, "الاستشارة غير موجودة.");
   if (!rateLimit(`msg:${user.id}`, 30, 60_000)) return fail(429, "طلبات كثيرة خلال دقيقة. انتظر قليلًا.");
 
@@ -32,20 +34,20 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
   const now = Date.now();
   let userMsgId: string | null = null;
   if (retry) {
-    const last = get<MessageRow>("SELECT * FROM messages WHERE consultation_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1", c.id);
-    if (last?.role === "assistant") run("DELETE FROM messages WHERE id = ?", last.id);
+    const last = await get<MessageRow>("SELECT * FROM messages WHERE consultation_id = ? ORDER BY created_at DESC, id DESC LIMIT 1", c.id);
+    if (last?.role === "assistant") await run("DELETE FROM messages WHERE id = ?", last.id);
   } else {
     const text = str(b?.text, LIMITS.message);
     if (!text) return fail(400, `اكتب رسالتك (حتى ${LIMITS.message} حرف).`);
     userMsgId = newId();
-    run("INSERT INTO messages (id, consultation_id, role, content, created_at) VALUES (?,?,?,?,?)", userMsgId, c.id, "user", text, now);
+    await run("INSERT INTO messages (id, consultation_id, role, content, created_at) VALUES (?,?,?,?,?)", userMsgId, c.id, "user", text, now);
   }
-  run("UPDATE consultations SET updated_at = ? WHERE id = ?", now, c.id);
+  await run("UPDATE consultations SET updated_at = ? WHERE id = ?", now, c.id);
 
-  const history = all<MessageRow>(
-    "SELECT * FROM (SELECT *, rowid AS rid FROM messages WHERE consultation_id = ? ORDER BY created_at DESC, rowid DESC LIMIT ?) ORDER BY created_at, rid",
+  const history = (await all<MessageRow>(
+    "SELECT * FROM (SELECT * FROM messages WHERE consultation_id = ? ORDER BY created_at DESC, id DESC LIMIT ?) AS recent ORDER BY created_at, id",
     c.id, MAX_HISTORY,
-  ).filter((m) => m.content.trim());
+  )).filter((m) => m.content.trim());
   while (history.length && history[0].role !== "user") history.shift();
   if (!history.length || history[history.length - 1].role !== "user") return fail(400, "لا توجد رسالة للإجابة عنها.");
 
@@ -71,14 +73,14 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
         if (closed) return;
         try { controller.enqueue(enc.encode(JSON.stringify(o) + "\n")); } catch { closed = true; }
       };
-      const save = (status: string) => {
+      const save = async (status: string) => {
         if (!text.trim()) return;
-        try { persist(status); } catch { /* حُذفت الاستشارة أو الحساب أثناء البث: لا شيء يُحفظ */ }
+        try { await persist(status); } catch { /* حُذفت الاستشارة أو الحساب أثناء البث: لا شيء يُحفظ */ }
       };
-      const persist = (status: string) => {
-        run("INSERT INTO messages (id, consultation_id, role, content, model_id, engine, status, created_at) VALUES (?,?,?,?,?,?,?,?)",
+      const persist = async (status: string) => {
+        await run("INSERT INTO messages (id, consultation_id, role, content, model_id, engine, status, created_at) VALUES (?,?,?,?,?,?,?,?)",
           assistantId, c.id, "assistant", text, c.model_id, model.def.adapter === "demo" ? "demo" : "llm", status, Date.now());
-        run("INSERT INTO actions (id, user_id, consultation_id, kind, detail, created_at) VALUES (?,?,?,?,?,?)",
+        await run("INSERT INTO actions (id, user_id, consultation_id, kind, detail, created_at) VALUES (?,?,?,?,?,?)",
           newId(), user.id, c.id, "model_call", `استدعاء ${model.def.name}${c.agent_id ? ` عبر الوكيل ${c.agent_id}` : ""} — ${status}`, Date.now());
       };
       send({ t: "start", id: assistantId, userMessageId: userMsgId, modelId: c.model_id });
@@ -92,24 +94,24 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
           text += chunk;
           send({ t: "d", v: chunk });
         }
-        if (abort.signal.aborted) save("stopped");
+        if (abort.signal.aborted) await save("stopped");
         else if (timeout.aborted) {
           // بلوغ السقف الزمني ليس اكتمالًا: تُحفظ الإجابة ناقصة ويُبلَّغ المستخدم.
-          save("stopped");
+          await save("stopped");
           send({ t: "error", message: "تجاوز التوليد المدة القصوى فأُوقف. الإجابة المحفوظة غير مكتملة.", partial: !!text.trim(), id: assistantId });
         } else if (!text.trim()) send({ t: "error", message: "أعاد النموذج ردًا فارغًا. أعد المحاولة." });
         else {
-          save("complete");
+          await save("complete");
           if (model.def.adapter !== "demo") recordCheck(c.model_id, true);
           send({ t: "done", id: assistantId, status: "complete" });
         }
       } catch (e) {
-        if (abort.signal.aborted) save("stopped");
+        if (abort.signal.aborted) await save("stopped");
         else {
           const message = e instanceof ProviderError ? e.message : "حدث خطأ غير متوقع أثناء توليد الإجابة.";
           if (!(e instanceof ProviderError)) console.error("[consult] stream error", (e as Error).name);
           else if (e.kind !== "refused" && e.kind !== "rate_limit") recordCheck(c.model_id, false, e.message);
-          save("stopped");
+          await save("stopped");
           send({ t: "error", message, partial: !!text.trim(), id: assistantId });
         }
       } finally {
