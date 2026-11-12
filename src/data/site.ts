@@ -6,9 +6,12 @@ export const nav = [
   { label: 'Resources', href: '/resources/' },
 ];
 
+// Public contact address. Leave empty until a real address is confirmed.
+export const contactEmail = '';
+
 export const footer = [
   { title: 'Platform', links: [['Platform', '/platform/'], ['Language Models', '/models/'], ['AI Consulting', '/consulting/']] },
-  { title: 'Resources', links: [['Agents', '/platform/#suite'], ['Insights', '/insights/'], ['Teams', '/resources/'], ['Ecosystem', '/resources/#library']] },
-  { title: 'Company', links: [['About Us', '/'], ['Contact Us', '/consulting/#cta'], ['Careers', '/resources/']] },
-  { title: 'Programs', links: [['Programs', '/resources/'], ['Terms & Usability', '/resources/'], ['Privacy Policy', '/resources/']] },
+  { title: 'Resources', links: [['Insights', '/insights/'], ['Library', '/resources/'], ['Getting Started', '/resources/getting-started/'], ['Security', '/resources/security/']] },
+  { title: 'Company', links: [['About Us', '/about/'], ['Contact Us', '/contact/'], ['Careers', '/careers/']] },
+  { title: 'Programs', links: [['Programs', '/programs/'], ['Terms & Usability', '/terms/'], ['Privacy Policy', '/privacy/']] },
 ];

@@ -1,0 +1,34 @@
+---
+import Base from './Base.astro';
+import Cta from '../components/Cta.astro';
+const { frontmatter: f } = Astro.props;
+const arts: Record<string, any> = {
+  insights: { name: 'insights', kind: 'fade', y: '-2rem' },
+  resources: { name: 'resources', kind: 'fade' },
+  platform: { name: 'platform', kind: 'fade' },
+  home: { name: 'home', kind: 'fade', fade: '--f1:38%;--f2:60%;--f3:86%' },
+};
+const back = f.section === 'insights' ? ['/insights/', 'All insights'] : f.section === 'resources' ? ['/resources/', 'All resources'] : null;
+---
+<Base
+  title={`${f.title} — HESSARA`}
+  description={f.description}
+  current={f.section ? `/${f.section}/` : undefined}
+  cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
+  art={arts[f.art ?? f.section ?? 'home']}
+>
+  <Fragment slot="hero">
+    <h1>{f.title}</h1>
+    {f.sub && <p class="hero__sub">{f.sub}</p>}
+    {f.kicker && <p class="hero__kicker">{f.kicker}</p>}
+  </Fragment>
+  <article class="section prose">
+    {f.draft && <p class="note"><b>Draft.</b> {f.draft}</p>}
+    <slot />
+    {back && <p class="prose__back"><a href={back[0]}>← {back[1]}</a></p>}
+  </article>
+  <Cta title={f.cta ?? 'Ready to navigate the complex?'} actions={[
+    { label: 'Start a Consultation', href: '/consulting/' },
+    { label: 'Explore the Platform', href: '/platform/', ghost: true },
+  ]} />
+</Base>
