@@ -2,12 +2,13 @@
 import Base from './Base.astro';
 import Cta from '../components/Cta.astro';
 const { frontmatter: f } = Astro.props;
-const arts: Record<string, any> = {
-  insights: { name: 'insights', kind: 'fade', y: '-2rem' },
-  resources: { name: 'resources', kind: 'fade' },
-  platform: { name: 'platform', kind: 'fade' },
-  home: { name: 'home', kind: 'fade', fade: '--f1:38%;--f2:60%;--f3:86%' },
+const arts: Record<string, { art: any; heroTop?: string }> = {
+  insights: { art: { name: 'insights', kind: 'fade', fade: '--art-h:26rem;--f1:40%;--f2:66%;--f3:94%' }, heroTop: '29rem' },
+  resources: { art: { name: 'resources', kind: 'fade' } },
+  platform: { art: { name: 'platform', kind: 'fade' } },
+  home: { art: { name: 'home', kind: 'fade', fade: '--f1:38%;--f2:60%;--f3:86%' } },
 };
+const picked = arts[f.art ?? f.section ?? 'home'];
 const back = f.section === 'insights' ? ['/insights/', 'All insights'] : f.section === 'resources' ? ['/resources/', 'All resources'] : null;
 ---
 <Base
@@ -15,7 +16,8 @@ const back = f.section === 'insights' ? ['/insights/', 'All insights'] : f.secti
   description={f.description}
   current={f.section ? `/${f.section}/` : undefined}
   cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
-  art={arts[f.art ?? f.section ?? 'home']}
+  art={picked.art}
+  heroTop={picked.heroTop}
 >
   <Fragment slot="hero">
     <h1>{f.title}</h1>

@@ -4,7 +4,7 @@ interface Props { name: keyof typeof manifest; kind?: 'frame' | 'fade'; x?: stri
 const { name, kind = 'frame', x = '0rem', y = '0rem', s = 1, fade = '' } = Astro.props;
 const m = manifest[name];
 const set = (ext: string) => m.widths.map((w: number) => `/art/${name}-${w}.${ext} ${w}w`).join(', ');
-const sizes = `(max-width: 820px) ${Math.round(1350 * s)}px, max(${Math.round(100 * s)}vw, ${Math.round(1260 * s)}px)`;
+const sizes = `(max-width: 820px) ${Math.round(1280 * s)}px, max(${Math.round(100 * s)}vw, ${Math.round(1260 * s)}px)`;
 const fallback = m.widths.includes(1920) ? 1920 : m.widths[0];
 ---
 <div class={`art art--${kind}`} style={`--art-x:${x};--art-y:${y};--art-s:${s};${fade}`} aria-hidden="true">

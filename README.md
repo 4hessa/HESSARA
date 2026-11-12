@@ -48,3 +48,7 @@ node scripts/build-art.mjs path/to/masters
 ```
 
 Masters are named after their page (`home.png`, `platform.png`, `models.png`, `consulting.png`, `insights.png`, `resources.png`) and are not stored in the repository.
+
+Each hero is positioned from the page's `art` prop: `kind` (`frame` shows the whole image, `fade` shows a fixed-height window), `y` (vertical offset) and a `fade` string carrying `--art-h` (window height) and the mask stops `--f1`/`--f2`/`--f3`. Heights are given in `rem`, which tracks the viewport width, so a window set to `90 / aspect` rem matches the image exactly at any screen size.
+
+The Insights master was extended sideways from a portrait original so that the hero sits at a usable height; its dark room continues into black at both edges.
