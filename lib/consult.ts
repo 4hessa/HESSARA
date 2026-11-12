@@ -1,4 +1,5 @@
 // بناء تعليمات النظام للاستشارة. النص الملصق من المستخدم يُعامل بيانات لا تعليمات.
+import { AGENT_INSTRUCTIONS } from "./catalog/agentInstructions";
 import { agentById } from "./catalog/agents";
 
 const BASE = `أنت مستشار تقني ضمن منصة «هسّارة» الاستشارية. تجيب بالعربية الفصحى الواضحة ما لم يكتب المستخدم بلغة أخرى.
@@ -17,7 +18,7 @@ export function systemPrompt(agentId?: string | null): string {
 
 معرّف الوكيل: ${agent.id}
 دورك في هذه الاستشارة: ${agent.name} — ${agent.scope}
-${agent.instructions}
+${AGENT_INSTRUCTIONS[agent.id] ?? ""}
 نظّم إجابتك الأولى تحت هذه العناوين بالترتيب: ${agent.sections.join("، ")}.
 حدودك: ${agent.limits.join(" ")}`;
 }

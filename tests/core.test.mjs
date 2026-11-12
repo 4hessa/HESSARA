@@ -54,3 +54,11 @@ test("diff: مدخلان كثيرا الأسطر لا يحجزان ذاكرة غ
   assert.ok(Date.now() - t < 500, "زمن محدود");
   assert.ok(grown < 50 * 1024 * 1024, "ذاكرة محدودة");
 });
+
+test("المراجع القاعدي: مدخلات عدائية لا تسبب كلفة تربيعية في التعابير النمطية", () => {
+  for (const [mode, text] of [["feasibility", "\n".repeat(20000) + "x"], ["evidence", "1".repeat(20000)], ["technical", " ".repeat(20000)], ["risk", "ا".repeat(20000)]]) {
+    const t = performance.now();
+    heuristicReview(mode, text, []);
+    assert.ok(performance.now() - t < 200, `${mode}: ${Math.round(performance.now() - t)}ms`);
+  }
+});

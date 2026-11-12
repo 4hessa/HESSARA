@@ -28,7 +28,10 @@ export const POST = authed(async (req, user) => {
   if (typeof b?.consultationId === "string") {
     if (!get("SELECT 1 FROM consultations WHERE id = ? AND user_id = ?", b.consultationId, user.id)) return fail(404, "الاستشارة غير موجودة.");
     consultationId = b.consultationId;
-    messageId = typeof b.messageId === "string" ? b.messageId : null;
+    if (typeof b.messageId === "string") {
+      if (!get("SELECT 1 FROM messages WHERE id = ? AND consultation_id = ?", b.messageId, consultationId)) return fail(404, "الرسالة غير موجودة.");
+      messageId = b.messageId;
+    }
   }
   const wantsLlm = b?.engine !== "heuristic" && !!firstLlm(user.pref_model);
   if (wantsLlm && !user.external_consent)

@@ -9,6 +9,9 @@ import { ProviderError } from "@/lib/providers/types";
 
 type Ctx = { params: Promise<{ id: string }> };
 const MAX_HISTORY = 40;
+const MAX_CONCURRENT = 3; // بثّ متزامن لكل مستخدم
+const g = globalThis as typeof globalThis & { __hessaraStreams?: Map<string, number> };
+const inflight = (g.__hessaraStreams ??= new Map());
 const MAX_GENERATION_MS = 5 * 60_000; // سقف زمني حتى لا يحتجز مزوّد معلّق الاتصال إلى ما لا نهاية
 
 export const POST = authed<Ctx>(async (req, user, ctx) => {
@@ -16,6 +19,8 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
   const c = get<ConsultRow>("SELECT * FROM consultations WHERE id = ? AND user_id = ?", id, user.id);
   if (!c) return fail(404, "الاستشارة غير موجودة.");
   if (!rateLimit(`msg:${user.id}`, 30, 60_000)) return fail(429, "طلبات كثيرة خلال دقيقة. انتظر قليلًا.");
+
+  if ((inflight.get(user.id) ?? 0) >= MAX_CONCURRENT) return fail(429, "لديك إجابات قيد التوليد. انتظر اكتمالها أو أوقفها.");
 
   const b = await readJson(req);
   const retry = b?.retry === true;
@@ -47,6 +52,15 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
   const assistantId = newId();
   const enc = new TextEncoder();
   const abort = new AbortController();
+  const timeout = AbortSignal.timeout(MAX_GENERATION_MS);
+  inflight.set(user.id, (inflight.get(user.id) ?? 0) + 1);
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    const n = (inflight.get(user.id) ?? 1) - 1;
+    if (n <= 0) inflight.delete(user.id); else inflight.set(user.id, n);
+  };
   req.signal.addEventListener("abort", () => abort.abort(), { once: true });
 
   const stream = new ReadableStream<Uint8Array>({
@@ -59,6 +73,9 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
       };
       const save = (status: string) => {
         if (!text.trim()) return;
+        try { persist(status); } catch { /* حُذفت الاستشارة أو الحساب أثناء البث: لا شيء يُحفظ */ }
+      };
+      const persist = (status: string) => {
         run("INSERT INTO messages (id, consultation_id, role, content, model_id, engine, status, created_at) VALUES (?,?,?,?,?,?,?,?)",
           assistantId, c.id, "assistant", text, c.model_id, model.def.adapter === "demo" ? "demo" : "llm", status, Date.now());
         run("INSERT INTO actions (id, user_id, consultation_id, kind, detail, created_at) VALUES (?,?,?,?,?,?)",
@@ -70,13 +87,17 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
           model: model.apiModel,
           system: systemPrompt(c.agent_id),
           messages: history.map((m) => ({ role: m.role, content: m.content })),
-          signal: AbortSignal.any([abort.signal, AbortSignal.timeout(MAX_GENERATION_MS)]),
+          signal: AbortSignal.any([abort.signal, timeout]),
         })) {
           text += chunk;
           send({ t: "d", v: chunk });
         }
         if (abort.signal.aborted) save("stopped");
-        else if (!text.trim()) send({ t: "error", message: "أعاد النموذج ردًا فارغًا. أعد المحاولة." });
+        else if (timeout.aborted) {
+          // بلوغ السقف الزمني ليس اكتمالًا: تُحفظ الإجابة ناقصة ويُبلَّغ المستخدم.
+          save("stopped");
+          send({ t: "error", message: "تجاوز التوليد المدة القصوى فأُوقف. الإجابة المحفوظة غير مكتملة.", partial: !!text.trim(), id: assistantId });
+        } else if (!text.trim()) send({ t: "error", message: "أعاد النموذج ردًا فارغًا. أعد المحاولة." });
         else {
           save("complete");
           if (model.def.adapter !== "demo") recordCheck(c.model_id, true);
@@ -92,11 +113,12 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
           send({ t: "error", message, partial: !!text.trim(), id: assistantId });
         }
       } finally {
+        release();
         closed = true;
         try { controller.close(); } catch { /* أُغلق مسبقًا */ }
       }
     },
-    cancel() { abort.abort(); },
+    cancel() { abort.abort(); release(); },
   });
 
   return new Response(stream, {

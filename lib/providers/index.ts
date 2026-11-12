@@ -80,7 +80,9 @@ export function modelView(def: ModelDef): ModelView {
   };
 }
 
-export const listModels = (): ModelView[] => MODELS.map(modelView);
+/** للزائر غير المسجَّل تُحجب تفاصيل التهيئة (أسماء المتغيرات الناقصة وسبب فشل الاختبار). */
+export const listModels = (detailed = false): ModelView[] =>
+  MODELS.map(modelView).map((m) => (detailed ? m : { ...m, missing: [], checkError: null }));
 export const isUsable = (id: string) => resolveModel(id) !== null;
 
 /** أول نموذج لغوي حقيقي مهيّأ؛ يُستخدم لمحرك المراجعة. */

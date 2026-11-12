@@ -9,7 +9,8 @@ export const metadata: Metadata = { title: "مختبر النقد والتقيي
 const shape = (r: ReviewRow) => ({ id: r.id, mode: r.mode, input: r.input, created_at: r.created_at, engine: r.engine, result: JSON.parse(r.result), criteria: JSON.parse(r.criteria), revised: r.revised });
 
 export default async function LabPage({ searchParams }: { searchParams: Promise<{ review?: string }> }) {
-  const sp = await searchParams;
+  const raw = (await searchParams).review;
+  const sp = { review: typeof raw === "string" ? raw.slice(0, 40) : undefined };
   const user = await requireUser(sp.review ? `/lab?review=${sp.review}` : "/lab");
   const rows = all<ReviewRow>("SELECT * FROM reviews WHERE user_id = ? ORDER BY created_at DESC LIMIT 10", user.id);
   const initial = sp.review ? all<ReviewRow>("SELECT * FROM reviews WHERE id = ? AND user_id = ?", sp.review, user.id)[0] : undefined;

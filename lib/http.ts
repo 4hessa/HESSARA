@@ -73,16 +73,25 @@ export function rateLimit(key: string, max: number, windowMs: number): boolean {
   return b.n <= max;
 }
 
+/** عدّاد إخفاقات: يُفحص قبل المحاولة، يزيد عند الفشل فقط، ويُصفَّر عند النجاح. */
+export const isBlocked = (key: string, max: number) => {
+  const b = buckets.get(key);
+  return !!b && b.reset >= Date.now() && b.n >= max;
+};
+export const noteFailure = (key: string, windowMs: number) => void rateLimit(key, Infinity, windowMs);
+export const clearFailures = (key: string) => void buckets.delete(key);
+
 /**
- * عنوان العميل لأغراض تحديد المعدل. ترويسة X-Forwarded-For يكتبها العميل نفسه ما لم يكن أمام
- * الخادم وسيط موثوق، لذا لا تُعتمد إلا عند ضبط HESSARA_TRUST_PROXY=1 (ويؤخذ آخر عنوان أضافه الوسيط).
- * دون ذلك تُحسب الحدود على مستوى الخادم كله بسقف أعلى.
+ * حد لكل عنوان عميل. ترويسة X-Forwarded-For يكتبها العميل نفسه ما لم يكن أمام الخادم وسيط موثوق،
+ * لذا لا تُعتمد إلا عند ضبط HESSARA_TRUST_PROXY=1 (ويؤخذ آخر عنوان أضافه الوسيط).
+ * دون وسيط موثوق لا يوجد عنوان يُنسب إليه الطلب، فلا يُطبَّق حد بالعنوان إطلاقًا: حدٌّ إجمالي
+ * مشترك كان سيمكّن زائرًا واحدًا من قفل الخدمة على الجميع. الحماية حينها بحدود الحساب والبريد.
  */
 const TRUST_PROXY = process.env.HESSARA_TRUST_PROXY === "1";
 export function ipLimit(req: Request, name: string, max: number, windowMs: number): boolean {
-  if (!TRUST_PROXY) return rateLimit(`${name}:all`, max * 20, windowMs);
+  if (!TRUST_PROXY) return true;
   const hops = (req.headers.get("x-forwarded-for") || "").split(",").map((h) => h.trim()).filter(Boolean);
-  return rateLimit(`${name}:${hops[hops.length - 1] || "unknown"}`, max, windowMs);
+  return rateLimit(`${name}:${(hops[hops.length - 1] || "unknown").slice(0, 64)}`, max, windowMs);
 }
 
 export const str = (v: unknown, max: number): string | null =>

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 function inline(text: string, key: string): ReactNode[] {
   const out: ReactNode[] = [];
-  const re = /(`[^`]+`)|(\*\*[^*]+\*\*)|(\*[^*\n]+\*)|(\[[^\]]+\]\((https?:\/\/[^\s)]+)\))/g;
+  const re = /(`[^`\n]{1,2000}`)|(\*\*[^*\n]{1,2000}\*\*)|(\*[^*\n]{1,2000}\*)|(\[[^\]\[\n]{1,500}\]\((https?:\/\/[^\s)]{1,2000})\))/g;
   let last = 0, m: RegExpExecArray | null, i = 0;
   while ((m = re.exec(text))) {
     if (m.index > last) out.push(text.slice(last, m.index));

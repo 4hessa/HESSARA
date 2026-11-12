@@ -8,7 +8,9 @@
    "zero",
    "how-llm"
   ],
-  "expect": "Language Models|3Blue1Brown"
+  "expect": "Language Models|3Blue1Brown",
+  "durationSec": 478,
+  "views": 8515968
  },
  {
   "id": "5sLYAQS9sWQ",
@@ -19,7 +21,9 @@
    "zero",
    "how-llm"
   ],
-  "expect": "Language Model|IBM"
+  "expect": "Language Model|IBM",
+  "durationSec": 334,
+  "views": 1747860
  },
  {
   "id": "5NgNicANyqM",
@@ -29,7 +33,9 @@
   "paths": [
    "zero"
   ],
-  "expect": "CS50|Artificial Intelligence"
+  "expect": "CS50|Artificial Intelligence",
+  "durationSec": 42682,
+  "views": 5207459
  },
  {
   "id": "zjkBMFhNj_g",
@@ -40,7 +46,9 @@
    "zero",
    "how-llm"
   ],
-  "expect": "Large Language Models|Karpathy"
+  "expect": "Large Language Models|Karpathy",
+  "durationSec": 3588,
+  "views": 4354781
  },
  {
   "id": "fNk_zzaMoSs",
@@ -50,7 +58,9 @@
   "paths": [
    "zero"
   ],
-  "expect": "Vectors|linear algebra"
+  "expect": "Vectors|linear algebra",
+  "durationSec": 592,
+  "views": 13109462
  },
  {
   "id": "kjBOesZCoqc",
@@ -60,7 +70,9 @@
   "paths": [
    "zero"
   ],
-  "expect": "linear algebra"
+  "expect": "linear algebra",
+  "durationSec": 309,
+  "views": 2774196
  },
  {
   "id": "WUvTyaaNkzM",
@@ -70,7 +82,9 @@
   "paths": [
    "zero"
   ],
-  "expect": "calculus"
+  "expect": "calculus",
+  "durationSec": 1025,
+  "views": 11991753
  },
  {
   "id": "HZGCoVF3YvM",
@@ -80,7 +94,9 @@
   "paths": [
    "zero"
   ],
-  "expect": "Bayes"
+  "expect": "Bayes",
+  "durationSec": 911,
+  "views": 6020635
  },
  {
   "id": "rfscVS0vtbw",
@@ -90,7 +106,9 @@
   "paths": [
    "zero"
   ],
-  "expect": "Python"
+  "expect": "Python",
+  "durationSec": 16012,
+  "views": 49577071
  },
  {
   "id": "_uQrJ0TkZlc",
@@ -100,7 +118,9 @@
   "paths": [
    "zero"
   ],
-  "expect": "Python"
+  "expect": "Python",
+  "durationSec": 22447,
+  "views": 49589485
  },
  {
   "id": "QUT1VHiLmmI",
@@ -108,7 +128,9 @@
   "lang": "en",
   "level": "مبتدئ",
   "paths": [],
-  "expect": "NumPy"
+  "expect": "NumPy",
+  "durationSec": 3490,
+  "views": 2309643
  },
  {
   "id": "vmEHCJofslg",
@@ -116,7 +138,9 @@
   "lang": "en",
   "level": "مبتدئ",
   "paths": [],
-  "expect": "Pandas"
+  "expect": "Pandas",
+  "durationSec": 3627,
+  "views": 3534640
  },
  {
   "id": "i_LwzRVP7bg",
@@ -126,7 +150,9 @@
   "paths": [
    "zero"
   ],
-  "expect": "Machine Learning"
+  "expect": "Machine Learning",
+  "durationSec": 14033,
+  "views": 10895581
  },
  {
   "id": "NWONeJKn6kc",
@@ -134,7 +160,9 @@
   "lang": "en",
   "level": "متوسط",
   "paths": [],
-  "expect": "Machine Learning"
+  "expect": "Machine Learning",
+  "durationSec": 35539,
+  "views": 2115105
  },
  {
   "id": "7eh4d6sabA0",
@@ -142,7 +170,9 @@
   "lang": "en",
   "level": "مبتدئ",
   "paths": [],
-  "expect": "Machine Learning"
+  "expect": "Machine Learning",
+  "durationSec": 2983,
+  "views": 3720138
  },
  {
   "id": "Gv9_4yMHFhI",
@@ -150,7 +180,9 @@
   "lang": "en",
   "level": "مبتدئ",
   "paths": [],
-  "expect": "StatQuest|Machine Learning"
+  "expect": "StatQuest|Machine Learning",
+  "durationSec": 765,
+  "views": 1782575
  },
  {
   "id": "aircAruvnKk",
@@ -161,7 +193,9 @@
    "zero",
    "how-llm"
   ],
-  "expect": "neural network"
+  "expect": "neural network",
+  "durationSec": 1120,
+  "views": 25219099
  },
  {
   "id": "IHZwWFHWa-w",
@@ -171,7 +205,9 @@
   "paths": [
    "how-llm"
   ],
-  "expect": "Gradient descent"
+  "expect": "Gradient descent",
+  "durationSec": 1233,
+  "views": 9752826
  },
  {
   "id": "Ilg3gGewQ5U",
@@ -181,7 +217,9 @@
   "paths": [
    "how-llm"
   ],
-  "expect": "backpropagation"
+  "expect": "backpropagation",
+  "durationSec": 767,
+  "views": 6409925
  },
  {
   "id": "VMj-3S1tku0",
@@ -191,7 +229,9 @@
   "paths": [
    "train-small"
   ],
-  "expect": "micrograd|backpropagation"
+  "expect": "micrograd|backpropagation",
+  "durationSec": 8752,
+  "views": 4447108
  },
  {
   "id": "CqOfi41LfDw",
@@ -199,7 +239,9 @@
   "lang": "en",
   "level": "مبتدئ",
   "paths": [],
-  "expect": "Neural Network|StatQuest"
+  "expect": "Neural Network|StatQuest",
+  "durationSec": 1134,
+  "views": 1473563
  },
  {
   "id": "PaCmpygFfXo",
@@ -209,7 +251,9 @@
   "paths": [
    "train-small"
   ],
-  "expect": "makemore|language model"
+  "expect": "makemore|language model",
+  "durationSec": 7065,
+  "views": 1327696
  },
  {
   "id": "7xTGNNLPyMI",
@@ -219,7 +263,9 @@
   "paths": [
    "how-llm"
   ],
-  "expect": "LLMs|ChatGPT|Karpathy"
+  "expect": "LLMs|ChatGPT|Karpathy",
+  "durationSec": 12684,
+  "views": 10361080
  },
  {
   "id": "kCc8FmEb1nY",
@@ -230,7 +276,9 @@
    "train-small",
    "how-llm"
   ],
-  "expect": "build GPT"
+  "expect": "build GPT",
+  "durationSec": 6980,
+  "views": 8264313
  },
  {
   "id": "UU1WVnMk4E8",
@@ -240,7 +288,9 @@
   "paths": [
    "train-small"
   ],
-  "expect": "LLM|Language Model"
+  "expect": "LLM|Language Model",
+  "durationSec": 20621,
+  "views": 1535517
  },
  {
   "id": "T-D1OfcDW1M",
@@ -250,7 +300,9 @@
   "paths": [
    "host"
   ],
-  "expect": "Retrieval|RAG"
+  "expect": "Retrieval|RAG",
+  "durationSec": 396,
+  "views": 2104944
  },
  {
   "id": "wjZofJX0v4M",
@@ -260,7 +312,9 @@
   "paths": [
    "how-llm"
   ],
-  "expect": "GPT|Transformer"
+  "expect": "GPT|Transformer",
+  "durationSec": 1634,
+  "views": 11649434
  },
  {
   "id": "eMlx5fFNoYc",
@@ -270,7 +324,9 @@
   "paths": [
    "how-llm"
   ],
-  "expect": "Attention"
+  "expect": "Attention",
+  "durationSec": 1570,
+  "views": 4914110
  },
  {
   "id": "zduSFxRajkE",
@@ -281,7 +337,9 @@
    "how-llm",
    "train-small"
   ],
-  "expect": "Tokenizer"
+  "expect": "Tokenizer",
+  "durationSec": 8015,
+  "views": 1264190
  },
  {
   "id": "zxQyTK8quyY",
@@ -291,7 +349,9 @@
   "paths": [
    "how-llm"
   ],
-  "expect": "Transformer"
+  "expect": "Transformer",
+  "durationSec": 2175,
+  "views": 1221335
  },
  {
   "id": "4Bdc55j80l8",
@@ -301,7 +361,9 @@
   "paths": [
    "how-llm"
   ],
-  "expect": "Transformer"
+  "expect": "Transformer",
+  "durationSec": 901,
+  "views": 1199798
  },
  {
   "id": "iDulhoQ2pro",
@@ -309,7 +371,9 @@
   "lang": "en",
   "level": "متقدم",
   "paths": [],
-  "expect": "Attention"
+  "expect": "Attention",
+  "durationSec": 1627,
+  "views": 815850
  },
  {
   "id": "eC6Hd1hFvos",
@@ -319,7 +383,9 @@
   "paths": [
    "train-small"
   ],
-  "expect": "Fine-?tun"
+  "expect": "Fine-?tun",
+  "durationSec": 1698,
+  "views": 583565
  },
  {
   "id": "l8pRSuU81PU",
@@ -329,7 +395,9 @@
   "paths": [
    "train-small"
   ],
-  "expect": "GPT-2|reproduce"
+  "expect": "GPT-2|reproduce",
+  "durationSec": 14486,
+  "views": 1236837
  },
  {
   "id": "F8NKVhkZZWI",
@@ -339,7 +407,9 @@
   "paths": [
    "agent"
   ],
-  "expect": "Agent"
+  "expect": "Agent",
+  "durationSec": 749,
+  "views": 1807058
  },
  {
   "id": "sal78ACtGTc",
@@ -349,7 +419,9 @@
   "paths": [
    "agent"
   ],
-  "expect": "Agent"
+  "expect": "Agent",
+  "durationSec": 820,
+  "views": 417880
  },
  {
   "id": "0I9qt2YQlvM",

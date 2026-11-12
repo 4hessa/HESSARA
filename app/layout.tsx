@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preload" href="/fonts/plex-arabic-700.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
       <body>
-        <AppProvider user={user ? toPublic(user) : null} models={listModels()}>{children}</AppProvider>
+        <AppProvider user={user ? toPublic(user) : null} models={listModels(!!user)}>{children}</AppProvider>
       </body>
     </html>
   );

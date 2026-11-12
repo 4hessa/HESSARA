@@ -269,16 +269,39 @@ try {
   const t0 = Date.now();
   const rvd = await ctx.request.post(`${BASE}/api/reviews/${(await rv.json()).id}/revise`, { data: { revised: "b\n".repeat(9000) } });
   check("أمان: مقارنة مدخلين كثيري الأسطر محدودة الزمن والذاكرة", rvd.ok() && Date.now() - t0 < 3000, `${Date.now() - t0}ms`);
+  // إخفاقات الدخول تُحسب لكل بريد ولا تقفل الخدمة على غيره
+  const tryLogin = (email, password) => fetch(BASE + "/api/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, password }) });
+  let st = 0;
+  for (let i = 0; i < 11; i++) st = (await tryLogin("victim@example.com", "wrong-" + i)).status;
+  const otherOk = await tryLogin("ahmad@example.com", "correct-horse-9");
+  check("أمان: التخمين يُوقف لكل بريد (429) دون قفل دخول الآخرين", st === 429 && otherOk.status === 200, `${st}/${otherOk.status}`);
+  let dst = 0;
+  for (let i = 0; i < 6; i++) dst = (await ctx.request.delete(BASE + "/api/me", { data: { password: "guess-" + i } })).status();
+  check("أمان: تخمين كلمة المرور عبر حذف الحساب محدود (429)", dst === 429, String(dst));
+  const anonModels = await (await fetch(BASE + "/api/models")).json();
+  check("أمان: تفاصيل تهيئة الخادم محجوبة عن الزائر", anonModels.models.every((m) => m.missing.length === 0));
+  const badMsg = await ctx.request.post(BASE + "/api/reviews", { data: { text: "نص للمراجعة لا يقل عن عشرين حرفًا بالتأكيد.", mode: "technical", consultationId: id, messageId: "not-mine" } });
+  check("أمان: ربط مراجعة برسالة لا تخص الاستشارة مرفوض", badMsg.status() === 404);
   const bundle = fs.readdirSync(".next/static", { recursive: true }).filter((f) => String(f).endsWith(".js")).map((f) => fs.readFileSync(path.join(".next/static", String(f)), "utf8")).join("");
-  check("أمان: لا أسماء مفاتيح خدمات ولا تعليمات النظام في حزمة المتصفح", !/ANTHROPIC_API_KEY|OPENAI_API_KEY|sk-ant-|أنت مستشار تقني ضمن منصة/.test(bundle));
+  check("أمان: لا أسماء مفاتيح خدمات ولا تعليمات النظام في حزمة المتصفح", !/ANTHROPIC_API_KEY|OPENAI_API_KEY|sk-ant-|أنت مستشار تقني ضمن منصة|أنت مهندس برمجيات يراجع شفرة زميل|أنت مراجع نقدي مستقل/.test(bundle));
 
   // حذف الحساب
   await page.goto(BASE + "/profile");
   await page.getByRole("button", { name: "احذف حسابي وبياناتي" }).click();
   await page.locator("#del-pw").fill("correct-horse-9");
   await page.getByRole("button", { name: "احذف نهائيًا" }).click();
-  await page.waitForURL(BASE + "/");
-  const relog = await fetch(BASE + "/api/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "ahmad@example.com", password: "correct-horse-9" }) });
+  await page.getByText("محاولات كثيرة").waitFor(); // الحد من الفحص السابق ما زال ساريًا: الحذف محجوب حتى بكلمة المرور الصحيحة
+  check("أمان: حد الحذف يسري حتى مع كلمة المرور الصحيحة أثناء النافذة", true);
+  const fresh = await browser.newContext();
+  await fresh.request.post(BASE + "/api/auth/signup", { data: { name: "ليلى", email: "layla@example.com", password: "delete-me-123", accept: true } });
+  const fp = await fresh.newPage();
+  await fp.goto(BASE + "/profile");
+  await fp.getByRole("button", { name: "احذف حسابي وبياناتي" }).click();
+  await fp.locator("#del-pw").fill("delete-me-123");
+  await fp.getByRole("button", { name: "احذف نهائيًا" }).click();
+  await fp.waitForURL(BASE + "/");
+  await fresh.close();
+  const relog = await fetch(BASE + "/api/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "layla@example.com", password: "delete-me-123" }) });
   check("حذف الحساب يزيل البيانات (تعذر الدخول بعده)", relog.status === 401);
 
   const realErrors = errors.filter((e) => !/401|404|412|Failed to load resource/.test(e));

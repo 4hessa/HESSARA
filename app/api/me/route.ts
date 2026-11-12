@@ -2,7 +2,7 @@ import { destroySession, toPublic, verifyPassword } from "@/lib/auth";
 import { agentById } from "@/lib/catalog/agents";
 import { modelById } from "@/lib/catalog/models";
 import { get, run, type UserRow } from "@/lib/db";
-import { authed, fail, LIMITS, ok, readJson, str } from "@/lib/http";
+import { authed, clearFailures, fail, isBlocked, LIMITS, noteFailure, ok, readJson, str } from "@/lib/http";
 import { isUsable } from "@/lib/providers";
 
 export const GET = authed(async (_req, user) => ok({ user: toPublic(user) }));
@@ -53,8 +53,14 @@ export const PATCH = authed(async (req, user) => {
 // حذف الحساب وكل بياناته (المحادثات والمراجعات والمفضلات تُحذف بالتتابع).
 export const DELETE = authed(async (req, user) => {
   const b = await readJson(req);
-  if (typeof b?.password !== "string" || !(await verifyPassword(b.password, user.pass_hash)))
+  // دون حد تصير هذه النقطة وسيلة لتخمين كلمة المرور لمن يحمل جلسة مسروقة.
+  const key = `delpw:${user.id}`;
+  if (isBlocked(key, 5)) return fail(429, "محاولات كثيرة. انتظر ربع ساعة.");
+  if (typeof b?.password !== "string" || b.password.length > 200 || !(await verifyPassword(b.password, user.pass_hash))) {
+    noteFailure(key, 15 * 60_000);
     return fail(403, "كلمة المرور غير صحيحة.");
+  }
+  clearFailures(key);
   run("DELETE FROM users WHERE id = ?", user.id);
   await destroySession();
   return ok();
