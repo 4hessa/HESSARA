@@ -145,14 +145,6 @@
   "expect": "Machine Learning"
  },
  {
-  "id": "jGwO_UgTS7I",
-  "category": "ml",
-  "lang": "en",
-  "level": "متوسط",
-  "paths": [],
-  "expect": "CS229|Machine Learning"
- },
- {
   "id": "Gv9_4yMHFhI",
   "category": "ml",
   "lang": "en",
@@ -239,16 +231,6 @@
    "how-llm"
   ],
   "expect": "build GPT"
- },
- {
-  "id": "9vM4p9NN0Ts",
-  "category": "llm",
-  "lang": "en",
-  "level": "متوسط",
-  "paths": [
-   "how-llm"
-  ],
-  "expect": "LLM|Stanford"
  },
  {
   "id": "UU1WVnMk4E8",
@@ -401,7 +383,7 @@
  },
  {
   "id": "YwiM0KlzIe8",
-  "category": "intro",
+  "category": "ml",
   "lang": "ar",
   "level": "متوسط",
   "paths": [
@@ -476,11 +458,11 @@
  },
  {
   "id": "FwOTs4UxQS4",
-  "category": "intro",
+  "category": "agents",
   "lang": "en",
   "level": "متوسط",
   "paths": [
-   "zero"
+   "agent"
   ],
   "expect": ".",
   "durationSec": 609,
@@ -654,21 +636,6 @@
   "source": "search",
   "searchTitle": "Lesson 3A: What is generative AI? (Deep Dive) | AI Fluency: Framework & Foundations Course",
   "searchChannel": "Anthropic"
- },
- {
-  "id": "J8Eh7RqggsU",
-  "category": "intro",
-  "lang": "en",
-  "level": "متوسط",
-  "paths": [
-   "zero"
-  ],
-  "expect": ".",
-  "durationSec": 5246,
-  "views": 781345,
-  "source": "search",
-  "searchTitle": "Overview Artificial Intelligence Course | Stanford CS221: Learn AI (Autumn 2019)",
-  "searchChannel": "Stanford Online"
  },
  {
   "id": "U5zQzSqywEY",
@@ -1300,21 +1267,6 @@
   "source": "search",
   "searchTitle": "All Machine Learning Models Clearly Explained!",
   "searchChannel": "AI For Beginners"
- },
- {
-  "id": "DXqxXe3rep0",
-  "category": "ml",
-  "lang": "en",
-  "level": "متوسط",
-  "paths": [
-   "zero"
-  ],
-  "expect": ".",
-  "durationSec": 513,
-  "views": 476737,
-  "source": "search",
-  "searchTitle": "Lec-18: Random Forest 🌳 in Machine Learning 🧑‍💻👩‍💻",
-  "searchChannel": "Gate Smashers"
  },
  {
   "id": "rieTvPIjvTY",
@@ -2616,21 +2568,6 @@
   "searchChannel": "IBM Technology"
  },
  {
-  "id": "ydFikMBJG1g",
-  "category": "local",
-  "lang": "en",
-  "level": "متوسط",
-  "paths": [
-   "run-local"
-  ],
-  "expect": ".",
-  "durationSec": 4716,
-  "views": 346038,
-  "source": "search",
-  "searchTitle": "STOP. You're Installing Local AI Right Now (Llama.cpp)",
-  "searchChannel": "SchizoDev"
- },
- {
   "id": "2t9XrPcAiHg",
   "category": "local",
   "lang": "en",
@@ -2809,5 +2746,95 @@
   "source": "search",
   "searchTitle": "LangSmith Tutorial - LLM Evaluation for Beginners",
   "searchChannel": "Dave Ebbelaar"
+ },
+ {
+  "id": "my-nNuleq2k",
+  "category": "intro",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 536,
+  "views": 113006,
+  "source": "search",
+  "searchTitle": "أفضل كورسات الذكاء الاصطناعي (للمبتدئين والمحترفين)",
+  "searchChannel": "It's Malak Hatem"
+ },
+ {
+  "id": "mUw27wG7uFA",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 529,
+  "views": 1105392,
+  "source": "search",
+  "searchTitle": "AI Simplified: 6 Concepts You Need to Know About Modern AI",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "O2gerCxEXvc",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 610,
+  "views": 730131,
+  "source": "search",
+  "searchTitle": "Generative AI vs AI agents vs Agentic AI",
+  "searchChannel": "codebasics"
+ },
+ {
+  "id": "7sJ9hQYpkbU",
+  "category": "ml",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 2125,
+  "views": 265757,
+  "source": "search",
+  "searchTitle": "Machine Learning ( in Arabic)  تعلم الآلة والذكاء الاصطناعي وأمثلة بلغة بايثون (بالعربي)",
+  "searchChannel": "Hussam Hourani"
+ },
+ {
+  "id": "hF2NtXRqbQE",
+  "category": "llm",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 3170,
+  "views": 92087,
+  "source": "search",
+  "searchTitle": "كورس هندسة الاوامر-  الكورس الكامل  Prompt Engineering Masterclass",
+  "searchChannel": "Mina Nessim"
+ },
+ {
+  "id": "rPGJhrunbxo",
+  "category": "local",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 1463,
+  "views": 2204798,
+  "source": "search",
+  "searchTitle": "كل أحجام الذكاء الاصطناعي محلياً في 24 دقيقة",
+  "searchChannel": "Tina Huang"
  }
 ]

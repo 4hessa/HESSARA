@@ -62,7 +62,9 @@ async function searchOnce(q, lang) {
   return out;
 }
 
-const existing = JSON.parse(fs.readFileSync("data/video-candidates.json", "utf8")).filter((c) => c.source !== "search");
+// يُبقي كل المرشّحين السابقين (المراجَعين) ويكمل النقص فقط، حتى لا تتبدّل القائمة مع تغيّر نتائج البحث.
+const curationAll = JSON.parse(fs.readFileSync("data/video-curation.json", "utf8"));
+const existing = JSON.parse(fs.readFileSync("data/video-candidates.json", "utf8")).filter((c) => !curationAll.excluded[c.id]).map((c) => ({ ...c, ...(curationAll.overrides[c.id] ?? {}) }));
 const excluded = JSON.parse(fs.readFileSync("data/video-curation.json", "utf8")).excluded;
 const taken = new Set([...existing.map((c) => c.id), ...Object.keys(excluded)]);
 const added = [];
@@ -90,7 +92,7 @@ for (const [cat, plan] of Object.entries(PLAN)) {
   const ar = pick("ar", Math.ceil(need * 0.3));
   const en = pick("en", need - ar.length);
   added.push(...ar, ...en);
-  console.log(`${cat}: يدوي ${have} + عربي ${ar.length} + إنجليزي ${en.length} / الهدف ${plan.n}`);
+  console.log(`${cat}: موجود ${have} + عربي ${ar.length} + إنجليزي ${en.length} / الهدف ${plan.n}`);
 }
 fs.writeFileSync("data/video-candidates.json", JSON.stringify([...existing, ...added], null, 1) + "\n");
 console.log(`أضيف ${added.length} مرشّحًا من البحث. المجموع ${existing.length + added.length}.`);
