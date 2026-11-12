@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import Cards from '../components/Cards.astro';
+import Mock from '../components/Mock.astro';
+import Cta from '../components/Cta.astro';
+---
+<Base
+  title="AI-Powered Strategic Consulting — HESSARA"
+  description="Deep-level advisory and multi-agent deliberation. Engage specialized AI consultants to dissect complex problems, simulate outcomes, and architect actionable roadmaps."
+  current="/consulting/"
+  cta={{ label: 'Start Consultation', href: '#cta' }}
+  art={{ name: 'consulting', kind: 'fade', y: '-12.5rem' }}
+>
+  <Fragment slot="hero">
+    <h1>AI-Powered Strategic Consulting</h1>
+    <p class="hero__sub">Deep-Level Advisory &amp; Multi-Agent Deliberation</p>
+    <div class="hero__copy">
+      <p>Engage specialized AI consultants trained on domain-specific research to dissect complex problems, simulate outcomes, and architect actionable roadmaps.</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn" href="#workspace">Launch Advisory Session</a>
+      <a class="btn btn--ghost" href="#council">Select AI Specialist</a>
+    </div>
+  </Fragment>
+
+  <section class="section" id="council">
+    <p class="eyebrow">Advisory Council</p>
+    <h2 class="title">Select Your Advisory Council</h2>
+    <Cards items={[
+      { icon: 'knight', title: 'Executive Strategist', text: 'Specialized AI models and intelligent navigation.' },
+      { icon: 'eye', title: 'Risk & Foresight Oracle', text: 'Measures what is at stake with predictive analysis.' },
+      { icon: 'network', title: 'Systems Architect', text: 'Decision structure development and systems insights.' },
+    ]} />
+  </section>
+
+  <section class="section" id="workspace" style="padding-bottom:1.6rem">
+    <p class="eyebrow">Workspace</p>
+    <h2 class="title">Interactive Consultation Workspace</h2>
+  </section>
+
+  <section class="section feature feature--bleed">
+    <div>
+      <h3>Real-Time Scenario Simulation</h3>
+      <p>HESSARA connects you with our specialized AI and domain-specific research to dissect the problem, simulate outcomes, and architect actionable roadmaps.</p>
+      <ul>
+        <li><small><b>Real-time scenarios</b> – specialist AI models run the consultation analysis and surface emerging problems as you work.</small></li>
+        <li><small><b>Scenario probability</b> – multi-agent consultation committed to exploration and decision insights.</small></li>
+      </ul>
+    </div>
+    <Mock variant="consult" />
+  </section>
+
+  <Cta title="Ready to consult with HESSARA intelligence?" actions={[{ label: 'Book AI Session', href: '/resources/' }]} />
+</Base>

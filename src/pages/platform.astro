@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import Cards from '../components/Cards.astro';
+import Steps from '../components/Steps.astro';
+import Mock from '../components/Mock.astro';
+import Cta from '../components/Cta.astro';
+---
+<Base
+  title="The HESSARA Platform — One System for Models, Agents, and Evidence"
+  description="The HESSARA platform orchestrates specialized models and intelligent agents around your own evidence, with governance built in."
+  current="/platform/"
+  cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
+  art={{ name: 'platform' }}
+  heroTop="37.5rem"
+>
+  <Fragment slot="hero">
+    <h1>One Platform. Every Decision in Orbit</h1>
+    <p class="hero__sub">Agent Orchestration &amp; Evidence-Grounded Reasoning</p>
+    <div class="hero__copy">
+      <p>The HESSARA platform brings specialized models, intelligent agents, and your own evidence into one governed workspace, so each recommendation can be traced back to its source.</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn" href="#suite">Explore the Platform</a>
+      <a class="btn btn--ghost" href="/resources/">Read the Documentation</a>
+    </div>
+  </Fragment>
+
+  <section class="section" id="suite">
+    <p class="eyebrow">Core Systems</p>
+    <h2 class="title">The Architecture of HESSARA</h2>
+    <Cards items={[
+      { icon: 'layers', title: 'Agent Orchestration', text: 'Coordinate specialist agents on one shared brief.' },
+      { icon: 'book', title: 'Knowledge Grounding', text: 'Anchor every answer in your own sources.' },
+      { icon: 'shield', title: 'Governance & Audit', text: 'Review, approve, and trace each decision path.' },
+    ]} />
+  </section>
+
+  <section class="section">
+    <p class="eyebrow">How It Fits Together</p>
+    <h2 class="title">From Question to Governed Answer</h2>
+    <Steps items={[
+      { title: 'Connect', text: 'Bring documents, data, and context into a private workspace.' },
+      { title: 'Orchestrate', text: 'Route each question to the models and agents suited to it.' },
+      { title: 'Govern', text: 'Inspect sources, record approvals, and export the reasoning.' },
+    ]} />
+  </section>
+
+  <section class="section feature">
+    <div>
+      <h3>A single workspace for every advisory thread</h3>
+      <p>Sessions, sources, and decisions stay together, so teams can pick up any line of reasoning where it was left.</p>
+    </div>
+    <Mock variant="advisory" />
+  </section>
+
+  <Cta title="Ready to bring HESSARA into your organization?" actions={[
+    { label: 'Deploy HESSARA', href: '/consulting/#cta' },
+    { label: 'Explore Language Models', href: '/models/', ghost: true },
+  ]} />
+</Base>
