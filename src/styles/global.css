@@ -47,6 +47,7 @@ ul, ol { list-style: none; }
   mix-blend-mode: multiply;
 }
 .art img { width: 100%; height: auto; }
+.art--frame img { margin-top: var(--art-y, 0rem); }
 .art--fade {
   height: 44rem;
   -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 var(--f1, 46%), rgba(0,0,0,.55) var(--f2, 68%), transparent var(--f3, 94%));
