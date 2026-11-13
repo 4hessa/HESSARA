@@ -10,6 +10,9 @@ interface Props {
 }
 const { title, description, current, cta, art, heroTop = '25.2rem', glow = true } = Astro.props;
 const is = (href: string) => (current === href ? 'page' : undefined);
+const site = Astro.site;
+const canonical = site ? new URL(Astro.url.pathname, site).href : undefined;
+const ogImage = site ? new URL('/og.jpg', site).href : undefined;
 ---
 <!doctype html>
 <html lang="en">
@@ -19,10 +22,20 @@ const is = (href: string) => (current === href ? 'page' : undefined);
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#111111" />
+    <meta property="og:site_name" content="HESSARA" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta property="og:image:width" content="1200" />}
+    {ogImage && <meta property="og:image:height" content="630" />}
+    {ogImage && <meta property="og:image:alt" content="HESSARA: a lone figure on a pale path between dark forest and gothic pillars" />}
+    {site && <link rel="sitemap" href="/sitemap-index.xml" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -49,7 +62,7 @@ const is = (href: string) => (current === href ? 'page' : undefined);
             <div class="footer__cols">
               {footer.map((c) => (
                 <div>
-                  <h4>{c.title}</h4>
+                  <h2 class="footer__title">{c.title}</h2>
                   <ul>{c.links.map(([l, h]) => <li><a href={h}>{l}</a></li>)}</ul>
                 </div>
               ))}
