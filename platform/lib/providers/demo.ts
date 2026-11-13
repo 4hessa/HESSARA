@@ -1,7 +1,7 @@
 // المحرك التجريبي: قواعد وكلمات مفتاحية وقوالب ثابتة. ليس نموذجًا لغويًا،
 // وتوضّح كل إجابة ذلك في سطرها الأخير. الغرض: إثبات المسار دون مفاتيح خدمات.
-import { agentById } from "../catalog/agents";
-import type { ProviderAdapter, StreamRequest } from "./types";
+import { agentById } from "../catalog/agents.ts";
+import type { ProviderAdapter, StreamRequest } from "./types.ts";
 
 type Topic = { id: string; re: RegExp; body: string };
 

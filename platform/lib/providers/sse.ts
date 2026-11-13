@@ -1,5 +1,5 @@
 // قارئ أحداث SSE عام للمزوّدين الذين نخاطبهم عبر HTTP مباشرة.
-import { ProviderError } from "./types";
+import { ProviderError } from "./types.ts";
 
 export async function* sseData(res: Response): AsyncIterable<string> {
   if (!res.body) return;

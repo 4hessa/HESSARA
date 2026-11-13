@@ -88,7 +88,8 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
     on(); mq.addEventListener("change", on);
     return () => mq.removeEventListener("change", on);
   }, []);
-  useEffect(() => { const el = scrollRef.current; if (el) el.scrollTop = el.scrollHeight; }, [msgs.length, streaming]);
+  // الخطأ أيضًا يُمرَّر إليه: يُضاف أسفل المحادثة، ودون تمرير يبقى خارج مجال الرؤية.
+  useEffect(() => { const el = scrollRef.current; if (el) el.scrollTop = el.scrollHeight; }, [msgs.length, streaming, error]);
   useEffect(() => {
     const el = taRef.current; if (!el) return;
     el.style.height = "auto"; el.style.height = `${Math.min(el.scrollHeight, window.innerHeight * 0.4)}px`;
@@ -112,7 +113,9 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
       });
       let res = await doFetch();
       if (res.status === 412) {
-        if (await ensureConsent()) res = await doFetch();
+        // لم يُرسل شيء للمزوّد بعد: لا يُعرض «يكتب الإجابة» أثناء انتظار الموافقة.
+        setStreaming(null);
+        if (await ensureConsent()) { setStreaming(""); res = await doFetch(); }
         else throw new Error("لم تُمنح الموافقة على الإرسال إلى المزوّد الخارجي. يمكنك اختيار المحرك التجريبي بدلًا من ذلك.");
       }
       if (!res.ok || !res.body) throw new Error((await res.json().catch(() => ({}))).error ?? "تعذر إرسال الرسالة.");

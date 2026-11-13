@@ -1,8 +1,8 @@
-import { firstLlm } from "../providers";
-import { ProviderError } from "../providers/types";
-import { heuristicReview } from "./heuristic";
-import { llmReview } from "./llm";
-import { modeById, type ReviewResult } from "./types";
+import { firstLlm } from "../providers/index.ts";
+import { ProviderError } from "../providers/types.ts";
+import { heuristicReview } from "./heuristic.ts";
+import { llmReview } from "./llm.ts";
+import { modeById, type ReviewResult } from "./types.ts";
 
 export type EngineChoice = "auto" | "heuristic";
 

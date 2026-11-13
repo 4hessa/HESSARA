@@ -1,7 +1,7 @@
 // موائم لواجهات «chat/completions» المتوافقة مع OpenAI
 // (OpenAI نفسها، DeepSeek، مستضيفو Llama وQwen، والخوادم المحلية مثل Ollama).
-import { httpError, safeFetch, sseData } from "./sse";
-import type { ProviderAdapter, StreamRequest } from "./types";
+import { httpError, safeFetch, sseData } from "./sse.ts";
+import type { ProviderAdapter, StreamRequest } from "./types.ts";
 
 export function openaiCompatAdapter(cfg: { baseUrl: string; apiKey?: string }): ProviderAdapter {
   return {

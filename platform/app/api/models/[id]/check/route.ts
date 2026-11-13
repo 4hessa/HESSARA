@@ -8,20 +8,23 @@ export const POST = authed<{ params: Promise<{ id: string }> }>(async (_req, use
   if (!rateLimit(`check:${user.id}`, 10, 10 * 60_000)) return fail(429, "اختبارات كثيرة. انتظر قليلًا.");
   const m = resolveModel(id);
   if (!m) return fail(409, "النموذج غير مهيّأ على الخادم.");
+  const signal = AbortSignal.timeout(30_000);
   try {
     const out = await collect(
       m.adapter.stream({
         model: m.apiModel,
         system: "أجب بكلمة واحدة.",
         messages: [{ role: "user", content: "اكتب كلمة: جاهز" }],
-        signal: AbortSignal.timeout(30_000),
+        signal,
         maxTokens: 2000,
       }),
     );
-    if (!out.trim()) throw new ProviderError("أعاد المزوّد ردًا فارغًا.");
+    if (!out.trim()) throw new ProviderError(signal.aborted ? "انتهت مهلة الاختبار (30 ثانية) دون رد." : "أعاد المزوّد ردًا فارغًا.");
     recordCheck(id, true);
   } catch (e) {
-    recordCheck(id, false, e instanceof ProviderError ? e.message : "فشل الاتصال.");
+    // إجابة مبتورة تثبت أن الاتصال والمفتاح يعملان.
+    if (e instanceof ProviderError && e.kind === "truncated") recordCheck(id, true);
+    else recordCheck(id, false, e instanceof ProviderError ? e.message : "فشل الاتصال.");
   }
   return ok({ model: modelView(m.def) });
 });

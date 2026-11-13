@@ -110,7 +110,8 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
         else {
           const message = e instanceof ProviderError ? e.message : "حدث خطأ غير متوقع أثناء توليد الإجابة.";
           if (!(e instanceof ProviderError)) console.error("[consult] stream error", (e as Error).name);
-          else if (e.kind !== "refused" && e.kind !== "rate_limit") recordCheck(c.model_id, false, e.message);
+          // الامتناع وحد المعدل والبتر لا تعني أن الاتصال بالنموذج معطّل.
+          else if (e.kind !== "refused" && e.kind !== "rate_limit" && e.kind !== "truncated") recordCheck(c.model_id, false, e.message);
           await save("stopped");
           send({ t: "error", message, partial: !!text.trim(), id: assistantId });
         }

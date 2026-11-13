@@ -14,12 +14,15 @@ export interface ProviderAdapter {
   stream(req: StreamRequest): AsyncIterable<string>;
 }
 
+// truncated: وصلت مخرجات جزئية ثم توقف التوليد عند الحد الأقصى للطول.
+export type ProviderErrorKind = "auth" | "rate_limit" | "unavailable" | "refused" | "bad_request" | "network" | "truncated";
+
+// دون «خصائص المعاملات» في المُنشئ: صيغة لا يدعمها تشغيل Node المباشر لملفات TypeScript (تحتاجه اختبارات الوحدات).
 export class ProviderError extends Error {
-  constructor(
-    message: string,
-    public kind: "auth" | "rate_limit" | "unavailable" | "refused" | "bad_request" | "network" = "unavailable",
-  ) {
+  kind: ProviderErrorKind;
+  constructor(message: string, kind: ProviderErrorKind = "unavailable") {
     super(message);
+    this.kind = kind;
   }
 }
 

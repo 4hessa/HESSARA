@@ -1,10 +1,10 @@
 // توجيه النماذج: يحوّل معرّف الفهرس إلى موائم + معرّف المزوّد، ويحسب الحالة الفعلية.
-import { MODELS, modelById, type ModelDef, type ModelStatus } from "../catalog/models";
-import { anthropicAdapter } from "./anthropic";
-import { demoAdapter } from "./demo";
-import { geminiAdapter } from "./gemini";
-import { openaiCompatAdapter } from "./openaiCompat";
-import type { ProviderAdapter } from "./types";
+import { MODELS, modelById, type ModelDef, type ModelStatus } from "../catalog/models.ts";
+import { anthropicAdapter } from "./anthropic.ts";
+import { demoAdapter } from "./demo.ts";
+import { geminiAdapter } from "./gemini.ts";
+import { openaiCompatAdapter } from "./openaiCompat.ts";
+import type { ProviderAdapter } from "./types.ts";
 
 const env = (name?: string) => (name ? process.env[name]?.trim() || undefined : undefined);
 

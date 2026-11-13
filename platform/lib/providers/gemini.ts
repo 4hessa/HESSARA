@@ -1,6 +1,6 @@
 // موائم Google Gemini عبر واجهة streamGenerateContent.
-import { httpError, safeFetch, sseData } from "./sse";
-import type { ProviderAdapter, StreamRequest } from "./types";
+import { httpError, safeFetch, sseData } from "./sse.ts";
+import type { ProviderAdapter, StreamRequest } from "./types.ts";
 
 export function geminiAdapter(apiKey: string): ProviderAdapter {
   return {
