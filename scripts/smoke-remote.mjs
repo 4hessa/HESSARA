@@ -18,18 +18,19 @@ const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); c
 const email = `smoke-${Date.now()}@example.com`;
 const password = `smoke-${Math.random().toString(36).slice(2)}-Aa1`;
 
-let browser;
+let browser, page;
+let signedUp = false;
+const errors = [];
 try {
   // خلف وسيط شبكة (كما في بيئات البناء السحابية) يمرّ المتصفح عبره؛ الثقة بشهادته مضبوطة في النظام.
   const proxy = process.env.HTTPS_PROXY || process.env.https_proxy;
   browser = await chromium.launch(proxy ? { proxy: { server: proxy, bypass: "localhost,127.0.0.1" } } : {});
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 860 }, locale: "ar" });
-  const page = await ctx.newPage();
-  const errors = [];
+  page = await ctx.newPage();
   page.on("pageerror", (e) => errors.push(e.message));
 
   await page.goto(START); // يضع ملف ارتباط المشاركة ثم يحوّل إلى الموقع
-  check("الصفحة التعريفية تُفتح", (await page.locator("h1").first().innerText()).includes("مستشارك"));
+  check("الصفحة الرئيسية تُفتح بالعربية", (await page.locator("h1").first().innerText()).includes("تصنع الفرق") && (await page.locator("html").getAttribute("dir")) === "rtl");
 
   const anon = await (await ctx.request.get(BASE + "/api/models")).json();
   const status = Object.fromEntries(anon.models.map((m) => [m.id, m.status]));
@@ -43,6 +44,7 @@ try {
   await page.locator("#password").fill(password);
   await page.locator("input[name=accept]").check();
   await page.getByRole("button", { name: "أنشئ الحساب" }).click();
+  signedUp = true; // من هنا قد يوجد الحساب، فيُحذف في النهاية مهما حدث بعدها
   await page.waitForURL(/\/home/, { timeout: 30000 });
   check("إنشاء الحساب يعمل خلف الاستضافة (فحص مصدر الطلب مقبول)", true);
 
@@ -70,7 +72,8 @@ try {
   ]);
   const total = Date.now() - t0;
   const failed = await page.locator(".notice-danger").count();
-  const meta = await page.locator(".msg-meta").first().innerText();
+  // عند خطأ المزوّد تُزال رسالة المساعد الفارغة ويبقى التنبيه، فلا وسم يُقرأ
+  const meta = failed ? "" : await page.locator(".msg-meta").first().innerText();
   const answer = failed ? "" : await page.locator(".prose").first().innerText();
   check("استشارة حقيقية: إجابة مكتملة وموسومة بالنموذج", !failed && meta.includes("مولَّد بالذكاء الاصطناعي") && answer.length > 40,
     failed ? await page.locator(".notice-danger").innerText() : `أول نص بعد ~${ttft}ms، الإجابة كاملة بعد ${total}ms، ${answer.length} حرفًا`);
@@ -87,17 +90,27 @@ try {
     await page.screenshot({ path: path.join(OUT, "02-review.png") });
   }
 
-  // تنظيف: حذف الحساب الاختباري وبياناته
-  await page.goto(BASE + "/profile");
-  await page.getByRole("button", { name: "احذف حسابي وبياناتي" }).click();
-  await page.locator("#del-pw").fill(password);
-  await page.getByRole("button", { name: "احذف نهائيًا" }).click();
-  await page.waitForURL(BASE + "/", { timeout: 30000 });
-  check("حذف الحساب الاختباري", true);
-  check("لا أخطاء JavaScript في المتصفح", errors.length === 0, errors.slice(0, 2).join(" | "));
 } catch (e) {
   check("تنفيذ السكربت", false, String(e.stack || e).slice(0, 600));
 } finally {
+  // تنظيف دائم: يُحذف الحساب الاختباري وبياناته حتى إن فشلت خطوة قبله، فلا تبقى حسابات في قاعدة الإنتاج.
+  if (signedUp) {
+    try {
+      if ((await page.request.get(BASE + "/api/me")).ok()) {
+        await page.goto(BASE + "/profile");
+        await page.getByRole("button", { name: "احذف حسابي وبياناتي" }).click();
+        await page.locator("#del-pw").fill(password);
+        await page.getByRole("button", { name: "احذف نهائيًا" }).click();
+        await page.waitForURL(BASE + "/", { timeout: 30000 });
+        check("حذف الحساب الاختباري", true);
+      } else {
+        check("حذف الحساب الاختباري", false, `لا جلسة للحساب ${email}؛ إن كان قد أُنشئ فهو باقٍ في القاعدة`);
+      }
+    } catch (e) {
+      check("حذف الحساب الاختباري", false, `${email}: ${String(e.message || e).slice(0, 200)}`);
+    }
+  }
+  if (page) check("لا أخطاء JavaScript في المتصفح", errors.length === 0, errors.slice(0, 2).join(" | "));
   await browser?.close();
   const failed = results.filter((r) => !r.ok);
   fs.writeFileSync(path.join(OUT, "results.json"), JSON.stringify(results, null, 2));
