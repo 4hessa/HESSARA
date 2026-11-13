@@ -1,80 +1,114 @@
-# HESSARA
+# هسّارة — HESSARA
 
-Marketing site for HESSARA, an AI-powered advisory platform. Static site built with [Astro](https://astro.build).
+منصة استشارية تجمع نماذج الذكاء الاصطناعي والوكلاء المتخصصين وأدوات النقد والتقييم في تجربة واحدة.
+مشروع تخرج في تخصص الذكاء الاصطناعي.
 
-## Pages
+> «من المشكلة إلى الحل، بمساعدة الذكاء الاصطناعي»
 
-| Route | Page |
-| --- | --- |
-| `/` | Home |
-| `/platform/` | Platform |
-| `/models/` | Language Models |
-| `/consulting/` | AI Consulting |
-| `/insights/` | Insights |
-| `/resources/` | Resources |
-| `/insights/<slug>/` | Insight articles (Markdown) |
-| `/resources/<slug>/` | Resource documents (Markdown) |
-| `/about/`, `/contact/`, `/careers/`, `/programs/` | Company pages |
-| `/privacy/`, `/terms/` | Legal templates, pending review |
+**الموقع:** https://hessara-rho.vercel.app — هذا المستودع هو مصدره الوحيد: تطبيق Next.js واحد في جذر المستودع يضم الصفحات التعريفية بتصميم الموقع المرجعي والمنصة نفسها، بالعربية والإنجليزية مع زر تبديل. الموقع المرجعي الأول (Astro) نُقل كله إلى هذا التطبيق ثم أُزيل من المستودع، ويبقى في تاريخ git (آخر نسخة له في الإيداع `e0c78b0`).
 
-## Develop
+## المسار الأساسي (منفَّذ ومُختبَر آليًا)
+
+اختيار نموذج ← إجراء استشارة ← مراجعة الإجابة بأداة نقد ← حفظ النتيجة ← العودة إليها.
+
+يعمل هذا المسار كاملًا **دون أي مفتاح خدمة** عبر «المحرك التجريبي» (محرك قواعد محلي، ليس نموذج ذكاء اصطناعي)
+و«المراجع القاعدي» (فحوص نمطية حتمية). عند ضبط مفتاح مزوّد حقيقي يعمل المسار نفسه بنموذج لغوي دون تغيير في الواجهة.
+
+## التشغيل
 
 ```bash
 npm install
-npm run dev
+cp .env.example .env.local   # اختياري: مفاتيح المزوّدين
+npm run dev                  # http://localhost:3000
 ```
+
+المتطلبات: Node.js 22.13 أو أحدث (يستخدم `node:sqlite` المضمّنة).
+
+| الأمر | الوظيفة |
+|---|---|
+| `npm run build && npm start` | بناء وتشغيل الإنتاج |
+| `npm test` | اختبارات الوحدات (محرك المراجعة، أداة المقارنة، طبقة البيانات، موائم Claude والمراجع اللغوي مقابل خادم محاكٍ) |
+| `npm run e2e` | الاختبار الشامل: المسار، الاستجابة، الإتاحة، الأمان (بعد `npm run build`) |
+| `E2E_DB=pglite npm run e2e` | الاختبار نفسه على مسار PostgreSQL |
+| `SMOKE_URL=... npm run smoke:remote` | فحص حي لنسخة منشورة بنموذج حقيقي (يستهلك رصيد المفتاح، ويحذف حسابه الاختباري في النهاية) |
+| `npm run e2e:llm` | مسار النماذج اللغوية في المتصفح مقابل مزوّد Anthropic محاكٍ محليًا: اختبار الاتصال، الموافقة، الوسم، المراجعة اللغوية، الأخطاء |
+| `npm run typecheck` | فحص الأنواع |
+| `npm run videos:verify` | التحقق من مرشّحي الفيديو عبر يوتيوب وكتابة `data/videos.json` |
+
+## البنية
+
+```
+app/            صفحات Next.js (App Router) ومسارات الواجهة البرمجية
+  (site)/       كل الصفحات داخل هيكل الموقع (الشريط العائم + التذييل)، ومنها الدخول
+  api/          auth · me · consultations · reviews · models · favorites · demo
+components/     مكونات المنصة (نظام التصميم في app/globals.css)
+  site/         مكونات الموقع المرجعي: الشريط، التذييل، الرسومات، البطاقات، الخطوات، النموذج المصغّر، المقالات
+content/        نصوص المقالات والوثائق والصفحات الطويلة بلغتين (Markdown داخل وحدات TypeScript)
+lib/
+  i18n.ts       اللغتان: اختيار اللغة، دالة الترجمة t(ar, en)، لغة طلبات الواجهة البرمجية
+  db.ts         طبقة البيانات (SQLite محليًا، PostgreSQL عبر DATABASE_URL) — كل استعلام مقيَّد بمعرّف المستخدم
+  auth.ts       scrypt + جلسات برموز عشوائية مجزّأة
+  providers/    طبقة توجيه النماذج: موائم لكل مزوّد خلف عقد واحد
+  catalog/      فهارس النماذج والوكلاء والفيديوهات
+  review/       طبقة التقييم: مراجع قاعدي، مراجع لغوي، أداة المقارنة
+data/           الفيديوهات المتحقق منها + المرشّحون، وقياسات الرسومات (art.json)
+public/art/     رسومات الموقع المرجعي بمقاساتها وقصّات الهاتف (AVIF و WebP)
+docs/           نظام التصميم، البنية، الحالة والقيود، المراجعة الأمنية
+scripts/        الاختبار الشامل، التحقق من الفيديوهات
+```
+
+## اللغتان
+
+- اللغة تُقرأ من ملف الارتباط `hs_lang` (يضبطه زر «EN» / «عربي» في الشريط والتذييل، أو الملف الشخصي)، وعند غيابه من ترويسة `Accept-Language`، وإلا فالعربية.
+- النص يُكتب في موضع استخدامه بالصيغتين معًا: `t("…", "…")` في الخادم (`getT()`) والمتصفح (`useT()`)، فلا يُنسى أحدهما. الفهارس (النماذج، الوكلاء، أنماط المراجعة، الفيديو) لها نسختان بالمعرّفات نفسها.
+- النماذج تُطلب منها الإجابة بلغة الواجهة؛ المحادثات المحفوظة تبقى بلغتها الأصلية.
+- القيد: الصفحات لا تحمل عنوانًا مستقلًا لكل لغة (لا `/en/…`)، فمحركات البحث ترى اللغة التي تطلبها ترويستها.
+
+## النشر على Vercel
+
+المشروع `hessara` في Vercel يبني جذر المستودع ويخدم https://hessara-rho.vercel.app. إعداد المشروع ما زال يذكر إطار Astro، لكن الملف `vercel.json` في الجذر يفرض إطار Next.js على كل نشر (وثائق Vercel: خاصية `framework` تتقدّم على إعداد المشروع)، فلا يلزم تغيير الإعداد يدويًا.
+
+ما يحتاجه المشروع في **Settings ← Environment Variables** و **Storage**:
+
+1. ربط قاعدة Postgres بالمشروع من تبويب **Storage** (يُضبط `DATABASE_URL` تلقائيًا)، ثم إعادة النشر.
+2. متغيرات البيئة من الجدول التالي.
+
+لإنشاء مشروع جديد من الصفر: استورد المستودع من https://vercel.com/new (يُكتشف Next.js تلقائيًا)، ثم الخطوتان أعلاه.
+
+| المتغير | متى يلزم | الغرض |
+|---|---|---|
+| `DATABASE_URL` | **إلزامي على Vercel** | قاعدة دائمة. دونه يرفض التطبيق الدخول وإنشاء الحسابات برسالة صريحة: على Vercel تعمل الصفحات ومسارات الواجهة البرمجية في دوال منفصلة لكلٍّ منها ملف مؤقت خاص، فلا تصل الجلسة من إحداها إلى الأخرى (ثبت ذلك على النسخة المنشورة) |
+| `HESSARA_TRUST_PROXY=1` | موصى به على Vercel | توثيق Vercel: المنصة تكتب `x-forwarded-for` بنفسها ولا تمرر ما يرسله العميل، فتعمل حدود المعدل لكل عنوان |
+| `ANTHROPIC_API_KEY` | لنماذج Claude | |
+| `ANTHROPIC_WORKSPACE_ID` | فقط إن لم يُربط مفتاح Anthropic بمساحة عمل عند إنشائه | دونه يرفض المزوّد كل طلب بخطأ 400 |
+| `OPENAI_API_KEY` و`OPENAI_MODEL` | لنماذج GPT، معًا | المنصة لا تفترض اسم إصدار |
+| `GEMINI_API_KEY` و`GEMINI_MODEL` | لنماذج Gemini، معًا | المنصة لا تفترض اسم إصدار |
+
+مسار البث يطلب مدة قصوى 300 ثانية (`maxDuration`). هذه القيمة لم يُتحقق منها مقابل حدود خطة الاستضافة؛ إن رُفض النشر بسببها فاخفضها في `app/api/consultations/[id]/messages/route.ts`.
+
+## عنوان الموقع، المشاركة، ومحركات البحث
+
+العنوان العام يُستخدم للرابط القانوني لكل صفحة، وبطاقات المشاركة (`public/og.jpg`)، وخريطة الموقع (`/sitemap.xml`) وملف `/robots.txt`. يُحدَّد وقت التشغيل من `VERCEL_PROJECT_PRODUCTION_URL` الذي يضبطه Vercel تلقائيًا، أو من `SITE_URL` في أي مكان آخر؛ ودون أيٍّ منهما تُحذف هذه الروابط بدل أن تشير إلى عنوان خاطئ. العنوان القديم لخريطة الموقع (`/sitemap-index.xml`) يُحوَّل إلى الجديد، وروابط الموقع القديم المنتهية بشرطة (مثل `/consulting/`) تُحوَّل إلى نظيرتها.
+
+## الرسومات
+
+`scripts/build-art.mjs` يعيد توليد `public/art/` و `data/art.json` من الصور الأصلية الرمادية عالية الدقة (لا تُحفظ في المستودع)، بأسماء الصفحات: `home.png` و `platform.png` و `models.png` و `consulting.png` و `insights.png` و `resources.png`:
 
 ```bash
-npm run build
+npm install --no-save sharp
+npm run art -- path/to/masters
 ```
 
-The build output is written to `dist/`.
+لكل رسمة مقاسات للشاشات العريضة (1280 حتى 5120 بكسل) وقصّ أوسط للهاتف، بصيغتي AVIF و WebP. مكان الرسمة في كل صفحة يحدده `art` في الصفحة: النمط (`frame` أو `fade`)، والإزاحة، وارتفاع النافذة ونقاط التلاشي `--art-h` و `--f1..f3`.
 
-## Site address, sharing and search
+## التوثيق
 
-The public address is needed for canonical links, social preview cards (`public/og.jpg`) and the sitemap. It is resolved at build time:
+- [نظام التصميم](docs/DESIGN-SYSTEM.md)
+- [تعديلات المحتوى على الموقع المرجعي وأسبابها](docs/CONTENT-CHANGES.md)
+- [البنية وخريطة الصفحات](docs/ARCHITECTURE.md)
+- [الحالة: التكاملات، المكتبة، الاختبارات، القيود](docs/STATUS.md)
+- [المراجعة الأمنية](docs/SECURITY-REVIEW.md)
 
-- on Vercel, from `VERCEL_PROJECT_PRODUCTION_URL`, which Vercel sets automatically
-- anywhere else, from `SITE_URL`, for example:
+## تنبيه
 
-```bash
-SITE_URL=https://example.com npm run build
-```
-
-Without either, those tags and the sitemap are left out rather than pointing at a wrong address. `robots.txt` is always generated and links the sitemap when one exists.
-
-## Structure
-
-- `src/layouts/Base.astro` – page shell: navigation, hero slot, centre column, footer.
-- `src/layouts/Prose.astro` – layout for long-form Markdown pages. A `draft` field in the front matter shows a notice at the top of the page.
-- `src/data/site.ts` – navigation, footer links, and the public contact address (`contactEmail`, empty until confirmed).
-- `src/components/ – artwork (`Art`), cards, process steps, product mock-ups, call-to-action, icons.
-- `src/styles/global.css` – design tokens and all styles. The layout is drawn on a 90rem canvas (1440px design width) and scales with the viewport.
-- `public/art/` – responsive hero artwork (AVIF + WebP, 1280px to 5120px wide).
-
-## Artwork
-
-`scripts/build-art.mjs` regenerates `public/art/` and `src/data/art.json` from greyscale master PNGs:
-
-```bash
-node scripts/build-art.mjs path/to/masters
-```
-
-Masters are named after their page (`home.png`, `platform.png`, `models.png`, `consulting.png`, `insights.png`, `resources.png`) and are not stored in the repository.
-
-Each hero is positioned from the page's `art` prop: `kind` (`frame` shows the whole image, `fade` shows a fixed-height window), `y` (vertical offset) and a `fade` string carrying `--art-h` (window height) and the mask stops `--f1`/`--f2`/`--f3`. Heights are given in `rem`, which tracks the viewport width, so a window set to `90 / aspect` rem matches the image exactly at any screen size.
-
-The Insights master was extended sideways from a portrait original so that the hero sits at a usable height; its dark room continues into black at both edges.
-
-## Repository layout
-
-This repository holds two independent builds. Each has its own `package.json` and lockfile, and neither imports from the other.
-
-| Path | What it is | Stack | Deployment |
-| --- | --- | --- | --- |
-| `platform/` | **The website.** The marketing pages in this site's design, merged with the consulting application (accounts, consultations with a chosen model or specialised agent, critique lab, media library), in Arabic and English with a language toggle | Next.js, TypeScript, SQLite locally or PostgreSQL via `DATABASE_URL` | Vercel project `hessara-platform1` with **Root Directory** set to `platform`. See [`platform/README.md`](platform/README.md) |
-| `/` (root) | The original marketing site (this README), kept unchanged as the design reference | Astro, static | Vercel project `hessara` builds the repository root. To serve the merged site there instead, set that project's Root Directory to `platform` and add the environment variables listed in `platform/README.md` |
-
-The platform adopted this site's design (tokens, fonts, components, and artwork, copied into `platform/public/art`). Copy that described capabilities the product does not have was rewritten; every change and its reason is listed in [`platform/docs/CONTENT-CHANGES.md`](platform/docs/CONTENT-CHANGES.md).
-
-The application's documentation (design system, architecture, status and known limits, security review) is in [`platform/docs/`](platform/docs/).
+بعض الإجابات مولَّدة بالذكاء الاصطناعي وقد تحتوي أخطاء. أسماء النماذج ملك لأصحابها، وذكرها لا يعني شراكة أو اعتمادًا رسميًا.

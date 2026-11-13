@@ -1,4 +1,4 @@
-// Builds the responsive hero artwork in public/art from high-resolution masters.
+// Builds the responsive hero artwork in public/art from high-resolution masters (needs sharp: npm i --no-save sharp).
 // Usage: node scripts/build-art.mjs <dir-with-master-pngs> [name ...] [--mobile-only]
 // Masters are greyscale PNGs named <page>.png (home, platform, models, consulting, insights, resources).
 //
@@ -16,7 +16,7 @@ const mobileOnly = args.includes('--mobile-only');
 const [src, ...only] = args.filter((a) => !a.startsWith('--'));
 if (!src) throw new Error('Pass the directory that holds the master PNGs.');
 const out = 'public/art';
-const manifestPath = 'src/data/art.json';
+const manifestPath = 'data/art.json';
 const WIDTHS = [1280, 1920, 2560, 3840, 5120];
 const MOBILE_FRACTION = 0.4; // 36rem of 90rem: keep in step with the 540px rule in global.css
 const MOBILE_WIDTHS = [960, 1280, 1600];
