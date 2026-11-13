@@ -9,7 +9,7 @@ import { MarketingPage } from "./Page";
 import type { ArtProps } from "./Art";
 
 const ARTS: Record<string, { art: ArtProps; heroTop?: string }> = {
-  insights: { art: { name: "insights", kind: "fade", fade: { "--art-h": "26rem", "--f1": "40%", "--f2": "66%", "--f3": "94%" } }, heroTop: "29rem" },
+  insights: { art: { name: "insights", kind: "fade", dark: true, fade: { "--art-h": "26rem", "--f1": "40%", "--f2": "66%", "--f3": "94%" } }, heroTop: "29rem" },
   resources: { art: { name: "resources", kind: "fade" } },
   platform: { art: { name: "platform", kind: "fade" } },
   home: { art: { name: "home", kind: "fade", fade: { "--f1": "38%", "--f2": "60%", "--f3": "86%" } } },

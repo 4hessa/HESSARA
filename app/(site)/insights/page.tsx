@@ -48,7 +48,7 @@ export default async function InsightsPage() {
   const rows = INSIGHTS.map((e) => ({ kind: e[lang].kicker ?? "", title: e[lang].title, text: e[lang].description, href: `/insights/${e.slug}` }));
   return (
     <MarketingPage
-      art={{ name: "insights", kind: "fade", fade: { "--art-h": "42rem", "--f1": "80%", "--f2": "90%", "--f3": "100%" } }}
+      art={{ name: "insights", kind: "fade", dark: true, fade: { "--art-h": "42rem", "--f1": "80%", "--f2": "90%", "--f3": "100%" } }}
       heroTop="44rem"
       hero={
         <>

@@ -3,11 +3,12 @@
 import manifest from "@/data/art.json";
 
 export type ArtName = keyof typeof manifest;
-export type ArtProps = { name: ArtName; kind?: "frame" | "fade"; x?: string; y?: string; s?: number; fade?: Record<string, string> };
+// dark: رسمة داكنة الأصل (خطوط فاتحة على أسود)، فلا تُعكس في الوضع الداكن.
+export type ArtProps = { name: ArtName; kind?: "frame" | "fade"; x?: string; y?: string; s?: number; fade?: Record<string, string>; dark?: boolean };
 
 type Entry = { w: number; h: number; widths: number[]; mw?: number; mobile?: number[] };
 
-export function Art({ name, kind = "frame", x = "0rem", y = "0rem", s = 1, fade = {} }: ArtProps) {
+export function Art({ name, kind = "frame", x = "0rem", y = "0rem", s = 1, fade = {}, dark = false }: ArtProps) {
   const m = manifest[name] as Entry;
   const set = (ext: string) => m.widths.map((w) => `/art/${name}-${w}.${ext} ${w}w`).join(", ");
   const mset = (ext: string) => (m.mobile ?? []).map((w) => `/art/${name}-m${w}.${ext} ${w}w`).join(", ");
@@ -17,7 +18,7 @@ export function Art({ name, kind = "frame", x = "0rem", y = "0rem", s = 1, fade 
   const fallback = m.widths.includes(1920) ? 1920 : m.widths[0];
   const style = { "--art-x": x, "--art-y": y, "--art-s": s, ...fade } as React.CSSProperties;
   return (
-    <div className={`art art--${kind}`} style={style} aria-hidden="true">
+    <div className={`art art--${kind}${dark ? " art--dark" : ""}`} style={style} aria-hidden="true">
       <picture>
         {m.mobile && <source media={phone} type="image/avif" srcSet={mset("avif")} sizes={`${Math.round(540 * s)}px`} width={m.mw} height={m.h} />}
         {m.mobile && <source media={phone} type="image/webp" srcSet={mset("webp")} sizes={`${Math.round(540 * s)}px`} width={m.mw} height={m.h} />}
