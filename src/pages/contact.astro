@@ -2,12 +2,12 @@
 import Base from '../layouts/Base.astro';
 import Cards from '../components/Cards.astro';
 import Cta from '../components/Cta.astro';
-import { contactEmail } from '../data/site';
+import { contactEmail, consult } from '../data/site';
 ---
 <Base
   title="Contact — HESSARA"
   description="Get in touch with HESSARA about advisory sessions, language models, programs, or careers."
-  cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
+  cta={{ label: 'Talk to an Advisor', href: consult() }}
   art={{ name: 'home', kind: 'fade', fade: '--f1:38%;--f2:60%;--f3:86%' }}
 >
   <Fragment slot="hero">

@@ -43,6 +43,16 @@ SITE_URL=https://example.com npm run build
 
 Without either, those tags and the sitemap are left out rather than pointing at a wrong address. `robots.txt` is always generated and links the sitemap when one exists.
 
+## Linking to the application
+
+The consulting application in `platform/` is deployed as its own Vercel project. The site's "start a consultation" buttons (Talk to an Advisor, Start Consultation, Launch Advisory Session, Book AI Session, Start a Consultation) lead into it, and Select AI Specialist leads to its agents page, once its address is set at build time:
+
+```bash
+PUBLIC_APP_URL=https://hessara-platform1.vercel.app npm run build
+```
+
+On Vercel, add `PUBLIC_APP_URL` under the `hessara` project's Environment Variables and redeploy. Without it, those buttons stay on this site, so the variable should only be set once sign-in works in the application.
+
 ## Structure
 
 - `src/layouts/Base.astro` – page shell: navigation, hero slot, centre column, footer.

@@ -1,11 +1,12 @@
 ---
+import { consult } from '../data/site';
 import Base from '../layouts/Base.astro';
 import Cta from '../components/Cta.astro';
 ---
 <Base
   title="Page not found — HESSARA"
   description="The page you were looking for could not be found."
-  cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
+  cta={{ label: 'Talk to an Advisor', href: consult() }}
   art={{ name: 'home' }}
   glow={false}
 >
@@ -20,5 +21,5 @@ import Cta from '../components/Cta.astro';
       <a class="btn btn--ghost" href="/resources/">Browse Resources</a>
     </div>
   </Fragment>
-  <Cta title="Looking for guidance instead?" actions={[{ label: 'Start a Consultation', href: '/consulting/' }]} />
+  <Cta title="Looking for guidance instead?" actions={[{ label: 'Start a Consultation', href: consult() }]} />
 </Base>
