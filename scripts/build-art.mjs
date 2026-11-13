@@ -55,7 +55,7 @@ for (const file of (await readdir(src)).filter((f) => f.endsWith('.png'))) {
   const cw = Math.round(width * MOBILE_FRACTION);
   const crop = { left: Math.round((width - cw) / 2), top: 0, width: cw, height };
   const mobile = MOBILE_WIDTHS.filter((w) => w <= cw);
-  if (!mobile.length) mobile.push(cw);
+  if (cw < MOBILE_WIDTHS.at(-1) && !mobile.includes(cw)) mobile.push(cw); // the crop's own size is the sharpest it gets
   for (const w of mobile) {
     await encode(open().extract(crop).resize({ width: w, kernel: 'lanczos3' }).greyscale(), `${name}-m${w}`, false);
     console.log(name, 'm' + w);
