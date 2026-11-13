@@ -169,6 +169,14 @@ function driver(): Promise<Driver> {
   return g.__hessaraDriver;
 }
 
+/**
+ * على Vercel دون DATABASE_URL لا يوجد تخزين مشترك: الصفحات ومسارات الواجهة البرمجية تعمل في دوال منفصلة،
+ * لكلٍّ منها ملف /tmp خاص بها، فالجلسة التي تُنشأ في إحداها لا تراها الأخرى (لوحظ على النسخة المنشورة:
+ * /api/me يعرف الجلسة وصفحة /consult/new تحوّل إلى الدخول). لذا يُرفض الدخول وإنشاء الحسابات صراحةً.
+ */
+export const persistentStoreMissing = () =>
+  !!process.env.VERCEL && !process.env.DATABASE_URL && process.env.HESSARA_PGLITE !== "1";
+
 export const dbEngine = () => (process.env.HESSARA_PGLITE === "1" ? "pglite" : process.env.DATABASE_URL ? "postgres" : "sqlite");
 
 export async function all<T>(sql: string, ...params: Param[]): Promise<T[]> {

@@ -1,9 +1,10 @@
 import { createSession, verifyPassword } from "@/lib/auth";
-import { get, type UserRow } from "@/lib/db";
+import { get, persistentStoreMissing, type UserRow } from "@/lib/db";
 import { clearFailures, fail, ipLimit, isBlocked, noteFailure, ok, readJson, sameOrigin } from "@/lib/http";
 
 export async function POST(req: Request) {
   if (!sameOrigin(req)) return fail(403, "مصدر الطلب غير مسموح.");
+  if (persistentStoreMissing()) return fail(503, "التخزين الدائم غير مهيّأ على الخادم: يلزم ضبط DATABASE_URL (قاعدة Postgres). لا يمكن إنشاء حساب أو تسجيل الدخول قبل ذلك.");
   const body = await readJson(req);
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase().slice(0, 200) : "";
   const password = typeof body?.password === "string" ? body.password : "";

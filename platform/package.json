@@ -13,7 +13,8 @@
     "test": "node --test tests/*.test.mjs",
     "e2e": "node scripts/e2e.mjs",
     "videos:verify": "node scripts/verify-videos.mjs",
-    "e2e:llm": "node scripts/e2e-llm.mjs"
+    "e2e:llm": "node scripts/e2e-llm.mjs",
+    "smoke:remote": "node scripts/smoke-remote.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",

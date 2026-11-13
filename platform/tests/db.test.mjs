@@ -10,3 +10,19 @@ test("طبقة البيانات: فشل الاتصال بـ Postgres لا يُح
   await assert.rejects(() => all("SELECT 1")); // محاولة جديدة لا خطأ محفوظ
   assert.equal(globalThis.__hessaraDriver, undefined);
 });
+
+test("طبقة البيانات: على Vercel دون DATABASE_URL يُعدّ التخزين الدائم مفقودًا", async () => {
+  const { persistentStoreMissing } = await import("../lib/db.ts");
+  const saved = { VERCEL: process.env.VERCEL, DATABASE_URL: process.env.DATABASE_URL, HESSARA_PGLITE: process.env.HESSARA_PGLITE };
+  try {
+    delete process.env.HESSARA_PGLITE;
+    process.env.VERCEL = "1"; delete process.env.DATABASE_URL;
+    assert.equal(persistentStoreMissing(), true);
+    process.env.DATABASE_URL = "postgres://x";
+    assert.equal(persistentStoreMissing(), false);
+    delete process.env.VERCEL; delete process.env.DATABASE_URL;
+    assert.equal(persistentStoreMissing(), false, "محليًا تبقى SQLite على القرص مقبولة");
+  } finally {
+    for (const [k, v] of Object.entries(saved)) v === undefined ? delete process.env[k] : (process.env[k] = v);
+  }
+});

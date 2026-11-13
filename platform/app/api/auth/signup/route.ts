@@ -1,11 +1,12 @@
 import { createSession, hashPassword, newId } from "@/lib/auth";
-import { get, run } from "@/lib/db";
+import { get, persistentStoreMissing, run } from "@/lib/db";
 import { fail, ipLimit, LIMITS, ok, readJson, sameOrigin, str } from "@/lib/http";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export async function POST(req: Request) {
   if (!sameOrigin(req)) return fail(403, "مصدر الطلب غير مسموح.");
+  if (persistentStoreMissing()) return fail(503, "التخزين الدائم غير مهيّأ على الخادم: يلزم ضبط DATABASE_URL (قاعدة Postgres). لا يمكن إنشاء حساب أو تسجيل الدخول قبل ذلك.");
   if (!ipLimit(req, "signup", 10, 3600_000)) return fail(429, "محاولات كثيرة. حاول لاحقًا.");
   const body = await readJson(req);
   const name = str(body?.name, LIMITS.name)?.trim();
