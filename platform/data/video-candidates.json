@@ -1,0 +1,2912 @@
+[
+ {
+  "id": "LPZh9BOjkQs",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero",
+   "how-llm"
+  ],
+  "expect": "Language Models|3Blue1Brown",
+  "durationSec": 478,
+  "views": 8515968
+ },
+ {
+  "id": "5sLYAQS9sWQ",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero",
+   "how-llm"
+  ],
+  "expect": "Language Model|IBM",
+  "durationSec": 334,
+  "views": 1747860
+ },
+ {
+  "id": "5NgNicANyqM",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": "CS50|Artificial Intelligence",
+  "durationSec": 42682,
+  "views": 5207459
+ },
+ {
+  "id": "zjkBMFhNj_g",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero",
+   "how-llm"
+  ],
+  "expect": "Large Language Models|Karpathy",
+  "durationSec": 3588,
+  "views": 4354781
+ },
+ {
+  "id": "fNk_zzaMoSs",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Vectors|linear algebra",
+  "durationSec": 592,
+  "views": 13109462
+ },
+ {
+  "id": "kjBOesZCoqc",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "linear algebra",
+  "durationSec": 309,
+  "views": 2774196
+ },
+ {
+  "id": "WUvTyaaNkzM",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "calculus",
+  "durationSec": 1025,
+  "views": 11991753
+ },
+ {
+  "id": "HZGCoVF3YvM",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Bayes",
+  "durationSec": 911,
+  "views": 6020635
+ },
+ {
+  "id": "rfscVS0vtbw",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Python",
+  "durationSec": 16012,
+  "views": 49577071
+ },
+ {
+  "id": "_uQrJ0TkZlc",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Python",
+  "durationSec": 22447,
+  "views": 49589485
+ },
+ {
+  "id": "QUT1VHiLmmI",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "NumPy",
+  "durationSec": 3490,
+  "views": 2309643
+ },
+ {
+  "id": "vmEHCJofslg",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "Pandas",
+  "durationSec": 3627,
+  "views": 3534640
+ },
+ {
+  "id": "i_LwzRVP7bg",
+  "category": "ml",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": "Machine Learning",
+  "durationSec": 14033,
+  "views": 10895581
+ },
+ {
+  "id": "NWONeJKn6kc",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [],
+  "expect": "Machine Learning",
+  "durationSec": 35539,
+  "views": 2115105
+ },
+ {
+  "id": "7eh4d6sabA0",
+  "category": "ml",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "Machine Learning",
+  "durationSec": 2983,
+  "views": 3720138
+ },
+ {
+  "id": "Gv9_4yMHFhI",
+  "category": "ml",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "StatQuest|Machine Learning",
+  "durationSec": 765,
+  "views": 1782575
+ },
+ {
+  "id": "aircAruvnKk",
+  "category": "dl",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero",
+   "how-llm"
+  ],
+  "expect": "neural network",
+  "durationSec": 1120,
+  "views": 25219099
+ },
+ {
+  "id": "IHZwWFHWa-w",
+  "category": "dl",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "Gradient descent",
+  "durationSec": 1233,
+  "views": 9752826
+ },
+ {
+  "id": "Ilg3gGewQ5U",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "backpropagation",
+  "durationSec": 767,
+  "views": 6409925
+ },
+ {
+  "id": "VMj-3S1tku0",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "micrograd|backpropagation",
+  "durationSec": 8752,
+  "views": 4447108
+ },
+ {
+  "id": "CqOfi41LfDw",
+  "category": "dl",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [],
+  "expect": "Neural Network|StatQuest",
+  "durationSec": 1134,
+  "views": 1473563
+ },
+ {
+  "id": "PaCmpygFfXo",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "makemore|language model",
+  "durationSec": 7065,
+  "views": 1327696
+ },
+ {
+  "id": "7xTGNNLPyMI",
+  "category": "llm",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "LLMs|ChatGPT|Karpathy",
+  "durationSec": 12684,
+  "views": 10361080
+ },
+ {
+  "id": "kCc8FmEb1nY",
+  "category": "llm",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "train-small",
+   "how-llm"
+  ],
+  "expect": "build GPT",
+  "durationSec": 6980,
+  "views": 8264313
+ },
+ {
+  "id": "UU1WVnMk4E8",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "LLM|Language Model",
+  "durationSec": 20621,
+  "views": 1535517
+ },
+ {
+  "id": "T-D1OfcDW1M",
+  "category": "llm",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "host"
+  ],
+  "expect": "Retrieval|RAG",
+  "durationSec": 396,
+  "views": 2104944
+ },
+ {
+  "id": "wjZofJX0v4M",
+  "category": "transformers",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "GPT|Transformer",
+  "durationSec": 1634,
+  "views": 11649434
+ },
+ {
+  "id": "eMlx5fFNoYc",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "Attention",
+  "durationSec": 1570,
+  "views": 4914110
+ },
+ {
+  "id": "zduSFxRajkE",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "how-llm",
+   "train-small"
+  ],
+  "expect": "Tokenizer",
+  "durationSec": 8015,
+  "views": 1264190
+ },
+ {
+  "id": "zxQyTK8quyY",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "Transformer",
+  "durationSec": 2175,
+  "views": 1221335
+ },
+ {
+  "id": "4Bdc55j80l8",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": "Transformer",
+  "durationSec": 901,
+  "views": 1199798
+ },
+ {
+  "id": "iDulhoQ2pro",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [],
+  "expect": "Attention",
+  "durationSec": 1627,
+  "views": 815850
+ },
+ {
+  "id": "eC6Hd1hFvos",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "Fine-?tun",
+  "durationSec": 1698,
+  "views": 583565
+ },
+ {
+  "id": "l8pRSuU81PU",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "train-small"
+  ],
+  "expect": "GPT-2|reproduce",
+  "durationSec": 14486,
+  "views": 1236837
+ },
+ {
+  "id": "F8NKVhkZZWI",
+  "category": "agents",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "agent"
+  ],
+  "expect": "Agent",
+  "durationSec": 749,
+  "views": 1807058
+ },
+ {
+  "id": "sal78ACtGTc",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": "Agent",
+  "durationSec": 820,
+  "views": 417880
+ },
+ {
+  "id": "0I9qt2YQlvM",
+  "category": "intro",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 809,
+  "views": 1631509,
+  "source": "search",
+  "searchTitle": "تعلم الذكاء الاصطناعي و تعلم الالة",
+  "searchChannel": "Ali Shahin"
+ },
+ {
+  "id": "lvuhqwLwJZ4",
+  "category": "intro",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1100,
+  "views": 408986,
+  "source": "search",
+  "searchTitle": "كورس - مقدمه في الذكاء الاصطناعي -  الحلقه الاولي",
+  "searchChannel": "Mohamed Al Assaal - اتعلم مع العسال"
+ },
+ {
+  "id": "YwiM0KlzIe8",
+  "category": "ml",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1347,
+  "views": 377211,
+  "source": "search",
+  "searchTitle": "الذكاء الاصطناعي | ١ | الشبكات العصبية و التعلم العميق| Linear & Logisitic Regression | Deep Learn",
+  "searchChannel": "Sharafestien - شرفشتــاين (Sharafestien)"
+ },
+ {
+  "id": "2V_TLEW34cg",
+  "category": "intro",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 532,
+  "views": 244542,
+  "source": "search",
+  "searchTitle": "الذكاء الاصطناعي و تعلم الآلة و الفرق بينهما",
+  "searchChannel": "Codezilla"
+ },
+ {
+  "id": "6xnwq9kjilM",
+  "category": "intro",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 964,
+  "views": 226340,
+  "source": "search",
+  "searchTitle": "تعلم الذكاء الاصطناعي  (هذا ما سأفعله لو بدأت من جديد!) | Machine learning ـ",
+  "searchChannel": "Python Arabic Community"
+ },
+ {
+  "id": "sxkNaL2rjRk",
+  "category": "intro",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 851,
+  "views": 222244,
+  "source": "search",
+  "searchTitle": "كيف يفكر الذكاء الاصطناعي",
+  "searchChannel": "RaeedXA"
+ },
+ {
+  "id": "Rp5VnXnWMLk",
+  "category": "intro",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 2870,
+  "views": 206267,
+  "source": "search",
+  "searchTitle": "كورس كامل : تعليم الذكاء الاصطناعي للبالغين - قوة الذكاء الاصطناعي",
+  "searchChannel": "Infology"
+ },
+ {
+  "id": "FwOTs4UxQS4",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 609,
+  "views": 5690028,
+  "source": "search",
+  "searchTitle": "AI Agents, Clearly Explained",
+  "searchChannel": "Jeff Su"
+ },
+ {
+  "id": "JMUxmLyrhSk",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 17571,
+  "views": 5156829,
+  "source": "search",
+  "searchTitle": "Artificial Intelligence Full Course | Artificial Intelligence Tutorial for Beginners | Edureka",
+  "searchChannel": "edureka!"
+ },
+ {
+  "id": "Yq0QkCxoTHM",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 558,
+  "views": 4046306,
+  "source": "search",
+  "searchTitle": "Google’s AI Course for Beginners (in 10 minutes)!",
+  "searchChannel": "Jeff Su"
+ },
+ {
+  "id": "2IK3DFHRFfw",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1077,
+  "views": 3870486,
+  "source": "search",
+  "searchTitle": "Generative AI in a Nutshell - how to survive and thrive in the age of AI",
+  "searchChannel": "Henrik Kniberg"
+ },
+ {
+  "id": "qYNweeDHiyU",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 601,
+  "views": 3851904,
+  "source": "search",
+  "searchTitle": "AI, Machine Learning, Deep Learning and Generative AI Explained",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "aBUniZHgCnE",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 874,
+  "views": 3180015,
+  "source": "search",
+  "searchTitle": "Anthropic's Chloe Lubinski explains how AI works (in 14 minutes)",
+  "searchChannel": "Alliance for Responsible Citizenship"
+ },
+ {
+  "id": "m8o2GrbR3d8",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1579,
+  "views": 2249546,
+  "source": "search",
+  "searchTitle": "SIMPLEST Explanation of How Artificial Intelligence Works? No Jargon | What is AI? How AI works?",
+  "searchChannel": "Science Simplified 4 All"
+ },
+ {
+  "id": "_6R7Ym6Vy_I",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 2762,
+  "views": 1601105,
+  "source": "search",
+  "searchTitle": "What is generative AI and how does it work? – The Turing Lectures with Mirella Lapata",
+  "searchChannel": "The Royal Institution"
+ },
+ {
+  "id": "EDb37y_MhRw",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero",
+   "host"
+  ],
+  "expect": ".",
+  "durationSec": 439,
+  "views": 1528633,
+  "source": "search",
+  "searchTitle": "Generative vs Agentic AI: Shaping the Future of AI Collaboration",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "hfIUstzHs9A",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 527,
+  "views": 1192902,
+  "source": "search",
+  "searchTitle": "What are Generative AI models?",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "VGFpV3Qj4as",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 3644,
+  "views": 1049948,
+  "source": "search",
+  "searchTitle": "AI Basics for Beginners",
+  "searchChannel": "codebasics"
+ },
+ {
+  "id": "RyvXxApfHkk",
+  "category": "intro",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 381,
+  "views": 819795,
+  "source": "search",
+  "searchTitle": "Lesson 3A: What is generative AI? (Deep Dive) | AI Fluency: Framework & Foundations Course",
+  "searchChannel": "Anthropic"
+ },
+ {
+  "id": "U5zQzSqywEY",
+  "category": "intro",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 42261,
+  "views": 772642,
+  "source": "search",
+  "searchTitle": "Artificial Intelligence Full Course for Beginners (FREE) | 12 Hours | Complete AI Course",
+  "searchChannel": "The iScale"
+ },
+ {
+  "id": "GmJJ2iZz08c",
+  "category": "math",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 3204,
+  "views": 1215950,
+  "source": "search",
+  "searchTitle": "01- Probability and Statistics | Sample Space & Event | احتمالات وإحصاء | فضاء العينة والحدث",
+  "searchChannel": "Dr. Ahmed Hagag"
+ },
+ {
+  "id": "_Pyi12dn4Kw",
+  "category": "math",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 3804,
+  "views": 823426,
+  "source": "search",
+  "searchTitle": "كل ما تحتاج معرفته عن الإحصاء في ساعة واحدة (دليل المذاكرة الشامل)",
+  "searchChannel": "JensenMath"
+ },
+ {
+  "id": "Fy2B6a8op8g",
+  "category": "math",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1209,
+  "views": 181823,
+  "source": "search",
+  "searchTitle": "The Science of Statistics/علم الاحصاء",
+  "searchChannel": "Professor X"
+ },
+ {
+  "id": "DYbb4nSBDSI",
+  "category": "math",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1367,
+  "views": 179376,
+  "source": "search",
+  "searchTitle": "تعلم أساسيات الإحصاء في 20 دقيقة (الجزء الأول)Learn the Basics of Statistics in 20 Minutes (Part 1)",
+  "searchChannel": "Aiman Al-Arosi ايمن العروسي"
+ },
+ {
+  "id": "8stueNPVl-I",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 39151,
+  "views": 963251,
+  "source": "search",
+  "searchTitle": "Calculus for Beginners full course | Calculus for Machine learning",
+  "searchChannel": "Academic Lesson"
+ },
+ {
+  "id": "sQqniayndb4",
+  "category": "math",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1783,
+  "views": 786056,
+  "source": "search",
+  "searchTitle": "Probability and Statistics: Overview",
+  "searchChannel": "Steve Brunton"
+ },
+ {
+  "id": "H6pWY2VQ9xI",
+  "category": "math",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 3705,
+  "views": 544793,
+  "source": "search",
+  "searchTitle": "Give Me 1 Hour, I'll Make Probability Click Forever",
+  "searchChannel": "Zachary Huang"
+ },
+ {
+  "id": "rSjt1E9WHaQ",
+  "category": "math",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 21912,
+  "views": 389823,
+  "source": "search",
+  "searchTitle": "Linear Algebra Course – Mathematics for Machine Learning and Generative AI",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "QCPJ0VdpM00",
+  "category": "math",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 38923,
+  "views": 337360,
+  "source": "search",
+  "searchTitle": "Linear Algebra for Machine Learning",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "uZeDTwWcnuY",
+  "category": "math",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 2483,
+  "views": 248350,
+  "source": "search",
+  "searchTitle": "Linear Algebra - Math for Machine Learning",
+  "searchChannel": "CoreWeave"
+ },
+ {
+  "id": "kZwSqZuBMGg",
+  "category": "math",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 4891,
+  "views": 246534,
+  "source": "search",
+  "searchTitle": "Linear Algebra for Beginners | Linear algebra for machine learning",
+  "searchChannel": "Geek's Lesson"
+ },
+ {
+  "id": "ij6qQQlGKtE",
+  "category": "programming",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 18031,
+  "views": 2430908,
+  "source": "search",
+  "searchTitle": "كورس لغة بايثون في 300 دقيقة | برمجة من الصفر",
+  "searchChannel": "اتعلم ببساطة"
+ },
+ {
+  "id": "Drjvm8p013o",
+  "category": "programming",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 2725,
+  "views": 1439325,
+  "source": "search",
+  "searchTitle": "تعلم لغة بايثون من الصفر الى الاحتراف | كورس كامل",
+  "searchChannel": "Python Arabic Community"
+ },
+ {
+  "id": "8QQdIieD4tw",
+  "category": "programming",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 3726,
+  "views": 543803,
+  "source": "search",
+  "searchTitle": "تعلم البرمجة في ساعة | اساسيات البرمجة من الصفر | شرح بايثون | Python Programming Crash Course",
+  "searchChannel": "Codezilla"
+ },
+ {
+  "id": "nDsr8xnJilY",
+  "category": "programming",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 13269,
+  "views": 279231,
+  "source": "search",
+  "searchTitle": "تعلم بايثون من الصفر للمبتدئين بالدارجة المغربية | كورس البرمجة كامل 2026 | أكاديمية الخبرة",
+  "searchChannel": "Lkhibra Academy"
+ },
+ {
+  "id": "tzN5nlRF20s",
+  "category": "programming",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1452,
+  "views": 28081,
+  "source": "search",
+  "searchTitle": "تحليل البيانات في بايثون باستخدام بانداس Pandas for Exploratory Data Analysis (EDA)",
+  "searchChannel": "Mustafa Othman"
+ },
+ {
+  "id": "V_xro1bcAuA",
+  "category": "programming",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 92246,
+  "views": 3717249,
+  "source": "search",
+  "searchTitle": "PyTorch for Deep Learning & Machine Learning – Full Course",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "tPYj3fFJGjk",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 24728,
+  "views": 3507617,
+  "source": "search",
+  "searchTitle": "TensorFlow 2.0 Complete Course - Python Neural Networks for Beginners Tutorial",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "Z_ikDlimN6A",
+  "category": "programming",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 92218,
+  "views": 2197583,
+  "source": "search",
+  "searchTitle": "Learn PyTorch for deep learning in a day. Literally.",
+  "searchChannel": "Daniel Bourke"
+ },
+ {
+  "id": "ZyhVh-qRZPA",
+  "category": "programming",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1381,
+  "views": 1781136,
+  "source": "search",
+  "searchTitle": "Python Pandas Tutorial (Part 1): Getting Started with Data Analysis - Installation and Loading Data",
+  "searchChannel": "Corey Schafer"
+ },
+ {
+  "id": "JDcZBzb46ts",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 36728,
+  "views": 1369719,
+  "source": "search",
+  "searchTitle": "Python for Data Science Full Course | Data Science Tutorials for Beginners in 2026 | Great Learning",
+  "searchChannel": "Great Learning"
+ },
+ {
+  "id": "CMEWVn1uZpQ",
+  "category": "programming",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 61413,
+  "views": 900069,
+  "source": "search",
+  "searchTitle": "Learn Python for Data Science – Full Course for Beginners",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "2uvysYbKdjM",
+  "category": "programming",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 5651,
+  "views": 820901,
+  "source": "search",
+  "searchTitle": "Complete Python Pandas Data Science Tutorial! (2025 Updated Edition)",
+  "searchChannel": "Keith Galli"
+ },
+ {
+  "id": "VXU4LSAQDSc",
+  "category": "programming",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 3600,
+  "views": 801155,
+  "source": "search",
+  "searchTitle": "Learn NumPy in 1 hour! 🔢",
+  "searchChannel": "Bro Code"
+ },
+ {
+  "id": "dcqPhpY7tWk",
+  "category": "programming",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 608,
+  "views": 723667,
+  "source": "search",
+  "searchTitle": "What is Pandas? Why and How to Use Pandas in Python",
+  "searchChannel": "Python Programmer"
+ },
+ {
+  "id": "6_2hzRopPbQ",
+  "category": "programming",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 693,
+  "views": 601626,
+  "source": "search",
+  "searchTitle": "Tensorflow Tutorial for Python in 10 Minutes",
+  "searchChannel": "Nicholas Renotte"
+ },
+ {
+  "id": "VXtjG_GzO7Q",
+  "category": "programming",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 3600,
+  "views": 575277,
+  "source": "search",
+  "searchTitle": "Learn Pandas in 1 hour! 🐼",
+  "searchChannel": "Bro Code"
+ },
+ {
+  "id": "xuTLxXpQt4E",
+  "category": "ml",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 552,
+  "views": 7426,
+  "source": "search",
+  "searchTitle": "All Machine Learning Models in 9 Minutes | كل انواع التعلم الالي في 9 دقائق",
+  "searchChannel": "Data Joy | متعة البيانات"
+ },
+ {
+  "id": "GwIo3gDZCVQ",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 34712,
+  "views": 3637245,
+  "source": "search",
+  "searchTitle": "Machine Learning Full Course - Learn Machine Learning 10 Hours | Machine Learning Tutorial | Edureka",
+  "searchChannel": "edureka!"
+ },
+ {
+  "id": "E0Hmnixke2g",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 990,
+  "views": 2391388,
+  "source": "search",
+  "searchTitle": "All Machine Learning algorithms explained in 17 min",
+  "searchChannel": "Infinite Codes"
+ },
+ {
+  "id": "8jazNUpO3lQ",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 914,
+  "views": 1557790,
+  "source": "search",
+  "searchTitle": "Machine Learning Tutorial Python - 2: Linear Regression Single Variable",
+  "searchChannel": "codebasics"
+ },
+ {
+  "id": "J4Wdy0Wc_xQ",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero",
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 594,
+  "views": 1503439,
+  "source": "search",
+  "searchTitle": "StatQuest: Random Forests Part 1 - Building, Using and Evaluating",
+  "searchChannel": "StatQuest with Josh Starmer"
+ },
+ {
+  "id": "_L39rN6gz7Y",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1088,
+  "views": 1367506,
+  "source": "search",
+  "searchTitle": "Decision and Classification Trees, Clearly Explained!!!",
+  "searchChannel": "StatQuest with Josh Starmer"
+ },
+ {
+  "id": "hDKCxebp88A",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 64835,
+  "views": 1204783,
+  "source": "search",
+  "searchTitle": "Machine Learning with Python and Scikit-Learn – Full Course",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "ZVR2Way4nwQ",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 633,
+  "views": 964088,
+  "source": "search",
+  "searchTitle": "Decision Tree Classification Clearly Explained!",
+  "searchChannel": "Normalized Nerd"
+ },
+ {
+  "id": "v6VJ2RO66Ag",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 481,
+  "views": 932627,
+  "source": "search",
+  "searchTitle": "Random Forest Algorithm Clearly Explained!",
+  "searchChannel": "Normalized Nerd"
+ },
+ {
+  "id": "0B5eIE_1vpU",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 7762,
+  "views": 781878,
+  "source": "search",
+  "searchTitle": "Scikit-learn Crash Course - Machine Learning Library for Python",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "7ArmBVF2dCs",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1647,
+  "views": 764034,
+  "source": "search",
+  "searchTitle": "Linear Regression, Clearly Explained!!!",
+  "searchChannel": "StatQuest with Josh Starmer"
+ },
+ {
+  "id": "Fa_V9fP2tpU",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1342,
+  "views": 606719,
+  "source": "search",
+  "searchTitle": "All Machine Learning Concepts Explained in 22 Minutes",
+  "searchChannel": "Infinite Codes"
+ },
+ {
+  "id": "pqNCD_5r0IU",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 10465,
+  "views": 548010,
+  "source": "search",
+  "searchTitle": "Scikit-Learn Course - Machine Learning in Python Tutorial",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "0YdpwSYMY6I",
+  "category": "ml",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 1343,
+  "views": 534251,
+  "source": "search",
+  "searchTitle": "All Machine Learning Models Clearly Explained!",
+  "searchChannel": "AI For Beginners"
+ },
+ {
+  "id": "rieTvPIjvTY",
+  "category": "dl",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 2431,
+  "views": 164468,
+  "source": "search",
+  "searchTitle": "Deep Learning ِ(in Arabic) التعلم العميق او التعلم بعمق والذكاء الاصطناعي بالعربي",
+  "searchChannel": "Hussam Hourani"
+ },
+ {
+  "id": "ZfTW5hOl-zI",
+  "category": "dl",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 411,
+  "views": 119372,
+  "source": "search",
+  "searchTitle": "بيرسيبترون : اُمُّ الشبكات العصبية و التعلم العميق ! [perceptron]",
+  "searchChannel": "Python Arabic Community"
+ },
+ {
+  "id": "jLCfzlcuANU",
+  "category": "dl",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 1294,
+  "views": 67189,
+  "source": "search",
+  "searchTitle": "شرح \"تدريب\" الشبكات العصبية الاصطناعية",
+  "searchChannel": "Zaher Joukhadar - أوراق علمية"
+ },
+ {
+  "id": "xiFWo_T85Og",
+  "category": "dl",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 492,
+  "views": 29348,
+  "source": "search",
+  "searchTitle": "شرح الشبكات العصبية الاصطناعية مع مثال | Artificial Neural Networks (ANN)",
+  "searchChannel": "Data Joy | متعة البيانات"
+ },
+ {
+  "id": "Ly3mseN2OSM",
+  "category": "dl",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 1163,
+  "views": 27200,
+  "source": "search",
+  "searchTitle": "مقدمة في الشبكات العصبية | Intro to neural networks",
+  "searchChannel": "mohammed Alawad"
+ },
+ {
+  "id": "tIeHLnjs5U8",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 618,
+  "views": 4013275,
+  "source": "search",
+  "searchTitle": "Backpropagation calculus | Deep Learning Chapter 4",
+  "searchChannel": "3Blue1Brown"
+ },
+ {
+  "id": "KuXjwB4LzSA",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 1381,
+  "views": 3812695,
+  "source": "search",
+  "searchTitle": "But what is a convolution?",
+  "searchChannel": "3Blue1Brown"
+ },
+ {
+  "id": "w8yWXqWQYmU",
+  "category": "dl",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "how-llm",
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 1888,
+  "views": 2957342,
+  "source": "search",
+  "searchTitle": "Building a neural network FROM SCRATCH (no Tensorflow/Pytorch, just numpy & math)",
+  "searchChannel": "Samson Zhang"
+ },
+ {
+  "id": "YRhxdVk_sIs",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 517,
+  "views": 1516570,
+  "source": "search",
+  "searchTitle": "Convolutional Neural Networks (CNNs) explained",
+  "searchChannel": "deeplizard"
+ },
+ {
+  "id": "zfiSAzpy9NM",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 1434,
+  "views": 1459929,
+  "source": "search",
+  "searchTitle": "Simple explanation of convolutional neural network | Deep Learning Tutorial 23 (Tensorflow & Python)",
+  "searchChannel": "codebasics"
+ },
+ {
+  "id": "cAkMcPfY_Ns",
+  "category": "dl",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "how-llm",
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 555,
+  "views": 1387794,
+  "source": "search",
+  "searchTitle": "I Built a Neural Network from Scratch",
+  "searchChannel": "Green Code"
+ },
+ {
+  "id": "VyWAvY2CF9c",
+  "category": "dl",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 5139,
+  "views": 1284373,
+  "source": "search",
+  "searchTitle": "Deep Learning Crash Course for Beginners",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "IA3WxTTPXqQ",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 134201,
+  "views": 1233918,
+  "source": "search",
+  "searchTitle": "Deep Learning for Computer Vision with Python and TensorFlow – Complete Course",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "AsNTP8Kwu80",
+  "category": "dl",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 997,
+  "views": 1079913,
+  "source": "search",
+  "searchTitle": "Recurrent Neural Networks (RNNs), Clearly Explained!!!",
+  "searchChannel": "StatQuest with Josh Starmer"
+ },
+ {
+  "id": "2_3WuekEg4s",
+  "category": "llm",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 1343,
+  "views": 385594,
+  "source": "search",
+  "searchTitle": "أساسيات هندسة أوامر الذكاء الاصطناعي - PROMPT ENGINEERING BASICS | وليد طه",
+  "searchChannel": "Walid Taha"
+ },
+ {
+  "id": "gZv5hFW3OF8",
+  "category": "llm",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 2870,
+  "views": 364551,
+  "source": "search",
+  "searchTitle": "كورس هندسة التلقين | Prompt Engineering MasterClass",
+  "searchChannel": "Python Arabic Community"
+ },
+ {
+  "id": "SEwkCSWUoD8",
+  "category": "llm",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 7404,
+  "views": 67061,
+  "source": "search",
+  "searchTitle": "كورس هندسة المطالبات مع ChatGPT | تعلم كتابة البرومبت باحتراف لزيادة إنتاجيتك بالذكاء الاصطناعي",
+  "searchChannel": "Emad Eid عماد عيد"
+ },
+ {
+  "id": "SroOUEfSDdQ",
+  "category": "llm",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 1174,
+  "views": 21316,
+  "source": "search",
+  "searchTitle": "هندسه الاوامر للذكاء الاصطناعى كورس كامل AI Prompt Engineering Full Course",
+  "searchChannel": "Yosoph Ahmed | يوسف أحمد"
+ },
+ {
+  "id": "LIFyBPDkluI",
+  "category": "llm",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm",
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 1253,
+  "views": 19173,
+  "source": "search",
+  "searchTitle": "28 – الجزء 1: RAG ببساطة! 3 طرق ذكية لتزويد الـ LLM بالمعلومات بدون إعادة Training",
+  "searchChannel": "AI Plus - محمد الشامي"
+ },
+ {
+  "id": "_Nhx4mAhrkw",
+  "category": "llm",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 2819,
+  "views": 16304,
+  "source": "search",
+  "searchTitle": "هندسة الأوامر Prompt Engineering في الذكاء الاصطناعي من الصفر إلى الاحتراف",
+  "searchChannel": "Ehtraf Al Bramj | احتراف البرامج"
+ },
+ {
+  "id": "_ZvnD73m40o",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 2496,
+  "views": 2864061,
+  "source": "search",
+  "searchTitle": "Prompt Engineering Tutorial – Master ChatGPT and LLM Responses",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "p09yRj47kNM",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 1217,
+  "views": 2324598,
+  "source": "search",
+  "searchTitle": "Google's 9 Hour AI Prompt Engineering Course In 20 Minutes",
+  "searchChannel": "Tina Huang"
+ },
+ {
+  "id": "sVcwVQRHIc8",
+  "category": "llm",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "how-llm",
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 9191,
+  "views": 1784797,
+  "source": "search",
+  "searchTitle": "Learn RAG From Scratch – Python AI Tutorial from a LangChain Engineer",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "YmLp8qe87A0",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 3108,
+  "views": 1264951,
+  "source": "search",
+  "searchTitle": "LLMs Explained: Tokens, Embeddings, Transformers and More",
+  "searchChannel": "Syntax"
+ },
+ {
+  "id": "5i2Hn8OG94o",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 4570,
+  "views": 1140165,
+  "source": "search",
+  "searchTitle": "Prompt Engineering 2026 Full course | Prompt engineering course | ChatGPT Prompts",
+  "searchChannel": "Great Learning"
+ },
+ {
+  "id": "UabBYexBD4k",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 670,
+  "views": 1115133,
+  "source": "search",
+  "searchTitle": "Is RAG Still Needed? Choosing the Best Approach for LLMs",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "YhRfgYH_AoU",
+  "category": "llm",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 3556,
+  "views": 1063662,
+  "source": "search",
+  "searchTitle": "Prompt Engineering Full Course | From Beginner to Pro",
+  "searchChannel": "The iScale"
+ },
+ {
+  "id": "_HQ2H_0Ayy0",
+  "category": "llm",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 609,
+  "views": 930964,
+  "source": "search",
+  "searchTitle": "RAG Explained For Beginners",
+  "searchChannel": "KodeKloud"
+ },
+ {
+  "id": "8ib4Qnh2HFE",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 8927,
+  "views": 786419,
+  "source": "search",
+  "searchTitle": "Full AI Prompting Course with Andrew Ng",
+  "searchChannel": "DeepLearningAI"
+ },
+ {
+  "id": "vKdKtxpfvIc",
+  "category": "llm",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "how-llm",
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 848,
+  "views": 784995,
+  "source": "search",
+  "searchTitle": "I Trained an LLM from Scratch",
+  "searchChannel": "Green Code"
+ },
+ {
+  "id": "o126p1QN_RI",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 7689,
+  "views": 758185,
+  "source": "search",
+  "searchTitle": "Complete RAG Crash Course With Langchain In 2 Hours",
+  "searchChannel": "Krish Naik"
+ },
+ {
+  "id": "s9w3gtgvNSU",
+  "category": "llm",
+  "lang": "en",
+  "level": "متقدم",
+  "paths": [
+   "how-llm",
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 817,
+  "views": 754523,
+  "source": "search",
+  "searchTitle": "I Built an LLM from Scratch",
+  "searchChannel": "Green Code"
+ },
+ {
+  "id": "ySus5ZS0b94",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 1121,
+  "views": 720416,
+  "source": "search",
+  "searchTitle": "OpenAI Embeddings and Vector Databases Crash Course",
+  "searchChannel": "Adrian Twarog"
+ },
+ {
+  "id": "osKyvYJ3PRM",
+  "category": "llm",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 1520,
+  "views": 524468,
+  "source": "search",
+  "searchTitle": "Everything You Need To Know About Large Language Models (LLMs)",
+  "searchChannel": "Matthew Berman"
+ },
+ {
+  "id": "6JGzwI2pNfo",
+  "category": "transformers",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 3573,
+  "views": 85279,
+  "source": "search",
+  "searchTitle": "Transformers and Attention in Details | شرح بالتفصيل",
+  "searchChannel": "Abu Bakr Soliman"
+ },
+ {
+  "id": "CXepv4ItZzM",
+  "category": "transformers",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 5187,
+  "views": 35340,
+  "source": "search",
+  "searchTitle": "شرح الترانسفورمر في الذكاء الاصطناعي | Transformer | Attention is all you need |",
+  "searchChannel": "Zaher Joukhadar - أوراق علمية"
+ },
+ {
+  "id": "SijpEg9c1DA",
+  "category": "transformers",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 15008,
+  "views": 23579,
+  "source": "search",
+  "searchTitle": "الاهتمام مبيتطلبش!  Attention is All You need",
+  "searchChannel": "Ahmed Elemam - أحمد الإمام and Mahmoud Abdellahi"
+ },
+ {
+  "id": "KJtZARuO3JY",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 3465,
+  "views": 1465024,
+  "source": "search",
+  "searchTitle": "Visualizing transformers and attention | Talk for TNG Big Tech Day '24",
+  "searchChannel": "Grant Sanderson"
+ },
+ {
+  "id": "SZorAJ4I-sA",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 551,
+  "views": 1264119,
+  "source": "search",
+  "searchTitle": "Transformers, explained: Understand the model behind GPT, BERT, and T5",
+  "searchChannel": "Google Cloud Tech"
+ },
+ {
+  "id": "TQQlZhbC5ps",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 785,
+  "views": 889889,
+  "source": "search",
+  "searchTitle": "Transformer Neural Networks - EXPLAINED! (Attention is all you need)",
+  "searchChannel": "CodeEmporium"
+ },
+ {
+  "id": "ZhAz268Hdpw",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 3451,
+  "views": 578214,
+  "source": "search",
+  "searchTitle": "Transformers Explained | Simple Explanation of Transformers",
+  "searchChannel": "codebasics"
+ },
+ {
+  "id": "xI0HHN5XKDo",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 697,
+  "views": 514410,
+  "source": "search",
+  "searchTitle": "BERT Neural Network - EXPLAINED!",
+  "searchChannel": "CodeEmporium"
+ },
+ {
+  "id": "PSs6nxngL6k",
+  "category": "transformers",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 951,
+  "views": 481798,
+  "source": "search",
+  "searchTitle": "Attention for Neural Networks, Clearly Explained!!!",
+  "searchChannel": "StatQuest with Josh Starmer"
+ },
+ {
+  "id": "IApfYw2uTEw",
+  "category": "finetune",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 1146,
+  "views": 137473,
+  "source": "search",
+  "searchTitle": "تدريب نموذج ذكاء اصطناعي خاص بك: عملية ال Fine-Tuning",
+  "searchChannel": "Eslam Younis إسلام يونس"
+ },
+ {
+  "id": "_EMfJSmLSKE",
+  "category": "finetune",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 4362,
+  "views": 25248,
+  "source": "search",
+  "searchTitle": "دليل تدريب نموذج لغوي بصري (صغير) من البداية إلى النهاية | على جهاز DGX Spark",
+  "searchChannel": "Daniel Bourke"
+ },
+ {
+  "id": "2ZHO-4hxdew",
+  "category": "finetune",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 1126,
+  "views": 22082,
+  "source": "search",
+  "searchTitle": "Fine-tuning شرح مبسط  | AI Fine-Tuning Simple Tutorial",
+  "searchChannel": "ذكاء اصطناعي عربي"
+ },
+ {
+  "id": "fCUkvL0mbxI",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 624,
+  "views": 1021710,
+  "source": "search",
+  "searchTitle": "Training Your Own AI Model Is Not As Hard As You (Probably) Think",
+  "searchChannel": "Steve (Builder.io)"
+ },
+ {
+  "id": "iOdFUJiB0Zc",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 9425,
+  "views": 501381,
+  "source": "search",
+  "searchTitle": "Fine Tuning LLM Models – Generative AI Course",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "9Ge0sMm65jo",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 12551,
+  "views": 482320,
+  "source": "search",
+  "searchTitle": "Train Your Own LLM – Tutorial",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "pTaSDVz0gok",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 1322,
+  "views": 379415,
+  "source": "search",
+  "searchTitle": "EASIEST Way to Fine-Tune a LLM and Use It With Ollama",
+  "searchChannel": "Tech With Tim"
+ },
+ {
+  "id": "4JofSJIrjwU",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 2466,
+  "views": 335733,
+  "source": "search",
+  "searchTitle": "How to Fine-Tune any AI Model Locally (FULL Tutorial)",
+  "searchChannel": "Tech With Tim"
+ },
+ {
+  "id": "Vg3dS-NLUT4",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 1605,
+  "views": 246010,
+  "source": "search",
+  "searchTitle": "Steps By Step Tutorial To Fine Tune LLAMA 2 With Custom Dataset Using LoRA And QLoRA Techniques",
+  "searchChannel": "Krish Naik"
+ },
+ {
+  "id": "t1caDsMzWBk",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 879,
+  "views": 219103,
+  "source": "search",
+  "searchTitle": "LoRA & QLoRA Fine-tuning Explained In-Depth",
+  "searchChannel": "Mark Hennings"
+ },
+ {
+  "id": "Us5ZFp16PaU",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 935,
+  "views": 195165,
+  "source": "search",
+  "searchTitle": "Fine-tuning LLMs with PEFT and LoRA",
+  "searchChannel": "Sam Witteveen"
+ },
+ {
+  "id": "3UQ7GY9hNwk",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 520,
+  "views": 180174,
+  "source": "search",
+  "searchTitle": "Fine Tune a model with MLX for Ollama",
+  "searchChannel": "Matt Williams"
+ },
+ {
+  "id": "-W2JdSl1v48",
+  "category": "finetune",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "train-small"
+  ],
+  "expect": ".",
+  "durationSec": 652,
+  "views": 173654,
+  "source": "search",
+  "searchTitle": "Is Fine-Tuning Still Needed? LLMs, RAG, & LoRA",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "WVzNoXBqNSY",
+  "category": "agents",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 1109,
+  "views": 237355,
+  "source": "search",
+  "searchTitle": "كيفية بناء وكلاء الذكاء الاصطناعي: الدليل الشامل للمبتدئين",
+  "searchChannel": "Metics Media | عربى"
+ },
+ {
+  "id": "vjbSndE0FLI",
+  "category": "agents",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 1596,
+  "views": 157826,
+  "source": "search",
+  "searchTitle": "ياريت حد كان شرحلي Hermes Agent بالشكل ده",
+  "searchChannel": "مدرسة الذكاء الاصطناعي"
+ },
+ {
+  "id": "DDR4A8-MLQs",
+  "category": "agents",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 8704,
+  "views": 84615,
+  "source": "search",
+  "searchTitle": "AI Agents using CrewAI Course | From (What) to (Do) | كورس وكلاء الذكاء الاصطناعي",
+  "searchChannel": "Abu Bakr Soliman"
+ },
+ {
+  "id": "VKQMaEYbY7o",
+  "category": "agents",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 1094,
+  "views": 38551,
+  "source": "search",
+  "searchTitle": "إزاي الـAI Agents بتشتغل؟ وفين دور MCP؟ | شرح من الصفر",
+  "searchChannel": "Ali Shahin"
+ },
+ {
+  "id": "jljydMqOfo0",
+  "category": "agents",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 1136,
+  "views": 24524,
+  "source": "search",
+  "searchTitle": "كيف تبني اول وكيل ذكاء اصطناعي لك",
+  "searchChannel": "أسامة الكلثمي - ذكاء اصطناعي "
+ },
+ {
+  "id": "NapBxmn1Zpo",
+  "category": "agents",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 1864,
+  "views": 11455,
+  "source": "search",
+  "searchTitle": "ازاي تبني AI Agent بنفس اللوب",
+  "searchChannel": "Bashmohandes Mazen - بشمهندس مازن"
+ },
+ {
+  "id": "EH5jx5qPabU",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 1558,
+  "views": 4570963,
+  "source": "search",
+  "searchTitle": "From Zero to Your First AI Agent in 25 Minutes (No Coding)",
+  "searchChannel": "Futurepedia and AI Agent Lab"
+ },
+ {
+  "id": "GuTcle5edjk",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 2320,
+  "views": 1848531,
+  "source": "search",
+  "searchTitle": "you need to learn MCP RIGHT NOW!! (Model Context Protocol)",
+  "searchChannel": "NetworkChuck"
+ },
+ {
+  "id": "rV3HJ4LEZ7k",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent",
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 40406,
+  "views": 1497986,
+  "source": "search",
+  "searchTitle": "Complete Agentic AI Course In 10 Hours- Langchain, Langgraph, RAG,Vectorless RAG, Guardrails,Evals",
+  "searchChannel": "Krish Naik"
+ },
+ {
+  "id": "ZaPbP9DwBOE",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 3400,
+  "views": 1452611,
+  "source": "search",
+  "searchTitle": "Don't learn AI Agents without Learning these Fundamentals",
+  "searchChannel": "KodeKloud"
+ },
+ {
+  "id": "HyzlYwjoXOQ",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 488,
+  "views": 1440994,
+  "source": "search",
+  "searchTitle": "Claude's Model Context Protocol is here... Let's test it",
+  "searchChannel": "Fireship"
+ },
+ {
+  "id": "E2DEHOEbzks",
+  "category": "agents",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 1450,
+  "views": 1376827,
+  "source": "search",
+  "searchTitle": "Model Context Protocol (MCP) Explained for Beginners: AI Flight Booking Demo!",
+  "searchChannel": "KodeKloud"
+ },
+ {
+  "id": "7j_NE6Pjv-E",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 1218,
+  "views": 1338368,
+  "source": "search",
+  "searchTitle": "Model Context Protocol (MCP), clearly explained (why it matters)",
+  "searchChannel": "Greg Isenberg"
+ },
+ {
+  "id": "jGg_1h0qzaM",
+  "category": "agents",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 11392,
+  "views": 1156809,
+  "source": "search",
+  "searchTitle": "LangGraph Complete Course for Beginners – Complex AI Agents with Python",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "EsTrWCV0Ph4",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 7995,
+  "views": 1061512,
+  "source": "search",
+  "searchTitle": "AI Agents Full Course 2026: Master Agentic AI (2 Hours)",
+  "searchChannel": "Nick Saraev"
+ },
+ {
+  "id": "bcM9dP_uXJU",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 1328,
+  "views": 977978,
+  "source": "search",
+  "searchTitle": "How to Build an AI Agent with Claude Code (Claude AI Agent Tutorial)",
+  "searchChannel": "AI Master"
+ },
+ {
+  "id": "eA9Zf2-qYYM",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 3536,
+  "views": 873498,
+  "source": "search",
+  "searchTitle": "Building AI Agents that actually work (Full Course)",
+  "searchChannel": "Greg Isenberg"
+ },
+ {
+  "id": "qAF1NjEVHhY",
+  "category": "agents",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "agent"
+  ],
+  "expect": ".",
+  "durationSec": 595,
+  "views": 699940,
+  "source": "search",
+  "searchTitle": "LangChain vs LangGraph: A Tale of Two Frameworks",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "2orxyu8c7Ek",
+  "category": "local",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 1059,
+  "views": 104318,
+  "source": "search",
+  "searchTitle": "كيفية تشغيل Llama 3.1 محلياً على جهازك باستخدام Ollama وn8n (شرح خطوة بخطوة)",
+  "searchChannel": "Zubair Trabzada | AI Workshop"
+ },
+ {
+  "id": "mkr4idOtj20",
+  "category": "local",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 593,
+  "views": 72055,
+  "source": "search",
+  "searchTitle": "شغّل نموذج GLM-5.2 محلياً على حاسوبك المحمول (بدون الحاجة إلى كارت شاشة)",
+  "searchChannel": "Cloud Codes"
+ },
+ {
+  "id": "U8lGbSaCCYI",
+  "category": "local",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 387,
+  "views": 66886,
+  "source": "search",
+  "searchTitle": "كيفية تشغيل نماذج اللغة الكبيرة (LLMs) محلياً (ممتاز للتعلم والخصوصية)",
+  "searchChannel": "ByteByteGo and ByteByteAI"
+ },
+ {
+  "id": "oaV_8ZSFblg",
+  "category": "local",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 362,
+  "views": 57348,
+  "source": "search",
+  "searchTitle": "متطلبات نظام LLM والأجهزة - تشغيل نماذج لغات كبيرة محليًا #systemrequirements",
+  "searchChannel": "AI Fusion"
+ },
+ {
+  "id": "LBlgnISVsTw",
+  "category": "local",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 614,
+  "views": 32674,
+  "source": "search",
+  "searchTitle": "ذكاء اصطناعي خاص فيك بدون انترنت مع Ollama",
+  "searchChannel": "عبدالمجيب الحميد"
+ },
+ {
+  "id": "Wjrdr0NU4Sk",
+  "category": "local",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "run-local",
+   "host"
+  ],
+  "expect": ".",
+  "durationSec": 1460,
+  "views": 2747416,
+  "source": "search",
+  "searchTitle": "host ALL your AI locally",
+  "searchChannel": "NetworkChuck"
+ },
+ {
+  "id": "UtSSMs6ObqY",
+  "category": "local",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 842,
+  "views": 1340435,
+  "source": "search",
+  "searchTitle": "Learn Ollama in 15 Minutes - Run LLM Models Locally for FREE",
+  "searchChannel": "Tech With Tim"
+ },
+ {
+  "id": "edIHPoWgIKU",
+  "category": "local",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 1467,
+  "views": 1085338,
+  "source": "search",
+  "searchTitle": "Local AI Explained: How to Run AI Models on Your Computer",
+  "searchChannel": "Tech With Tim"
+ },
+ {
+  "id": "GWB9ApTPTv4",
+  "category": "local",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 10644,
+  "views": 790684,
+  "source": "search",
+  "searchTitle": "Ollama Course – Build AI Apps Locally",
+  "searchChannel": "freeCodeCamp.org"
+ },
+ {
+  "id": "K75j8MkwgJ0",
+  "category": "local",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 730,
+  "views": 556935,
+  "source": "search",
+  "searchTitle": "Optimize Your AI - Quantization Explained",
+  "searchChannel": "Matt Williams"
+ },
+ {
+  "id": "hBzUokVYQkI",
+  "category": "local",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "run-local",
+   "host"
+  ],
+  "expect": ".",
+  "durationSec": 3060,
+  "views": 451716,
+  "source": "search",
+  "searchTitle": "AI Infrastructure Explained (GPUs, vLLM, and LLM-D)",
+  "searchChannel": "KodeKloud"
+ },
+ {
+  "id": "5RIOQuHOihY",
+  "category": "local",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 434,
+  "views": 413294,
+  "source": "search",
+  "searchTitle": "What is Ollama? Running Local LLMs Made Simple",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "2t9XrPcAiHg",
+  "category": "local",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 881,
+  "views": 310804,
+  "source": "search",
+  "searchTitle": "Local AI just leveled up... Llama.cpp vs Ollama",
+  "searchChannel": "Alex Ziskind"
+ },
+ {
+  "id": "4KXLW9Y1r4c",
+  "category": "local",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 957,
+  "views": 296970,
+  "source": "search",
+  "searchTitle": "Run Your Own Agentic AI? 🦙 Full Ollama Setup + Hermes Workflow",
+  "searchChannel": "Wanderloots"
+ },
+ {
+  "id": "cfqtFvWOfg0",
+  "category": "eval",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 578,
+  "views": 379903,
+  "source": "search",
+  "searchTitle": "Why Large Language Models Hallucinate",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "VQzK3cPWYTQ",
+  "category": "eval",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 868,
+  "views": 324613,
+  "source": "search",
+  "searchTitle": "AI ethics and the future of safety | Dr. Roman Yampolskiy | TEDxMiami",
+  "searchChannel": "TEDx Talks"
+ },
+ {
+  "id": "jrHRe9lSqqA",
+  "category": "eval",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 657,
+  "views": 306889,
+  "source": "search",
+  "searchTitle": "What Is a Prompt Injection Attack?",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "pYXy-A4siMw",
+  "category": "eval",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 1085,
+  "views": 210475,
+  "source": "search",
+  "searchTitle": "Intro to AI Safety, Remastered",
+  "searchChannel": "Robert Miles AI Safety "
+ },
+ {
+  "id": "IB1OvoCNnWY",
+  "category": "eval",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 363,
+  "views": 203360,
+  "source": "search",
+  "searchTitle": "AI Safety - Computerphile",
+  "searchChannel": "Computerphile"
+ },
+ {
+  "id": "a3SMraZWNNs",
+  "category": "eval",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 3302,
+  "views": 133758,
+  "source": "search",
+  "searchTitle": "How to Systematically Setup LLM Evals (Metrics, Unit Tests, LLM-as-a-Judge)",
+  "searchChannel": "Dave Ebbelaar"
+ },
+ {
+  "id": "NebOSOTp-zA",
+  "category": "eval",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 3972,
+  "views": 81756,
+  "source": "search",
+  "searchTitle": "Mastering LLM Chatbots And RAG Evaluation Crash Course",
+  "searchChannel": "Krish Naik"
+ },
+ {
+  "id": "ruiLq0OzjkI",
+  "category": "eval",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 2295,
+  "views": 72280,
+  "source": "search",
+  "searchTitle": "Guardrails with LangChain: A Complete Crash Course for Building Safe AI Agents",
+  "searchChannel": "Krish Naik"
+ },
+ {
+  "id": "5fp6e5nhJRk",
+  "category": "eval",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 518,
+  "views": 71561,
+  "source": "search",
+  "searchTitle": "RAGAS: How to Evaluate a RAG Application Like a Pro for Beginners",
+  "searchChannel": "Mervin Praison"
+ },
+ {
+  "id": "tFXm5ijih98",
+  "category": "eval",
+  "lang": "en",
+  "level": "مبتدئ",
+  "paths": [
+   "evaluate"
+  ],
+  "expect": ".",
+  "durationSec": 2170,
+  "views": 63561,
+  "source": "search",
+  "searchTitle": "LangSmith Tutorial - LLM Evaluation for Beginners",
+  "searchChannel": "Dave Ebbelaar"
+ },
+ {
+  "id": "my-nNuleq2k",
+  "category": "intro",
+  "lang": "ar",
+  "level": "مبتدئ",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 536,
+  "views": 113006,
+  "source": "search",
+  "searchTitle": "أفضل كورسات الذكاء الاصطناعي (للمبتدئين والمحترفين)",
+  "searchChannel": "It's Malak Hatem"
+ },
+ {
+  "id": "mUw27wG7uFA",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 529,
+  "views": 1105392,
+  "source": "search",
+  "searchTitle": "AI Simplified: 6 Concepts You Need to Know About Modern AI",
+  "searchChannel": "IBM Technology"
+ },
+ {
+  "id": "O2gerCxEXvc",
+  "category": "intro",
+  "lang": "en",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 610,
+  "views": 730131,
+  "source": "search",
+  "searchTitle": "Generative AI vs AI agents vs Agentic AI",
+  "searchChannel": "codebasics"
+ },
+ {
+  "id": "7sJ9hQYpkbU",
+  "category": "ml",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "zero"
+  ],
+  "expect": ".",
+  "durationSec": 2125,
+  "views": 265757,
+  "source": "search",
+  "searchTitle": "Machine Learning ( in Arabic)  تعلم الآلة والذكاء الاصطناعي وأمثلة بلغة بايثون (بالعربي)",
+  "searchChannel": "Hussam Hourani"
+ },
+ {
+  "id": "hF2NtXRqbQE",
+  "category": "llm",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "how-llm"
+  ],
+  "expect": ".",
+  "durationSec": 3170,
+  "views": 92087,
+  "source": "search",
+  "searchTitle": "كورس هندسة الاوامر-  الكورس الكامل  Prompt Engineering Masterclass",
+  "searchChannel": "Mina Nessim"
+ },
+ {
+  "id": "rPGJhrunbxo",
+  "category": "local",
+  "lang": "ar",
+  "level": "متوسط",
+  "paths": [
+   "run-local"
+  ],
+  "expect": ".",
+  "durationSec": 1463,
+  "views": 2204798,
+  "source": "search",
+  "searchTitle": "كل أحجام الذكاء الاصطناعي محلياً في 24 دقيقة",
+  "searchChannel": "Tina Huang"
+ }
+]

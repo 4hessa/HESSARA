@@ -65,3 +65,14 @@ Masters are named after their page (`home.png`, `platform.png`, `models.png`, `c
 Each hero is positioned from the page's `art` prop: `kind` (`frame` shows the whole image, `fade` shows a fixed-height window), `y` (vertical offset) and a `fade` string carrying `--art-h` (window height) and the mask stops `--f1`/`--f2`/`--f3`. Heights are given in `rem`, which tracks the viewport width, so a window set to `90 / aspect` rem matches the image exactly at any screen size.
 
 The Insights master was extended sideways from a portrait original so that the hero sits at a usable height; its dark room continues into black at both edges.
+
+## Repository layout
+
+This repository holds two independent builds. Each has its own `package.json` and lockfile, and neither imports from the other.
+
+| Path | What it is | Stack | Deployment |
+| --- | --- | --- | --- |
+| `/` (root) | Marketing site (this README) | Astro, static | Vercel project `hessara` builds the repository root |
+| `platform/` | The consulting application: accounts, consultations with a chosen model or specialised agent, critique lab, media library | Next.js, TypeScript, SQLite locally or PostgreSQL via `DATABASE_URL` | Needs its own Vercel project with **Root Directory** set to `platform`. See [`platform/README.md`](platform/README.md) |
+
+The application's documentation (design system, architecture, status and known limits, security review) is in [`platform/docs/`](platform/docs/).

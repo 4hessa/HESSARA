@@ -1,0 +1,8 @@
+node_modules
+.next
+.env
+.env.local
+/var
+*.tsbuildinfo
+next-env.d.ts
+/test-output
