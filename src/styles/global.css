@@ -231,6 +231,9 @@ a.row:hover { background: rgba(255,255,255,.9); padding-inline: 0.6rem; }
 .footer__base div { display: flex; gap: 0.6rem; }
 .footer__base svg { width: 0.9rem; height: 0.9rem; }
 
+/* ---------- Phones: the art is drawn from a centre crop (see scripts/build-art.mjs) ---------- */
+@media (max-width: 540px) { .art { width: max(100vw, 36rem); } }
+
 /* ---------- Small screens ---------- */
 @media (max-width: 820px) {
   html { font-size: 15px; }
