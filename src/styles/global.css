@@ -200,7 +200,7 @@ a.card:hover { transform: translateY(-0.2rem); background-color: #fff; }
 .pane svg { width: 100%; height: auto; flex: 1; min-height: 0; }
 .bubble { align-self: flex-end; max-width: 88%; background: #111; color: #fff; border-radius: 0.3rem 0.3rem 0.05rem 0.3rem; padding: 0.25rem 0.35rem; }
 .bubble--in { align-self: flex-start; background: #ededea; color: #222; border-radius: 0.3rem 0.3rem 0.3rem 0.05rem; }
-.field { margin-top: auto; border: 1px solid #ddd; border-radius: 0.2rem; padding: 0.22rem 0.3rem; color: #999; }
+.field { margin-top: auto; border: 1px solid #ddd; border-radius: 0.2rem; padding: 0.22rem 0.3rem; color: #707070; }
 .slider { display: grid; gap: 0.12rem; }
 .slider div { display: flex; justify-content: space-between; }
 .slider u { display: block; height: 0.12rem; background: linear-gradient(to right, #111 var(--v), #d9d9d6 var(--v)); border-radius: 1rem; position: relative; text-decoration: none; }
@@ -224,7 +224,7 @@ a.row:hover { background: rgba(255,255,255,.9); padding-inline: 0.6rem; }
 /* ---------- Footer ---------- */
 .footer { position: relative; z-index: 2; width: min(var(--inner), calc(100% - 2.5rem)); margin: 0 auto; padding: 1.4rem 0 2rem; }
 .footer__cols { display: grid; grid-template-columns: 1.05fr 1.05fr 1.2fr 1fr; gap: 1rem; }
-.footer h4 { margin: 0 0 0.35rem; font-size: 0.82rem; font-weight: 700; }
+.footer__title { margin: 0 0 0.35rem; font-family: var(--sans); font-size: 0.82rem; font-weight: 700; line-height: 1.32; }
 .footer li { font-size: 0.74rem; line-height: 1.75; }
 .footer li a:hover { text-decoration: underline; }
 .footer__base { display: flex; justify-content: space-between; align-items: center; margin-top: 1.6rem; font-size: 0.72rem; }
@@ -258,7 +258,7 @@ a.row:hover { background: rgba(255,255,255,.9); padding-inline: 0.6rem; }
   .row__d { font-size: 0.88rem; }
   .footer__cols { grid-template-columns: 1fr 1fr; gap: 1.6rem 1rem; }
   .footer li { font-size: 0.9rem; line-height: 2; }
-  .footer h4 { font-size: 0.95rem; }
+  .footer__title { font-size: 0.95rem; }
 }
 
 .h1-split { text-wrap: wrap; }

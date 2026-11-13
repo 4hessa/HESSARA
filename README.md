@@ -30,6 +30,19 @@ npm run build
 
 The build output is written to `dist/`.
 
+## Site address, sharing and search
+
+The public address is needed for canonical links, social preview cards (`public/og.jpg`) and the sitemap. It is resolved at build time:
+
+- on Vercel, from `VERCEL_PROJECT_PRODUCTION_URL`, which Vercel sets automatically
+- anywhere else, from `SITE_URL`, for example:
+
+```bash
+SITE_URL=https://example.com npm run build
+```
+
+Without either, those tags and the sitemap are left out rather than pointing at a wrong address. `robots.txt` is always generated and links the sitemap when one exists.
+
 ## Structure
 
 - `src/layouts/Base.astro` – page shell: navigation, hero slot, centre column, footer.
