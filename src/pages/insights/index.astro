@@ -1,4 +1,5 @@
 ---
+import { consult } from '../../data/site';
 import Base from '../../layouts/Base.astro';
 import Cards from '../../components/Cards.astro';
 import Cta from '../../components/Cta.astro';
@@ -13,7 +14,7 @@ const rows = [
   title="Insights — HESSARA"
   description="Research notes, field reports, and briefings from HESSARA on AI-assisted advisory, reasoning, and decision-making."
   current="/insights/"
-  cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
+  cta={{ label: 'Talk to an Advisor', href: consult() }}
   art={{ name: 'insights', kind: 'fade', fade: '--art-h:42rem;--f1:80%;--f2:90%;--f3:100%' }}
   heroTop="44rem"
 >
@@ -54,7 +55,7 @@ const rows = [
   </section>
 
   <Cta title="Ready to turn insight into action?" actions={[
-    { label: 'Start a Consultation', href: '/consulting/' },
+    { label: 'Start a Consultation', href: consult() },
     { label: 'Explore the Platform', href: '/platform/', ghost: true },
   ]} />
 </Base>

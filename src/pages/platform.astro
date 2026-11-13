@@ -1,4 +1,5 @@
 ---
+import { consult } from '../data/site';
 import Base from '../layouts/Base.astro';
 import Cards from '../components/Cards.astro';
 import Steps from '../components/Steps.astro';
@@ -9,7 +10,7 @@ import Cta from '../components/Cta.astro';
   title="The HESSARA Platform — One System for Models, Agents, and Evidence"
   description="The HESSARA platform orchestrates specialized models and intelligent agents around your own evidence, with governance built in."
   current="/platform/"
-  cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
+  cta={{ label: 'Talk to an Advisor', href: consult() }}
   art={{ name: 'platform' }}
   heroTop="37.5rem"
 >

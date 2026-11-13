@@ -1,4 +1,5 @@
 ---
+import { consult, appLink } from '../data/site';
 import Base from '../layouts/Base.astro';
 import Cards from '../components/Cards.astro';
 import Mock from '../components/Mock.astro';
@@ -8,7 +9,7 @@ import Cta from '../components/Cta.astro';
   title="AI-Powered Strategic Consulting — HESSARA"
   description="Deep-level advisory and multi-agent deliberation. Engage specialized AI consultants to dissect complex problems, simulate outcomes, and architect actionable roadmaps."
   current="/consulting/"
-  cta={{ label: 'Start Consultation', href: '#cta' }}
+  cta={{ label: 'Start Consultation', href: consult('#cta') }}
   art={{ name: 'consulting', kind: 'fade', y: '-10.1rem', fade: '--art-h:46.1rem;--f1:88%;--f2:95%;--f3:100%' }}
   heroTop="40rem"
 >
@@ -19,8 +20,8 @@ import Cta from '../components/Cta.astro';
       <p>Engage specialized AI consultants trained on domain-specific research to dissect complex problems, simulate outcomes, and architect actionable roadmaps.</p>
     </div>
     <div class="btn-row">
-      <a class="btn" href="#workspace">Launch Advisory Session</a>
-      <a class="btn btn--ghost" href="#council">Select AI Specialist</a>
+      <a class="btn" href={consult('#workspace')}>Launch Advisory Session</a>
+      <a class="btn btn--ghost" href={appLink('/agents', '#council')}>Select AI Specialist</a>
     </div>
   </Fragment>
 
@@ -51,5 +52,5 @@ import Cta from '../components/Cta.astro';
     <Mock variant="consult" />
   </section>
 
-  <Cta title="Ready to consult with HESSARA intelligence?" actions={[{ label: 'Book AI Session', href: '/contact/' }]} />
+  <Cta title="Ready to consult with HESSARA intelligence?" actions={[{ label: 'Book AI Session', href: consult('/contact/') }]} />
 </Base>

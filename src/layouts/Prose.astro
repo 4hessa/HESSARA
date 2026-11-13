@@ -1,4 +1,5 @@
 ---
+import { consult } from '../data/site';
 import Base from './Base.astro';
 import Cta from '../components/Cta.astro';
 const { frontmatter: f } = Astro.props;
@@ -15,7 +16,7 @@ const back = f.section === 'insights' ? ['/insights/', 'All insights'] : f.secti
   title={`${f.title} — HESSARA`}
   description={f.description}
   current={f.section ? `/${f.section}/` : undefined}
-  cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
+  cta={{ label: 'Talk to an Advisor', href: consult() }}
   art={picked.art}
   heroTop={picked.heroTop}
 >
@@ -30,7 +31,7 @@ const back = f.section === 'insights' ? ['/insights/', 'All insights'] : f.secti
     {back && <p class="prose__back"><a href={back[0]}>← {back[1]}</a></p>}
   </article>
   <Cta title={f.cta ?? 'Ready to navigate the complex?'} actions={[
-    { label: 'Start a Consultation', href: '/consulting/' },
+    { label: 'Start a Consultation', href: consult() },
     { label: 'Explore the Platform', href: '/platform/', ghost: true },
   ]} />
 </Base>

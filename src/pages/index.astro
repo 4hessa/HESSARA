@@ -1,4 +1,5 @@
 ---
+import { consult } from '../data/site';
 import Base from '../layouts/Base.astro';
 import Cards from '../components/Cards.astro';
 import Steps from '../components/Steps.astro';
@@ -8,7 +9,7 @@ import Cta from '../components/Cta.astro';
 <Base
   title="HESSARA — Intelligence That Guides. Insight That Matters"
   description="HESSARA is an AI-powered advisory platform connecting you with specialized AI models and intelligent agents to navigate complex decisions."
-  cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
+  cta={{ label: 'Talk to an Advisor', href: consult() }}
   art={{ name: 'home' }}
   glow={false}
 >
@@ -21,7 +22,7 @@ import Cta from '../components/Cta.astro';
     </div>
     <div class="btn-row">
       <a class="btn" href="#suite">Explore the Suite</a>
-      <a class="btn btn--ghost" href="/consulting/">Talk to an Advisor</a>
+      <a class="btn btn--ghost" href={consult()}>Talk to an Advisor</a>
     </div>
   </Fragment>
 
