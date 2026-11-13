@@ -1,0 +1,71 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cards from '../../components/Cards.astro';
+import Steps from '../../components/Steps.astro';
+import Cta from '../../components/Cta.astro';
+const rows = [
+  ['Guide', 'Getting started with your first advisory session', 'Set up a workspace, frame a question, and invite your first specialist.', '/resources/getting-started/'],
+  ['Reference', 'Model registry and capability overview', 'What each HESSARA model is tuned for and how to choose between them.', '/resources/model-registry/'],
+  ['Playbook', 'Running a multi-agent consultation', 'Roles, hand-offs, and review points for a structured deliberation.', '/resources/multi-agent-playbook/'],
+  ['Policy', 'Security, privacy, and data handling', 'How workspace data is stored, who can reach it, and how to export or remove it.', '/resources/security/'],
+];
+---
+<Base
+  title="Resources — HESSARA"
+  description="Documentation, references, and playbooks for working with the HESSARA platform, language models, and advisory agents."
+  current="/resources/"
+  cta={{ label: 'Talk to an Advisor', href: '/consulting/' }}
+  art={{ name: 'resources' }}
+  heroTop="37.5rem"
+>
+  <Fragment slot="hero">
+    <h1>A Library for Every Question</h1>
+    <p class="hero__sub">Documentation, References &amp; Playbooks</p>
+    <div class="hero__copy">
+      <p>Everything you need to work with HESSARA: guides for your first session, references for each model, and playbooks for running deliberations with your team.</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn" href="#library">Browse the Library</a>
+      <a class="btn btn--ghost" href="#start">Start Here</a>
+    </div>
+  </Fragment>
+
+  <section class="section" id="shelves">
+    <p class="eyebrow">Collections</p>
+    <h2 class="title">Find Your Shelf</h2>
+    <Cards items={[
+      { icon: 'document', title: 'Documentation', text: 'Concepts, setup, and day-to-day use.', href: '#library' },
+      { icon: 'code', title: 'API Reference', text: 'Endpoints, parameters, and integration notes.', href: '#library' },
+      { icon: 'map', title: 'Guides & Playbooks', text: 'Step-by-step methods for real engagements.', href: '#library' },
+    ]} />
+  </section>
+
+  <section class="section" id="start">
+    <p class="eyebrow">Start Here</p>
+    <h2 class="title">Three Steps to Your First Session</h2>
+    <Steps items={[
+      { title: 'Prepare', text: 'Gather the documents and context your question depends on.' },
+      { title: 'Convene', text: 'Choose the specialists and models suited to the problem.' },
+      { title: 'Review', text: 'Read the reasoning, check the sources, and decide.' },
+    ]} />
+  </section>
+
+  <section class="section" id="library">
+    <p class="eyebrow">Library</p>
+    <h2 class="title">Popular Resources</h2>
+    <div class="rows">
+      {rows.map(([k, t, d, href]) => (
+        <a class="row" href={href}>
+          <span class="row__k">{k}</span>
+          <span><span class="row__t">{t}</span><p class="row__d">{d}</p></span>
+          <span class="row__a" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <Cta title="Cannot find what you are looking for?" actions={[
+    { label: 'Talk to an Advisor', href: '/consulting/' },
+    { label: 'Read Insights', href: '/insights/', ghost: true },
+  ]} />
+</Base>
