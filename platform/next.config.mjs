@@ -1,4 +1,9 @@
+import { fileURLToPath } from "node:url";
+
 const dev = process.env.NODE_ENV !== "production";
+// التطبيق مجلد فرعي في مستودع يضم في جذره موقعًا آخر له ملف قفل حزم خاص به.
+// تثبيت الجذر هنا يمنع Next.js من اختيار جذر المستودع للتجميع وتتبّع ملفات الإنتاج.
+const root = fileURLToPath(new URL(".", import.meta.url));
 
 // سياسة أمان المحتوى: لا مصادر خارجية سوى الصور المصغّرة من يوتيوب.
 const csp = [
@@ -17,6 +22,8 @@ const csp = [
 const nextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ["pg"],
+  turbopack: { root },
+  outputFileTracingRoot: root,
   async headers() {
     return [
       { source: "/fonts/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },

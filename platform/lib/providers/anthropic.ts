@@ -7,7 +7,9 @@ const FALLBACK_MODELS = new Set(["claude-opus-5-5", "claude-sonnet-5-5", "claude
 
 export const anthropicAdapter: ProviderAdapter = {
   async *stream(req: StreamRequest) {
-    const client = new Anthropic();
+    // مفتاح غير مرتبط بمساحة عمل يتطلب ترويسة anthropic-workspace-id في كل طلب (توثيق Anthropic: Authentication).
+    const workspace = process.env.ANTHROPIC_WORKSPACE_ID?.trim();
+    const client = new Anthropic(workspace ? { defaultHeaders: { "anthropic-workspace-id": workspace } } : undefined);
     try {
       const base = {
         model: req.model,
@@ -39,6 +41,8 @@ export const anthropicAdapter: ProviderAdapter = {
         throw new ProviderError("مفتاح الخدمة غير صالح أو لا يملك صلاحية هذا النموذج.", "auth");
       if (err instanceof Anthropic.RateLimitError)
         throw new ProviderError("تجاوز الحساب حد الطلبات لدى المزوّد. حاول بعد قليل.", "rate_limit");
+      if (err instanceof Anthropic.BadRequestError && /workspace/i.test(err.message))
+        throw new ProviderError("مفتاح Anthropic غير مرتبط بمساحة عمل: اضبط ANTHROPIC_WORKSPACE_ID على الخادم، أو أنشئ مفتاحًا مرتبطًا بمساحة عمل.", "auth");
       if (err instanceof Anthropic.BadRequestError || err instanceof Anthropic.NotFoundError)
         throw new ProviderError("رفض المزوّد الطلب (معرّف النموذج أو الصيغة).", "bad_request");
       if (err instanceof Anthropic.APIConnectionError)

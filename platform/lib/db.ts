@@ -114,10 +114,27 @@ async function sqliteDriver(): Promise<Driver> {
   };
 }
 
+// مفتاح قفل ثابت يسلسل إنشاء الجداول بين نسخ الخادم: CREATE TABLE IF NOT EXISTS المتزامن
+// من عدة اتصالات قد يفشل في Postgres بتعارض على فهرس أسماء الأنواع.
+const SCHEMA_LOCK = 72519430;
+
 async function pgDriver(url: string): Promise<Driver> {
   const { Pool } = await import("pg");
   const pool = new Pool({ connectionString: url, max: 5, idleTimeoutMillis: 10_000 });
-  await pool.query(SCHEMA);
+  // خطأ على اتصال خامل (مثل إغلاقه من جهة الخادم) يُطلق حدثًا على المجمّع؛ دون مستمع تنهار العملية كلها.
+  pool.on("error", (e) => console.error("[db] idle client error:", e.message));
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock($1)", [SCHEMA_LOCK]);
+    await client.query(SCHEMA);
+    await client.query("COMMIT");
+  } catch (e) {
+    await client.query("ROLLBACK").catch(() => {});
+    throw e;
+  } finally {
+    client.release();
+  }
   return { async query(sql, params) { return (await pool.query(toPg(sql), params)).rows.map(fixRow); } };
 }
 
@@ -126,18 +143,30 @@ async function pgliteDriver(): Promise<Driver> {
   const name = ["@electric-sql", "pglite"].join("/");
   const { PGlite } = (await import(/* webpackIgnore: true */ /* turbopackIgnore: true */ name)) as typeof import("@electric-sql/pglite");
   const db = new PGlite(process.env.HESSARA_PGLITE_DIR || undefined);
+  // المسار نفسه الذي يسلكه pgDriver، ليغطيه الاختبار الشامل على PGlite.
+  await db.exec("BEGIN");
+  await db.query("SELECT pg_advisory_xact_lock($1)", [SCHEMA_LOCK]);
   await db.exec(SCHEMA);
+  await db.exec("COMMIT");
   return { async query(sql, params) { return ((await db.query(toPg(sql), params)).rows as Row[]).map(fixRow); } };
 }
 
 type G = typeof globalThis & { __hessaraDriver?: Promise<Driver> };
 function driver(): Promise<Driver> {
   const g = globalThis as G;
-  return (g.__hessaraDriver ??= process.env.HESSARA_PGLITE === "1"
-    ? pgliteDriver()
-    : process.env.DATABASE_URL
-      ? pgDriver(process.env.DATABASE_URL)
-      : sqliteDriver());
+  if (!g.__hessaraDriver) {
+    const created = process.env.HESSARA_PGLITE === "1"
+      ? pgliteDriver()
+      : process.env.DATABASE_URL
+        ? pgDriver(process.env.DATABASE_URL)
+        : sqliteDriver();
+    // لا يُحفظ الفشل: تعيد الطلبات التالية المحاولة بدل أن تفشل كلها حتى إعادة تشغيل النسخة.
+    g.__hessaraDriver = created.catch((e) => {
+      g.__hessaraDriver = undefined;
+      throw e;
+    });
+  }
+  return g.__hessaraDriver;
 }
 
 export const dbEngine = () => (process.env.HESSARA_PGLITE === "1" ? "pglite" : process.env.DATABASE_URL ? "postgres" : "sqlite");
