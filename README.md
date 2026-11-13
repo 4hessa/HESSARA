@@ -72,7 +72,9 @@ This repository holds two independent builds. Each has its own `package.json` an
 
 | Path | What it is | Stack | Deployment |
 | --- | --- | --- | --- |
-| `/` (root) | Marketing site (this README) | Astro, static | Vercel project `hessara` builds the repository root |
-| `platform/` | The consulting application: accounts, consultations with a chosen model or specialised agent, critique lab, media library | Next.js, TypeScript, SQLite locally or PostgreSQL via `DATABASE_URL` | Needs its own Vercel project with **Root Directory** set to `platform`. See [`platform/README.md`](platform/README.md) |
+| `platform/` | **The website.** The marketing pages in this site's design, merged with the consulting application (accounts, consultations with a chosen model or specialised agent, critique lab, media library), in Arabic and English with a language toggle | Next.js, TypeScript, SQLite locally or PostgreSQL via `DATABASE_URL` | Vercel project `hessara-platform1` with **Root Directory** set to `platform`. See [`platform/README.md`](platform/README.md) |
+| `/` (root) | The original marketing site (this README), kept unchanged as the design reference | Astro, static | Vercel project `hessara` builds the repository root. To serve the merged site there instead, set that project's Root Directory to `platform` and add the environment variables listed in `platform/README.md` |
+
+The platform adopted this site's design (tokens, fonts, components, and artwork, copied into `platform/public/art`). Copy that described capabilities the product does not have was rewritten; every change and its reason is listed in [`platform/docs/CONTENT-CHANGES.md`](platform/docs/CONTENT-CHANGES.md).
 
 The application's documentation (design system, architecture, status and known limits, security review) is in [`platform/docs/`](platform/docs/).
