@@ -17,6 +17,7 @@ import { ReviewRunner } from "./Review";
 type Msg = Pick<MessageRow, "id" | "role" | "content" | "model_id" | "engine" | "status" | "feedback">;
 
 export function HistoryList({ items, currentId, savedOnly }: { items: ConsultRow[]; currentId?: string; savedOnly?: boolean }) {
+  const { t, lang } = useApp();
   const [q, setQ] = useState("");
   const [list, setList] = useState(items);
   const [saved, setSaved] = useState(!!savedOnly);
@@ -25,7 +26,7 @@ export function HistoryList({ items, currentId, savedOnly }: { items: ConsultRow
   useEffect(() => {
     if (first.current) { first.current = false; if (!savedOnly) return; }
     const ctl = new AbortController();
-    const t = setTimeout(async () => {
+    const timer = setTimeout(async () => {
       setLoading(true);
       try {
         const r = await api<{ consultations: ConsultRow[] }>(`/api/consultations?q=${encodeURIComponent(q)}${saved ? "&saved=1" : ""}`, { signal: ctl.signal });
@@ -33,27 +34,27 @@ export function HistoryList({ items, currentId, savedOnly }: { items: ConsultRow
       } catch { /* أُلغي */ }
       setLoading(false);
     }, 250);
-    return () => { clearTimeout(t); ctl.abort(); };
+    return () => { clearTimeout(timer); ctl.abort(); };
   }, [q, saved, savedOnly]);
   return (
     <>
       <div className="ws-side-head">
-        <Link href="/consult/new" className="btn btn-primary btn-sm btn-block"><Icon name="plus" size={18} /> استشارة جديدة</Link>
+        <Link href="/consult/new" className="btn btn-primary btn-sm btn-block"><Icon name="plus" size={18} /> {t("استشارة جديدة", "New consultation")}</Link>
         <div className="input-wrap">
-          <label className="sr-only" htmlFor="hist-q">ابحث في الاستشارات</label>
-          <input id="hist-q" className="input" type="search" placeholder="ابحث في العناوين والمحتوى" value={q} onChange={(e) => setQ(e.target.value)} />
+          <label className="sr-only" htmlFor="hist-q">{t("ابحث في الاستشارات", "Search consultations")}</label>
+          <input id="hist-q" className="input" type="search" placeholder={t("ابحث في العناوين والمحتوى", "Search titles and content")} value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
         <div className="chips">
-          <button className="chip" aria-pressed={!saved} onClick={() => setSaved(false)}>الكل</button>
-          <button className="chip" aria-pressed={saved} onClick={() => setSaved(true)}><Icon name="bookmark" size={16} /> المحفوظة</button>
+          <button className="chip" aria-pressed={!saved} onClick={() => setSaved(false)}>{t("الكل", "All")}</button>
+          <button className="chip" aria-pressed={saved} onClick={() => setSaved(true)}><Icon name="bookmark" size={16} /> {t("المحفوظة", "Saved")}</button>
         </div>
       </div>
-      <nav className="ws-list" aria-label="سجل الاستشارات" aria-busy={loading}>
-        {list.length === 0 && <p className="t-small muted" style={{ padding: "var(--s-4)" }}>{q || saved ? "لا نتائج مطابقة." : "لا استشارات بعد. ابدأ أول استشارة."}</p>}
+      <nav className="ws-list" aria-label={t("سجل الاستشارات", "Consultation history")} aria-busy={loading}>
+        {list.length === 0 && <p className="t-small muted" style={{ padding: "1rem" }}>{q || saved ? t("لا نتائج مطابقة.", "No matching results.") : t("لا استشارات بعد. ابدأ أول استشارة.", "No consultations yet. Start your first one.")}</p>}
         {list.map((c) => (
           <Link key={c.id} href={`/consult/${c.id}`} className="ws-item" aria-current={c.id === currentId ? "page" : undefined}>
             <span className="ws-item-title">{c.saved ? "★ " : ""}{c.title}</span>
-            <span className="t-caption">{fmtDate(c.updated_at)}</span>
+            <span className="t-caption">{fmtDate(c.updated_at, lang)}</span>
           </Link>
         ))}
       </nav>
@@ -62,7 +63,7 @@ export function HistoryList({ items, currentId, savedOnly }: { items: ConsultRow
 }
 
 export function Workspace({ consultation: c0, messages: m0, history }: { consultation: ConsultRow; messages: Msg[]; history: ConsultRow[] }) {
-  const { models, user, setUser, toast, ensureConsent } = useApp();
+  const { models, user, setUser, toast, ensureConsent, t, lang } = useApp();
   const router = useRouter();
   const [c, setC] = useState(c0);
   const [msgs, setMsgs] = useState<Msg[]>(m0);
@@ -79,7 +80,7 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
   const sentPending = useRef(false);
 
   const model = models.find((m) => m.id === c.model_id);
-  const agent = agentById(c.agent_id);
+  const agent = agentById(c.agent_id, lang);
   const busy = streaming !== null;
 
   useEffect(() => {
@@ -116,9 +117,9 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
         // لم يُرسل شيء للمزوّد بعد: لا يُعرض «يكتب الإجابة» أثناء انتظار الموافقة.
         setStreaming(null);
         if (await ensureConsent()) { setStreaming(""); res = await doFetch(); }
-        else throw new Error("لم تُمنح الموافقة على الإرسال إلى المزوّد الخارجي. يمكنك اختيار المحرك التجريبي بدلًا من ذلك.");
+        else throw new Error(t("لم تُمنح الموافقة على الإرسال إلى المزوّد الخارجي. يمكنك اختيار المحرك التجريبي بدلًا من ذلك.", "Consent to send to the external provider was not given. You can choose the demo engine instead."));
       }
-      if (!res.ok || !res.body) throw new Error((await res.json().catch(() => ({}))).error ?? "تعذر إرسال الرسالة.");
+      if (!res.ok || !res.body) throw new Error((await res.json().catch(() => ({}))).error ?? t("تعذر إرسال الرسالة.", "Could not send the message."));
       const reader = res.body.getReader();
       const dec = new TextDecoder();
       let buf = "";
@@ -139,10 +140,10 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
           else if (ev.t === "error") failed = ev.message;
         }
       }
-      if (!finished && !failed) failed = "انقطع الاتصال قبل اكتمال الإجابة.";
+      if (!finished && !failed) failed = t("انقطع الاتصال قبل اكتمال الإجابة.", "The connection dropped before the answer was complete.");
     } catch (e) {
       if ((e as Error).name !== "AbortError") {
-        failed = (e as Error).message || "تعذر الاتصال بالخادم.";
+        failed = (e as Error).message || t("تعذر الاتصال بالخادم.", "Could not reach the server.");
         // لم تصل الرسالة: نعيد النص إلى حقل الكتابة حتى لا يضيع.
         if (!assistantId && !retry) { setMsgs((m) => m.filter((x) => x.id !== tempId)); setDraft(text ?? ""); }
       }
@@ -154,7 +155,7 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
     setStreaming(null);
     if (failed) setError(failed);
     router.refresh();
-  }, [c.id, c.model_id, ensureConsent, model?.engine, router]);
+  }, [c.id, c.model_id, ensureConsent, model?.engine, router, t]);
 
   // الرسالة الأولى القادمة من حقل البدء السريع.
   useEffect(() => {
@@ -166,49 +167,49 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
     } catch { /* لا شيء معلّق */ }
   }, [c.id, m0.length, send]);
 
-  const submit = () => { const t = draft.trim(); if (!t || busy) return; setDraft(""); send(t); };
+  const submit = () => { const v = draft.trim(); if (!v || busy) return; setDraft(""); send(v); };
   const patch = async (body: Record<string, unknown>, okMsg?: string) => {
     const r = await api<{ consultation: ConsultRow }>(`/api/consultations/${c.id}`, { method: "PATCH", body });
     if (r.ok) { setC(r.data.consultation); if (okMsg) toast(okMsg); router.refresh(); }
-    else toast(r.data.error ?? "تعذر حفظ التغيير.");
+    else toast(r.data.error ?? t("تعذر حفظ التغيير.", "Could not save the change."));
   };
   const feedback = async (m: Msg, value: 1 | -1) => {
     const v = m.feedback === value ? null : value;
     setMsgs((all) => all.map((x) => (x.id === m.id ? { ...x, feedback: v } : x)));
     const r = await api(`/api/messages/${m.id}/feedback`, { body: { value: v } });
-    if (!r.ok) toast("تعذر حفظ التقييم.");
+    if (!r.ok) toast(t("تعذر حفظ التقييم.", "Could not save your rating."));
   };
-  const copy = async (t: string) => {
-    try { await navigator.clipboard.writeText(t); toast("نُسخت الإجابة."); } catch { toast("تعذر النسخ من المتصفح."); }
+  const copy = async (text: string) => {
+    try { await navigator.clipboard.writeText(text); toast(t("نُسخت الإجابة.", "Answer copied.")); } catch { toast(t("تعذر النسخ من المتصفح.", "The browser could not copy.")); }
   };
   const lastAssistantId = [...msgs].reverse().find((m) => m.role === "assistant")?.id;
   let prevModel: string | null = null;
 
   const panelBody = panel && (
     <div className="dialog-body">
-      <p className="t-small muted">تُراجَع الإجابة المحددة مراجعة مستقلة عن النموذج الذي كتبها، وفق معايير معلنة.</p>
+      <p className="t-small muted">{t("تُراجَع الإجابة المحددة مراجعة مستقلة عن النموذج الذي كتبها، وفق معايير معلنة.", "The selected answer is reviewed independently of the model that wrote it, against stated criteria.")}</p>
       <ReviewRunner key={panel.id} text={panel.content} consultationId={c.id} messageId={panel.id} defaultMode={agent?.reviewMode} />
     </div>
   );
 
   return (
     <div className={`workspace${panel && wide ? " with-panel" : ""}`}>
-      <aside className="ws-side" aria-label="سجل الاستشارات"><HistoryList items={history} currentId={c.id} /></aside>
+      <aside className="ws-side" aria-label={t("سجل الاستشارات", "Consultation history")}><HistoryList items={history} currentId={c.id} /></aside>
 
-      <section className="ws-main" aria-label="المحادثة">
+      <section className="ws-main" aria-label={t("المحادثة", "Conversation")}>
         <div className="ws-bar">
-          <button className="btn btn-ghost btn-icon btn-sm ws-mobile-only" aria-label="سجل الاستشارات" onClick={() => setSideOpen(true)}><Icon name="menu" /></button>
+          <button className="btn btn-ghost btn-icon btn-sm ws-mobile-only" aria-label={t("سجل الاستشارات", "Consultation history")} onClick={() => setSideOpen(true)}><Icon name="menu" /></button>
           <h1 className="ws-title grow">{c.title}</h1>
-          <span className="row hide-mobile" style={{ flexWrap: "nowrap" }} title={busy ? "يولّد الإجابة" : model?.status === "failed" ? "فشل آخر اتصال" : "جاهز"}>
+          <span className="row hide-mobile" style={{ flexWrap: "nowrap" }} title={busy ? t("يولّد الإجابة", "Generating the answer") : model?.status === "failed" ? t("فشل آخر اتصال", "The last connection failed") : t("جاهز", "Ready")}>
             <span className={`status-dot${busy ? " busy" : model?.status === "failed" ? " off" : ""}`} />
-            <span className="t-caption">{busy ? "يكتب…" : model?.status === "failed" ? "تعذر الاتصال" : "متصل"}</span>
+            <span className="t-caption">{busy ? t("يكتب…", "Writing…") : model?.status === "failed" ? t("تعذر الاتصال", "Connection failed") : t("متصل", "Connected")}</span>
           </span>
           <AdvisorPicker compact lockAgent value={{ modelId: c.model_id, agentId: c.agent_id }}
-            onChange={(a) => { if (a.modelId !== c.model_id) patch({ modelId: a.modelId }, "تغيّر النموذج. الإجابات التالية ستأتي من النموذج الجديد."); }} />
-          <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={!!c.saved} aria-label={c.saved ? "إزالة من المحفوظات" : "حفظ الاستشارة"}
-            onClick={() => patch({ saved: !c.saved }, c.saved ? "أُزيلت من المحفوظات." : "حُفظت الاستشارة في المحفوظات.")}><Icon name="bookmark" /></button>
-          <a className="btn btn-ghost btn-icon btn-sm hide-mobile" href={`/api/consultations/${c.id}/export`} aria-label="تصدير الاستشارة ملفًا نصيًا"><Icon name="export" /></a>
-          <button className="btn btn-ghost btn-icon btn-sm" aria-label="حذف الاستشارة" onClick={() => setConfirmDelete(true)}><Icon name="trash" /></button>
+            onChange={(a) => { if (a.modelId !== c.model_id) patch({ modelId: a.modelId }, t("تغيّر النموذج. الإجابات التالية ستأتي من النموذج الجديد.", "Model changed. The next answers will come from the new model.")); }} />
+          <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={!!c.saved} aria-label={c.saved ? t("إزالة من المحفوظات", "Remove from saved") : t("حفظ الاستشارة", "Save the consultation")}
+            onClick={() => patch({ saved: !c.saved }, c.saved ? t("أُزيلت من المحفوظات.", "Removed from saved.") : t("حُفظت الاستشارة في المحفوظات.", "Consultation saved."))}><Icon name="bookmark" /></button>
+          <a className="btn btn-ghost btn-icon btn-sm hide-mobile" href={`/api/consultations/${c.id}/export`} aria-label={t("تصدير الاستشارة ملفًا نصيًا", "Export the consultation as a text file")}><Icon name="export" /></a>
+          <button className="btn btn-ghost btn-icon btn-sm" aria-label={t("حذف الاستشارة", "Delete the consultation")} onClick={() => setConfirmDelete(true)}><Icon name="trash" /></button>
         </div>
 
         <div className="ws-scroll" ref={scrollRef}>
@@ -219,36 +220,36 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
                 <div><strong>{agent.name}</strong><p className="t-small">{agent.scope} {agent.tools[0]}</p></div>
               </div>
             )}
-            {msgs.length === 0 && !busy && <p className="muted">اكتب رسالتك الأولى في الأسفل لبدء الاستشارة.</p>}
+            {msgs.length === 0 && !busy && <p className="muted">{t("اكتب رسالتك الأولى في الأسفل لبدء الاستشارة.", "Write your first message below to start the consultation.")}</p>}
             {msgs.map((m) => {
-              if (m.role === "user") return <div key={m.id} className="msg"><span className="sr-only">أنت:</span><div className="msg-user" dir="auto">{m.content}</div></div>;
+              if (m.role === "user") return <div key={m.id} className="msg"><span className="sr-only">{t("أنت:", "You:")}</span><div className="msg-user" dir="auto">{m.content}</div></div>;
               const mm = models.find((x) => x.id === m.model_id);
               const switched = prevModel !== null && prevModel !== m.model_id;
               prevModel = m.model_id;
               return (
                 <div key={m.id} className="msg">
-                  {switched && <div className="model-switch" role="note">تغيّر النموذج إلى <bdi>{mm?.name}</bdi></div>}
+                  {switched && <div className="model-switch" role="note">{t("تغيّر النموذج إلى", "Model changed to")} <bdi>{mm?.name}</bdi></div>}
                   <div className="msg-meta">
                     {mm && <VendorMark vendorKey={mm.vendorKey} small />}
-                    <strong style={{ color: "var(--text)" }}><bdi>{mm?.name ?? "نموذج غير معروف"}</bdi></strong>
-                    <span className={`badge ${m.engine === "demo" ? "badge-warn" : ""}`}>{m.engine === "demo" ? "قالب تجريبي — ليس ذكاءً اصطناعيًا" : "مولَّد بالذكاء الاصطناعي"}</span>
-                    {m.status === "stopped" && <span className="badge badge-warn">إجابة غير مكتملة</span>}
+                    <strong style={{ color: "var(--ink)" }}><bdi>{mm?.name ?? t("نموذج غير معروف", "Unknown model")}</bdi></strong>
+                    <span className={`badge ${m.engine === "demo" ? "badge-warn" : ""}`}>{m.engine === "demo" ? t("قالب تجريبي — ليس ذكاءً اصطناعيًا", "Demo template — not AI") : t("مولَّد بالذكاء الاصطناعي", "Generated by AI")}</span>
+                    {m.status === "stopped" && <span className="badge badge-warn">{t("إجابة غير مكتملة", "Incomplete answer")}</span>}
                   </div>
                   <Markdown text={m.content} />
                   <div className="msg-actions">
-                    <button className="btn btn-ghost btn-sm" onClick={() => copy(m.content)}><Icon name="copy" size={18} /> نسخ</button>
-                    <button className="btn btn-ghost btn-sm" onClick={() => setPanel(m)} aria-expanded={panel?.id === m.id}><Icon name="lab" size={18} /> مراجعة نقدية</button>
-                    {m.id === lastAssistantId && !busy && <button className="btn btn-ghost btn-sm" onClick={() => send(null)}><Icon name="retry" size={18} /> أعد التوليد</button>}
-                    <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={m.feedback === 1} aria-label="إجابة مفيدة" onClick={() => feedback(m, 1)}><Icon name="up" size={18} /></button>
-                    <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={m.feedback === -1} aria-label="إجابة غير مفيدة" onClick={() => feedback(m, -1)}><Icon name="down" size={18} /></button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => copy(m.content)}><Icon name="copy" size={18} /> {t("نسخ", "Copy")}</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setPanel(m)} aria-expanded={panel?.id === m.id}><Icon name="lab" size={18} /> {t("مراجعة نقدية", "Critical review")}</button>
+                    {m.id === lastAssistantId && !busy && <button className="btn btn-ghost btn-sm" onClick={() => send(null)}><Icon name="retry" size={18} /> {t("أعد التوليد", "Regenerate")}</button>}
+                    <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={m.feedback === 1} aria-label={t("إجابة مفيدة", "Helpful answer")} onClick={() => feedback(m, 1)}><Icon name="up" size={18} /></button>
+                    <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={m.feedback === -1} aria-label={t("إجابة غير مفيدة", "Unhelpful answer")} onClick={() => feedback(m, -1)}><Icon name="down" size={18} /></button>
                   </div>
                 </div>
               );
             })}
             {busy && (
               <div className="msg">
-                <div className="msg-meta">{model && <VendorMark vendorKey={model.vendorKey} small />}<strong style={{ color: "var(--text)" }}><bdi>{model?.name}</bdi></strong><span>يكتب الإجابة…</span></div>
-                {streaming ? <Markdown text={streaming} /> : <span className="typing" aria-label="جارٍ التوليد"><i /><i /><i /></span>}
+                <div className="msg-meta">{model && <VendorMark vendorKey={model.vendorKey} small />}<strong style={{ color: "var(--ink)" }}><bdi>{model?.name}</bdi></strong><span>{t("يكتب الإجابة…", "Writing the answer…")}</span></div>
+                {streaming ? <Markdown text={streaming} /> : <span className="typing" aria-label={t("جارٍ التوليد", "Generating")}><i /><i /><i /></span>}
               </div>
             )}
             {error && (
@@ -257,20 +258,20 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
                 <div className="stack-sm">
                   <span>{error}</span>
                   <div className="row">
-                    {msgs[msgs.length - 1]?.role === "user" && <button className="btn btn-secondary btn-sm" onClick={() => send(null)}><Icon name="retry" size={18} /> أعد المحاولة</button>}
-                    <Link className="btn btn-ghost btn-sm" href="/models">حالة النماذج</Link>
+                    {msgs[msgs.length - 1]?.role === "user" && <button className="btn btn-secondary btn-sm" onClick={() => send(null)}><Icon name="retry" size={18} /> {t("أعد المحاولة", "Try again")}</button>}
+                    <Link className="btn btn-ghost btn-sm" href="/models">{t("حالة النماذج", "Model status")}</Link>
                   </div>
                 </div>
               </div>
             )}
             {user && model && user.prefModel !== model.id && msgs.some((m) => m.role === "assistant" && m.status === "complete") && !busy && (
               <div className="row t-small muted">
-                <span>أعجبك أداء <bdi>{model.name}</bdi>؟</span>
+                <span>{t("أعجبك أداء", "Liked how")} <bdi>{model.name}</bdi>{t("؟", " did?")}</span>
                 <button className="btn btn-secondary btn-sm" onClick={async () => {
                   const r = await api<{ user: NonNullable<typeof user> }>("/api/me", { method: "PATCH", body: { prefModel: model.id } });
-                  if (r.ok) { setUser(r.data.user); toast("أصبح هذا النموذج مفضّلك، وسيُختار تلقائيًا في الاستشارات الجديدة."); }
-                  else toast(r.data.error ?? "تعذر الحفظ.");
-                }}><Icon name="star" size={18} /> اجعله نموذجي المفضل</button>
+                  if (r.ok) { setUser(r.data.user); toast(t("أصبح هذا النموذج مفضّلك، وسيُختار تلقائيًا في الاستشارات الجديدة.", "This model is now your favourite and will be chosen automatically in new consultations.")); }
+                  else toast(r.data.error ?? t("تعذر الحفظ.", "Could not save."));
+                }}><Icon name="star" size={18} /> {t("اجعله نموذجي المفضل", "Make it my favourite model")}</button>
               </div>
             )}
           </div>
@@ -278,39 +279,39 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
 
         <div className="ws-compose">
           <form className="composer" onSubmit={(e) => { e.preventDefault(); submit(); }}>
-            <label htmlFor="ws-input" className="sr-only">رسالتك</label>
-            <textarea id="ws-input" ref={taRef} rows={1} value={draft} maxLength={12000} placeholder="اكتب متابعتك أو سؤالك التالي…"
+            <label htmlFor="ws-input" className="sr-only">{t("رسالتك", "Your message")}</label>
+            <textarea id="ws-input" ref={taRef} rows={1} value={draft} maxLength={12000} placeholder={t("اكتب متابعتك أو سؤالك التالي…", "Write your follow-up or next question…")}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && window.matchMedia("(pointer: fine)").matches) { e.preventDefault(); submit(); } }} />
             <div className="composer-bar">
-              <span className="t-caption grow">تحقق من الإجابات قبل الاعتماد عليها.</span>
+              <span className="t-caption grow">{t("تحقق من الإجابات قبل الاعتماد عليها.", "Check answers before relying on them.")}</span>
               {busy
-                ? <button type="button" className="btn btn-secondary btn-sm" onClick={() => abortRef.current?.abort()}><Icon name="stop" size={18} /> أوقف التوليد</button>
-                : <button type="submit" className="btn btn-primary btn-sm" disabled={!draft.trim()}><Icon name="send" size={18} /> أرسل</button>}
+                ? <button type="button" className="btn btn-secondary btn-sm" onClick={() => abortRef.current?.abort()}><Icon name="stop" size={18} /> {t("أوقف التوليد", "Stop generating")}</button>
+                : <button type="submit" className="btn btn-primary btn-sm" disabled={!draft.trim()}><Icon name="send" size={18} /> {t("أرسل", "Send")}</button>}
             </div>
           </form>
         </div>
       </section>
 
       {panel && wide && (
-        <aside className="ws-panel" aria-label="المراجعة النقدية">
-          <div className="dialog-head"><h2 className="t-h4">المراجعة النقدية</h2>
-            <button className="btn btn-ghost btn-icon btn-sm" aria-label="إغلاق اللوحة" onClick={() => setPanel(null)}><Icon name="close" /></button></div>
+        <aside className="ws-panel" aria-label={t("المراجعة النقدية", "Critical review")}>
+          <div className="dialog-head"><h2>{t("المراجعة النقدية", "Critical review")}</h2>
+            <button className="btn btn-ghost btn-icon btn-sm" aria-label={t("إغلاق اللوحة", "Close the panel")} onClick={() => setPanel(null)}><Icon name="close" /></button></div>
           {panelBody}
         </aside>
       )}
-      <Dialog open={!!panel && !wide} onClose={() => setPanel(null)} title="المراجعة النقدية" variant="sheet">{panelBody}</Dialog>
-      <Dialog open={sideOpen} onClose={() => setSideOpen(false)} title="سجل الاستشارات" variant="sheet-start">
+      <Dialog open={!!panel && !wide} onClose={() => setPanel(null)} title={t("المراجعة النقدية", "Critical review")} variant="sheet">{panelBody}</Dialog>
+      <Dialog open={sideOpen} onClose={() => setSideOpen(false)} title={t("سجل الاستشارات", "Consultation history")} variant="sheet-start">
         <div onClick={(e) => { if ((e.target as HTMLElement).closest("a")) setSideOpen(false); }}><HistoryList items={history} currentId={c.id} /></div>
       </Dialog>
-      <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} title="حذف الاستشارة">
-        <div className="dialog-body"><p>ستُحذف هذه الاستشارة ورسائلها ومراجعاتها نهائيًا. لا يمكن التراجع.</p></div>
+      <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} title={t("حذف الاستشارة", "Delete the consultation")}>
+        <div className="dialog-body"><p>{t("ستُحذف هذه الاستشارة ورسائلها ومراجعاتها نهائيًا. لا يمكن التراجع.", "This consultation, its messages, and its reviews will be deleted permanently. This cannot be undone.")}</p></div>
         <div className="dialog-foot">
           <button className="btn btn-danger" onClick={async () => {
             const r = await api(`/api/consultations/${c.id}`, { method: "DELETE" });
-            if (r.ok) { toast("حُذفت الاستشارة."); router.push("/consult"); router.refresh(); } else toast(r.data.error ?? "تعذر الحذف.");
-          }}>احذف نهائيًا</button>
-          <button className="btn btn-secondary" onClick={() => setConfirmDelete(false)}>إلغاء</button>
+            if (r.ok) { toast(t("حُذفت الاستشارة.", "Consultation deleted.")); router.push("/consult"); router.refresh(); } else toast(r.data.error ?? t("تعذر الحذف.", "Could not delete."));
+          }}>{t("احذف نهائيًا", "Delete permanently")}</button>
+          <button className="btn btn-secondary" onClick={() => setConfirmDelete(false)}>{t("إلغاء", "Cancel")}</button>
         </div>
       </Dialog>
     </div>

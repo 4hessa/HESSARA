@@ -6,6 +6,7 @@ import { all, get, run, type ConsultRow, type MessageRow } from "@/lib/db";
 import { authed, fail, LIMITS, rateLimit, readJson, str } from "@/lib/http";
 import { recordCheck, resolveModel } from "@/lib/providers";
 import { ProviderError } from "@/lib/providers/types";
+import { langOf, makeT } from "@/lib/i18n";
 
 export const maxDuration = 300; // ثوانٍ: أقصى مدة للدالة على الاستضافة عديمة الحالة
 
@@ -17,19 +18,21 @@ const inflight = (g.__hessaraStreams ??= new Map());
 const MAX_GENERATION_MS = 5 * 60_000; // سقف زمني حتى لا يحتجز مزوّد معلّق الاتصال إلى ما لا نهاية
 
 export const POST = authed<Ctx>(async (req, user, ctx) => {
+  const lang = langOf(req);
+  const t = makeT(lang);
   const { id } = await ctx.params;
   const c = await get<ConsultRow>("SELECT * FROM consultations WHERE id = ? AND user_id = ?", id, user.id);
-  if (!c) return fail(404, "الاستشارة غير موجودة.");
-  if (!rateLimit(`msg:${user.id}`, 30, 60_000)) return fail(429, "طلبات كثيرة خلال دقيقة. انتظر قليلًا.");
+  if (!c) return fail(404, t("الاستشارة غير موجودة.", "Consultation not found."));
+  if (!rateLimit(`msg:${user.id}`, 30, 60_000)) return fail(429, t("طلبات كثيرة خلال دقيقة. انتظر قليلًا.", "Too many requests in a minute. Wait a little."));
 
-  if ((inflight.get(user.id) ?? 0) >= MAX_CONCURRENT) return fail(429, "لديك إجابات قيد التوليد. انتظر اكتمالها أو أوقفها.");
+  if ((inflight.get(user.id) ?? 0) >= MAX_CONCURRENT) return fail(429, t("لديك إجابات قيد التوليد. انتظر اكتمالها أو أوقفها.", "You have answers being generated. Wait for them to finish, or stop them."));
 
   const b = await readJson(req);
   const retry = b?.retry === true;
   const model = resolveModel(c.model_id);
-  if (!model) return fail(409, "النموذج المختار لهذه الاستشارة لم يعد متاحًا. اختر نموذجًا آخر.");
+  if (!model) return fail(409, t("النموذج المختار لهذه الاستشارة لم يعد متاحًا. اختر نموذجًا آخر.", "The model chosen for this consultation is no longer available. Choose another model."));
   if (model.def.adapter !== "demo" && !user.external_consent)
-    return Response.json({ error: "يلزم موافقتك على إرسال نص الاستشارة إلى مزوّد خارجي.", code: "consent" }, { status: 412 });
+    return Response.json({ error: t("يلزم موافقتك على إرسال نص الاستشارة إلى مزوّد خارجي.", "Your consent is needed to send the consultation text to an external provider."), code: "consent" }, { status: 412 });
 
   const now = Date.now();
   let userMsgId: string | null = null;
@@ -38,7 +41,7 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
     if (last?.role === "assistant") await run("DELETE FROM messages WHERE id = ?", last.id);
   } else {
     const text = str(b?.text, LIMITS.message);
-    if (!text) return fail(400, `اكتب رسالتك (حتى ${LIMITS.message} حرف).`);
+    if (!text) return fail(400, t(`اكتب رسالتك (حتى ${LIMITS.message} حرف).`, `Write your message (up to ${LIMITS.message} characters).`));
     userMsgId = newId();
     await run("INSERT INTO messages (id, consultation_id, role, content, created_at) VALUES (?,?,?,?,?)", userMsgId, c.id, "user", text, now);
   }
@@ -49,7 +52,7 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
     c.id, MAX_HISTORY,
   )).filter((m) => m.content.trim());
   while (history.length && history[0].role !== "user") history.shift();
-  if (!history.length || history[history.length - 1].role !== "user") return fail(400, "لا توجد رسالة للإجابة عنها.");
+  if (!history.length || history[history.length - 1].role !== "user") return fail(400, t("لا توجد رسالة للإجابة عنها.", "There is no message to answer."));
 
   const assistantId = newId();
   const enc = new TextEncoder();
@@ -81,13 +84,13 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
         await run("INSERT INTO messages (id, consultation_id, role, content, model_id, engine, status, created_at) VALUES (?,?,?,?,?,?,?,?)",
           assistantId, c.id, "assistant", text, c.model_id, model.def.adapter === "demo" ? "demo" : "llm", status, Date.now());
         await run("INSERT INTO actions (id, user_id, consultation_id, kind, detail, created_at) VALUES (?,?,?,?,?,?)",
-          newId(), user.id, c.id, "model_call", `استدعاء ${model.def.name}${c.agent_id ? ` عبر الوكيل ${c.agent_id}` : ""} — ${status}`, Date.now());
+          newId(), user.id, c.id, "model_call", JSON.stringify({ model: model.def.id, agent: c.agent_id, status }), Date.now());
       };
       send({ t: "start", id: assistantId, userMessageId: userMsgId, modelId: c.model_id });
       try {
         for await (const chunk of model.adapter.stream({
           model: model.apiModel,
-          system: systemPrompt(c.agent_id),
+          system: systemPrompt(c.agent_id, lang),
           messages: history.map((m) => ({ role: m.role, content: m.content })),
           signal: AbortSignal.any([abort.signal, timeout]),
         })) {
@@ -98,8 +101,8 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
         else if (timeout.aborted) {
           // بلوغ السقف الزمني ليس اكتمالًا: تُحفظ الإجابة ناقصة ويُبلَّغ المستخدم.
           await save("stopped");
-          send({ t: "error", message: "تجاوز التوليد المدة القصوى فأُوقف. الإجابة المحفوظة غير مكتملة.", partial: !!text.trim(), id: assistantId });
-        } else if (!text.trim()) send({ t: "error", message: "أعاد النموذج ردًا فارغًا. أعد المحاولة." });
+          send({ t: "error", message: t("تجاوز التوليد المدة القصوى فأُوقف. الإجابة المحفوظة غير مكتملة.", "Generation exceeded the maximum time and was stopped. The saved answer is incomplete."), partial: !!text.trim(), id: assistantId });
+        } else if (!text.trim()) send({ t: "error", message: t("أعاد النموذج ردًا فارغًا. أعد المحاولة.", "The model returned an empty reply. Try again.") });
         else {
           await save("complete");
           if (model.def.adapter !== "demo") recordCheck(c.model_id, true);
@@ -108,10 +111,10 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
       } catch (e) {
         if (abort.signal.aborted) await save("stopped");
         else {
-          const message = e instanceof ProviderError ? e.message : "حدث خطأ غير متوقع أثناء توليد الإجابة.";
+          const message = e instanceof ProviderError ? e.text(lang) : t("حدث خطأ غير متوقع أثناء توليد الإجابة.", "An unexpected error occurred while generating the answer.");
           if (!(e instanceof ProviderError)) console.error("[consult] stream error", (e as Error).name);
           // الامتناع وحد المعدل والبتر لا تعني أن الاتصال بالنموذج معطّل.
-          else if (e.kind !== "refused" && e.kind !== "rate_limit" && e.kind !== "truncated") recordCheck(c.model_id, false, e.message);
+          else if (e.kind !== "refused" && e.kind !== "rate_limit" && e.kind !== "truncated") recordCheck(c.model_id, false, { ar: e.message, en: e.en });
           await save("stopped");
           send({ t: "error", message, partial: !!text.trim(), id: assistantId });
         }

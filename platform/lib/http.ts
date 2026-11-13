@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "./auth";
 import type { UserRow } from "./db";
+import { tOf } from "./i18n";
 
 export const LIMITS = {
   message: 12_000, // أحرف لكل رسالة
@@ -52,9 +53,10 @@ type Handler<C> = (req: Request, user: UserRow, ctx: C) => Promise<Response> | R
 /** يغلّف المعالج: يرفض الأصل المخالف ويشترط جلسة صالحة. */
 export function authed<C = unknown>(handler: Handler<C>) {
   return async (req: Request, ctx: C) => {
-    if (req.method !== "GET" && !sameOrigin(req)) return fail(403, "مصدر الطلب غير مسموح.");
+    const t = tOf(req);
+    if (req.method !== "GET" && !sameOrigin(req)) return fail(403, t("مصدر الطلب غير مسموح.", "Request origin not allowed."));
     const user = await currentUser();
-    if (!user) return fail(401, "يلزم تسجيل الدخول.");
+    if (!user) return fail(401, t("يلزم تسجيل الدخول.", "You need to sign in."));
     return handler(req, user, ctx);
   };
 }

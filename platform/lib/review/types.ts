@@ -60,4 +60,46 @@ export const REVIEW_MODES: ReviewMode[] = [
   },
 ];
 
-export const modeById = (id: string) => REVIEW_MODES.find((m) => m.id === id);
+/** النسخة الإنجليزية: المعرّفات نفسها، والأسماء والمعايير مترجمة. */
+export const REVIEW_MODES_EN: ReviewMode[] = [
+  {
+    id: "technical",
+    name: "Technical critic",
+    short: "Errors, weak assumptions, and engineering problems.",
+    criteria: ["Is the problem measured before a solution is proposed?", "Is there a way to verify the result?", "Are assumptions and missing information stated?", "Is it free of unjustified absolute claims?", "Does any code shown handle error cases?"],
+  },
+  {
+    id: "evidence",
+    name: "Evidence checker",
+    short: "Are the claims supported by what is actually shown?",
+    criteria: ["Does every figure or percentage have a source or a method of measurement?", "Are claims attributed to sources that can be consulted?", "Is fact separated from inference?", "Is what has not been verified stated?"],
+  },
+  {
+    id: "risk",
+    name: "Risk analyst",
+    short: "Possible failures, their impact, and rollback plans.",
+    criteria: ["Are the risks stated explicitly?", "Is there a rollback plan or a backup?", "Is there monitoring that would reveal a failure?", "Is the change rolled out gradually?", "Are data and secrets taken into account?"],
+  },
+  {
+    id: "logic",
+    name: "Logic reviewer",
+    short: "Contradictions and unjustified conclusions.",
+    criteria: ["Is it free of absolute generalisations?", "Are conclusions preceded by their premises?", "Are alternatives or other explanations presented?", "Is it free of the single-cause fallacy?"],
+  },
+  {
+    id: "feasibility",
+    name: "Delivery reviewer",
+    short: "Whether the plan can be carried out: requirements, resources, steps.",
+    criteria: ["Are the steps numbered and ordered?", "Are prerequisites and dependencies stated?", "Are resources, duration, or an owner set?", "Does every phase have an acceptance criterion?", "Is what will be postponed identified?"],
+  },
+  {
+    id: "judge",
+    name: "Structured judge",
+    short: "A verdict for each criterion you write: met, not met, or undecided.",
+    criteria: [],
+    needsCriteria: true,
+  },
+];
+
+export const modesFor = (lang: "ar" | "en" = "ar") => (lang === "en" ? REVIEW_MODES_EN : REVIEW_MODES);
+export const modeById = (id: string, lang: "ar" | "en" = "ar") => modesFor(lang).find((m) => m.id === id);

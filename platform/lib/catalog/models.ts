@@ -8,7 +8,7 @@ export type ModelDef = {
   vendor: string; // الجهة المطوّرة
   vendorKey: "hessara" | "anthropic" | "openai" | "google" | "meta" | "alibaba" | "deepseek" | "local";
   adapter: "demo" | "anthropic" | "openai" | "gemini";
-  category: "تجريبي" | "سحابي" | "محلي";
+  category: string; // قيمة عرض بلغة الواجهة: تجريبي / سحابي / محلي
   description: string;
   tasks: string[];
   inputs: string; // ما تدعمه هسّارة فعليًا لهذا النموذج
@@ -162,6 +162,80 @@ export const MODELS: ModelDef[] = [
     note: "لا يحتاج مفتاحًا؛ يكفي ضبط العنوان واسم النموذج.",
   },
 ];
+
+/** النصوص الإنجليزية لكل نموذج؛ الحقول التقنية (المعرّفات والمتغيرات والروابط) مشتركة. */
+const TEXT_ONLY_EN = "Text only in this version of HESSARA (no files or images).";
+const CLAUDE_PRICING_NOTE_EN = "From the provider's price list as stored on 2026-11-03; check the official page before relying on it.";
+type ModelText = Pick<ModelDef, "description" | "tasks" | "inputs"> & Partial<Pick<ModelDef, "name" | "vendor" | "pricing" | "note">>;
+const EN: Record<string, ModelText> = {
+  "hessara-demo": {
+    name: "Demo engine",
+    vendor: "HESSARA",
+    description: "A local rule engine that runs without any service keys. It is not an AI model: it classifies the question by keywords and shows a fixed analytical template. Its purpose is to prove the whole path of use end to end.",
+    tasks: ["Trying the platform", "Showing the workflow"],
+    inputs: TEXT_ONLY_EN,
+    note: "Its answers are prepared templates, not language generation.",
+  },
+  "claude-opus-5-5": {
+    description: "The default model in the Opus class, for complex analysis, programming, and multi-step tasks.",
+    tasks: ["Complex analysis", "Programming", "Critical review"],
+    inputs: TEXT_ONLY_EN,
+    pricing: `US$4 input and US$20 output per million tokens. ${CLAUDE_PRICING_NOTE_EN}`,
+  },
+  "claude-sonnet-5-5": {
+    description: "A balance of speed and capability for everyday consultations and programming.",
+    tasks: ["Everyday consultations", "Programming", "Summaries"],
+    inputs: TEXT_ONLY_EN,
+    pricing: `US$2 input and US$10 output per million tokens. ${CLAUDE_PRICING_NOTE_EN}`,
+  },
+  "claude-haiku-5-5": {
+    description: "The fastest and least expensive in the family; suited to short questions and classification.",
+    tasks: ["Quick questions", "Classification", "Short reviews"],
+    inputs: TEXT_ONLY_EN,
+    pricing: `US$0.10 input and US$0.50 output per million tokens (up to 100k tokens per request). ${CLAUDE_PRICING_NOTE_EN}`,
+  },
+  gpt: {
+    description: "OpenAI's model family. The version used is set by the platform operator in the server settings; HESSARA does not assume one.",
+    tasks: ["General consultations", "Programming"],
+    inputs: TEXT_ONLY_EN,
+  },
+  gemini: {
+    description: "Google's model family. The version is set by the platform operator in the server settings.",
+    tasks: ["General consultations", "Analysis"],
+    inputs: TEXT_ONLY_EN,
+  },
+  deepseek: {
+    description: "DeepSeek models through an OpenAI-compatible interface. The version is set by the platform operator.",
+    tasks: ["Programming", "Reasoning"],
+    inputs: TEXT_ONLY_EN,
+  },
+  qwen: {
+    description: "Qwen models through a host that offers an OpenAI-compatible interface. The address and version are set by the platform operator.",
+    tasks: ["General consultations", "Programming"],
+    inputs: TEXT_ONLY_EN,
+  },
+  llama: {
+    description: "Open-weight Llama models at an external host with an OpenAI-compatible interface. The address and version are set by the platform operator.",
+    tasks: ["General consultations", "Experiments"],
+    inputs: TEXT_ONLY_EN,
+  },
+  local: {
+    name: "Local model",
+    vendor: "Platform server",
+    description: "A model running on the HESSARA server itself (such as Ollama). The connection is made from the server, not the browser, so it cannot reach a model on the user's own computer.",
+    tasks: ["More privacy", "Experiments with no per-request cost"],
+    inputs: TEXT_ONLY_EN,
+    note: "Needs no key; setting the address and model name is enough.",
+  },
+};
+const CATEGORY_EN: Record<string, string> = { "تجريبي": "Demo", "سحابي": "Cloud", "محلي": "Local" };
+
+/** نسخة النموذج بلغة الواجهة. الفئة تبقى قيمة عرض نصية لأن عوامل التصفية تقارن بها. */
+export function localizeModel(def: ModelDef, lang: "ar" | "en"): ModelDef {
+  if (lang === "ar") return def;
+  const en = EN[def.id];
+  return { ...def, ...en, category: CATEGORY_EN[def.category] ?? def.category };
+}
 
 export const modelById = (id: string | null | undefined) => MODELS.find((m) => m.id === id);
 export const DEMO_MODEL_ID = "hessara-demo";

@@ -26,10 +26,10 @@ async function* run(client: Anthropic, base: Base, withFallback: boolean, signal
   }
   const final = await stream.finalMessage();
   if (final.stop_reason === "refusal") {
-    throw new ProviderError("امتنع النموذج عن إكمال هذا الطلب وفق سياسات المزوّد.", "refused");
+    throw new ProviderError({ ar: "امتنع النموذج عن إكمال هذا الطلب وفق سياسات المزوّد.", en: "The model declined to complete this request under the provider's policies." }, "refused");
   }
   if (final.stop_reason === "max_tokens") {
-    throw new ProviderError("بلغت الإجابة الحد الأقصى للطول فتوقفت قبل اكتمالها.", "truncated");
+    throw new ProviderError({ ar: "بلغت الإجابة الحد الأقصى للطول فتوقفت قبل اكتمالها.", en: "The answer reached the maximum length and stopped before it was complete." }, "truncated");
   }
 }
 
@@ -61,23 +61,23 @@ export const anthropicAdapter: ProviderAdapter = {
       if (err instanceof ProviderError) throw err;
       if (err instanceof Anthropic.APIUserAbortError) return;
       if (err instanceof Anthropic.AuthenticationError)
-        throw new ProviderError("مفتاح Anthropic غير صالح أو منتهي الصلاحية.", "auth");
+        throw new ProviderError({ ar: "مفتاح Anthropic غير صالح أو منتهي الصلاحية.", en: "The Anthropic key is invalid or has expired." }, "auth");
       if (err instanceof Anthropic.PermissionDeniedError)
-        throw new ProviderError("مفتاح Anthropic لا يملك صلاحية هذا النموذج أو مساحة العمل.", "auth");
+        throw new ProviderError({ ar: "مفتاح Anthropic لا يملك صلاحية هذا النموذج أو مساحة العمل.", en: "The Anthropic key has no access to this model or workspace." }, "auth");
       if (err instanceof Anthropic.RateLimitError)
-        throw new ProviderError("تجاوز الحساب حد الطلبات لدى المزوّد. حاول بعد قليل.", "rate_limit");
+        throw new ProviderError({ ar: "تجاوز الحساب حد الطلبات لدى المزوّد. حاول بعد قليل.", en: "The account has exceeded the provider's rate limit. Try again shortly." }, "rate_limit");
       if (err instanceof Anthropic.BadRequestError && /credit balance/i.test(err.message))
-        throw new ProviderError("رصيد حساب Anthropic لا يكفي. أضف رصيدًا من صفحة الفوترة في لوحة Claude.", "auth");
+        throw new ProviderError({ ar: "رصيد حساب Anthropic لا يكفي. أضف رصيدًا من صفحة الفوترة في لوحة Claude.", en: "The Anthropic account's credit balance is too low. Add credits from the billing page of the Claude Console." }, "auth");
       if (err instanceof Anthropic.BadRequestError && /workspace/i.test(err.message))
-        throw new ProviderError("مفتاح Anthropic غير مرتبط بمساحة عمل: اضبط ANTHROPIC_WORKSPACE_ID على الخادم، أو أنشئ مفتاحًا مرتبطًا بمساحة عمل.", "auth");
+        throw new ProviderError({ ar: "مفتاح Anthropic غير مرتبط بمساحة عمل: اضبط ANTHROPIC_WORKSPACE_ID على الخادم، أو أنشئ مفتاحًا مرتبطًا بمساحة عمل.", en: "The Anthropic key is not scoped to a workspace: set ANTHROPIC_WORKSPACE_ID on the server, or create a key scoped to a workspace." }, "auth");
       if (err instanceof Anthropic.NotFoundError)
-        throw new ProviderError("النموذج غير متاح لهذا الحساب، أو معرّفه غير صحيح.", "bad_request");
+        throw new ProviderError({ ar: "النموذج غير متاح لهذا الحساب، أو معرّفه غير صحيح.", en: "The model is not available to this account, or its identifier is wrong." }, "bad_request");
       if (err instanceof Anthropic.BadRequestError)
-        throw new ProviderError("رفض المزوّد الطلب (معرّف النموذج أو الصيغة).", "bad_request");
+        throw new ProviderError({ ar: "رفض المزوّد الطلب (معرّف النموذج أو الصيغة).", en: "The provider rejected the request (model identifier or format)." }, "bad_request");
       if (err instanceof Anthropic.APIConnectionError)
-        throw new ProviderError("تعذر الاتصال بخدمة المزوّد.", "network");
+        throw new ProviderError({ ar: "تعذر الاتصال بخدمة المزوّد.", en: "Could not connect to the provider's service." }, "network");
       if (err instanceof Anthropic.APIError)
-        throw new ProviderError("خدمة المزوّد غير متاحة مؤقتًا.", "unavailable");
+        throw new ProviderError({ ar: "خدمة المزوّد غير متاحة مؤقتًا.", en: "The provider's service is temporarily unavailable." }, "unavailable");
       throw err;
     }
   },

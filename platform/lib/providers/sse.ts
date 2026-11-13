@@ -20,10 +20,10 @@ export async function* sseData(res: Response): AsyncIterable<string> {
 }
 
 export function httpError(status: number): ProviderError {
-  if (status === 401 || status === 403) return new ProviderError("مفتاح الخدمة غير صالح أو بلا صلاحية.", "auth");
-  if (status === 429) return new ProviderError("تجاوز الحساب حد الطلبات لدى المزوّد.", "rate_limit");
-  if (status === 400 || status === 404) return new ProviderError("رفض المزوّد الطلب (معرّف النموذج أو الصيغة).", "bad_request");
-  return new ProviderError("خدمة المزوّد غير متاحة مؤقتًا.", "unavailable");
+  if (status === 401 || status === 403) return new ProviderError({ ar: "مفتاح الخدمة غير صالح أو بلا صلاحية.", en: "The service key is invalid or lacks permission." }, "auth");
+  if (status === 429) return new ProviderError({ ar: "تجاوز الحساب حد الطلبات لدى المزوّد.", en: "The account has exceeded the provider's rate limit." }, "rate_limit");
+  if (status === 400 || status === 404) return new ProviderError({ ar: "رفض المزوّد الطلب (معرّف النموذج أو الصيغة).", en: "The provider rejected the request (model identifier or format)." }, "bad_request");
+  return new ProviderError({ ar: "خدمة المزوّد غير متاحة مؤقتًا.", en: "The provider's service is temporarily unavailable." }, "unavailable");
 }
 
 export async function safeFetch(url: string, init: RequestInit): Promise<Response> {
@@ -31,6 +31,6 @@ export async function safeFetch(url: string, init: RequestInit): Promise<Respons
     return await fetch(url, init);
   } catch (e) {
     if ((e as Error).name === "AbortError") throw e;
-    throw new ProviderError("تعذر الاتصال بخدمة المزوّد.", "network");
+    throw new ProviderError({ ar: "تعذر الاتصال بخدمة المزوّد.", en: "Could not connect to the provider's service." }, "network");
   }
 }

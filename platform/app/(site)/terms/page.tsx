@@ -1,25 +1,14 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/Shell";
+import { PAGES } from "@/content/pages";
+import { ProsePage } from "@/components/site/ProsePage";
+import { getLang } from "@/lib/i18n-server";
 
-export const metadata: Metadata = { title: "شروط الاستخدام" };
+export async function generateMetadata(): Promise<Metadata> {
+  const d = PAGES.terms[await getLang()];
+  return { title: d.title, description: d.description };
+}
 
-const S: [string, string][] = [
-  ["طبيعة الخدمة", "هسّارة منصة استشارية تعليمية وبحثية ضمن مشروع تخرج جامعي. تُقدَّم كما هي دون ضمان توافر أو دقة."],
-  ["الإجابات المولَّدة", "بعض الإجابات تولّدها نماذج ذكاء اصطناعي وقد تكون خاطئة أو ناقصة أو قديمة. أنت مسؤول عن التحقق منها قبل الاعتماد عليها. المراجعة النقدية أداة مساعدة وليست إثباتًا للصحة."],
-  ["الاستشارات الحساسة", "لا تقدّم المنصة استشارات طبية أو قانونية أو مالية ملزمة، ولا تنتحل صفة مختص مرخّص. راجع مختصًا في هذه المسائل."],
-  ["الاستخدام المقبول", "لا تستخدم المنصة لإلحاق ضرر بالغير أو لاختراق أنظمة لا تملك تصريحًا بفحصها. لا تلصق أسرارًا أو بيانات شخصية لآخرين."],
-  ["العلامات والأسماء", "أسماء النماذج والشركات المذكورة ملك لأصحابها، وذكرها للتعريف فقط ولا يعني شراكة أو اعتمادًا رسميًا. لا تستخدم المنصة شعارات رسمية لأي مزوّد."],
-  ["المحتوى المرئي", "فيديوهات المكتبة روابط إلى مصادرها الأصلية على يوتيوب؛ لا تستضيفها المنصة ولا تعيد نشرها."],
-];
-
-export default function Terms() {
-  return (
-    <>
-      <div className="container page" style={{ maxWidth: 820 }}>
-        <div className="page-head"><h1 className="t-h2">شروط الاستخدام</h1></div>
-        <div className="stack">{S.map(([h, p]) => <section key={h} className="card"><h2 className="t-h4">{h}</h2><p className="muted">{p}</p></section>)}</div>
-      </div>
-      <Footer />
-    </>
-  );
+export default async function Page() {
+  const lang = await getLang();
+  return <ProsePage doc={PAGES.terms[lang]} lang={lang} />;
 }

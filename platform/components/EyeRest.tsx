@@ -17,7 +17,7 @@ const load = (): State => {
 const save = (s: State) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* تخزين غير متاح */ } };
 
 export function EyeRest() {
-  const { user } = useApp();
+  const { user, t } = useApp();
   const [show, setShow] = useState(false);
   const lastInput = useRef(Date.now());
   const lastKey = useRef(0);
@@ -59,20 +59,20 @@ export function EyeRest() {
     setShow(false);
   };
   return (
-    <aside className="eye-rest" role="status" aria-live="polite" aria-label="تذكير بالاستراحة">
+    <aside className="eye-rest" role="status" aria-live="polite" aria-label={t("تذكير بالاستراحة", "Break reminder")}>
       <div className="row" style={{ flexWrap: "nowrap", alignItems: "flex-start" }}>
         <span className="icon-tile"><Icon name="eye" /></span>
         <div className="grow">
-          <strong>وقت استراحة قصيرة</strong>
-          <p className="t-small muted">أرح عينيك قليلًا وانظر إلى شيء بعيد، ثم أكمل عندما تكون مستعدًا.</p>
+          <strong>{t("وقت استراحة قصيرة", "Time for a short break")}</strong>
+          <p className="t-small muted">{t("أرح عينيك قليلًا وانظر إلى شيء بعيد، ثم أكمل عندما تكون مستعدًا.", "Rest your eyes for a moment and look at something far away, then carry on when you are ready.")}</p>
         </div>
       </div>
       <div className="row">
-        <button className="btn btn-primary btn-sm" onClick={() => dismiss(0)}>سآخذ استراحة</button>
-        <button className="btn btn-secondary btn-sm" onClick={() => dismiss(5)}>ذكّرني بعد ٥ دقائق</button>
-        <button className="btn btn-ghost btn-sm" onClick={() => dismiss(15)}>بعد ١٥ دقيقة</button>
+        <button className="btn btn-primary btn-sm" onClick={() => dismiss(0)}>{t("سآخذ استراحة", "I'll take a break")}</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => dismiss(5)}>{t("ذكّرني بعد ٥ دقائق", "Remind me in 5 minutes")}</button>
+        <button className="btn btn-ghost btn-sm" onClick={() => dismiss(15)}>{t("بعد ١٥ دقيقة", "In 15 minutes")}</button>
       </div>
-      <p className="t-caption">يمكن تعطيل التذكير من الملف الشخصي.</p>
+      <p className="t-caption">{t("يمكن تعطيل التذكير من الملف الشخصي.", "You can turn the reminder off in your profile.")}</p>
     </aside>
   );
 }

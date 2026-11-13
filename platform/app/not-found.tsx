@@ -1,13 +1,17 @@
-import Link from "next/link";
-import { Logo } from "@/components/bits";
+// للعناوين التي لا تطابق أي مسار: تُعرض خارج تخطيط (site) فتحتاج الشريط والهيكل بنفسها.
+import { Nav } from "@/components/site/Nav";
+import { NotFoundView } from "@/components/site/NotFoundView";
+import { getLang } from "@/lib/i18n-server";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const lang = await getLang();
   return (
-    <main className="container" style={{ minHeight: "100dvh", display: "grid", placeContent: "center", justifyItems: "center", gap: 24, textAlign: "center" }}>
-      <Logo large />
-      <h1 className="t-h2">الصفحة غير موجودة</h1>
-      <p className="muted">ربما حُذفت الاستشارة أو أن الرابط غير صحيح.</p>
-      <Link className="btn btn-primary" href="/">العودة إلى الرئيسية</Link>
-    </main>
+    <>
+      <a className="skip" href="#main">{lang === "ar" ? "تخطَّ إلى المحتوى" : "Skip to content"}</a>
+      <div className="page">
+        <Nav />
+        <main id="main"><NotFoundView lang={lang} /></main>
+      </div>
+    </>
   );
 }

@@ -13,7 +13,7 @@ export const pendingKey = (id: string) => `hs_pending:${id}`;
 export function QuickConsult({ examples, initialAgent, initialModel, initialText, autoFocus, restoreDraft }: {
   examples?: string[]; initialAgent?: string | null; initialModel?: string | null; initialText?: string; autoFocus?: boolean; restoreDraft?: boolean;
 }) {
-  const { user, models } = useApp();
+  const { user, models, t } = useApp();
   const router = useRouter();
   const [text, setText] = useState(initialText ?? "");
   const [advisor, setAdvisor] = useState<Advisor>({ modelId: defaultModel(models, initialModel ?? user?.prefModel), agentId: initialAgent ?? user?.prefAgent ?? null });
@@ -50,7 +50,7 @@ export function QuickConsult({ examples, initialAgent, initialModel, initialText
     }
     setBusy(true);
     const r = await api<{ id: string }>("/api/consultations", { body: { text: value, ...advisor } });
-    if (!r.ok) { setBusy(false); setError(r.data.error ?? "تعذر بدء الاستشارة."); return; }
+    if (!r.ok) { setBusy(false); setError(r.data.error ?? t("تعذر بدء الاستشارة.", "Could not start the consultation.")); return; }
     try { sessionStorage.setItem(pendingKey(r.data.id), value); } catch { /* سيُطلب من المستخدم إعادة الإرسال */ }
     router.push(`/consult/${r.data.id}`);
   }
@@ -58,9 +58,9 @@ export function QuickConsult({ examples, initialAgent, initialModel, initialText
   return (
     <div className="stack-sm">
       <form className="composer" onSubmit={(e) => { e.preventDefault(); submit(); }}>
-        <label htmlFor="quick-consult" className="sr-only">نص الاستشارة</label>
+        <label htmlFor="quick-consult" className="sr-only">{t("نص الاستشارة", "Consultation text")}</label>
         <textarea id="quick-consult" ref={ta} value={text} autoFocus={autoFocus} maxLength={12000} rows={2}
-          placeholder="اشرح المشكلة التي تواجهك، وسنساعدك في تحليلها..."
+          placeholder={t("اشرح المشكلة التي تواجهك، وسنساعدك في تحليلها...", "Describe the problem you are facing, and we will help you analyse it...")}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); submit(); } }}
           aria-describedby="quick-consult-hint" />
@@ -69,18 +69,18 @@ export function QuickConsult({ examples, initialAgent, initialModel, initialText
           <span className="grow" />
           <button type="submit" className="btn btn-primary btn-sm" disabled={!text.trim() || busy}>
             {busy ? <span className="spinner" /> : <Icon name="send" size={18} />}
-            {busy ? "جارٍ البدء…" : "أرسل"}
+            {busy ? t("جارٍ البدء…", "Starting…") : t("أرسل", "Send")}
           </button>
         </div>
       </form>
       {error && <p className="field-error" role="alert"><Icon name="alert" size={16} /> {error}</p>}
       <p id="quick-consult-hint" className="t-caption">
         {user
-          ? <>اضغط <kbd className="ltr">Ctrl + Enter</kbd> للإرسال. إرفاق الملفات غير متاح في هذه النسخة.</>
-          : "ستُطلب منك خطوة تسجيل الدخول، ويُحفظ نصك مؤقتًا في متصفحك فقط حتى تكملها."}
+          ? <>{t("اضغط", "Press")} <kbd className="ltr">Ctrl + Enter</kbd> {t("للإرسال. إرفاق الملفات غير متاح في هذه النسخة.", "to send. Attaching files is not available in this version.")}</>
+          : t("ستُطلب منك خطوة تسجيل الدخول، ويُحفظ نصك مؤقتًا في متصفحك فقط حتى تكملها.", "You will be asked to sign in; your text is kept temporarily in your browser only until you do.")}
       </p>
       {examples && examples.length > 0 && (
-        <div className="chips" aria-label="أمثلة">
+        <div className="chips" aria-label={t("أمثلة", "Examples")}>
           {examples.map((ex) => (
             <button key={ex} type="button" className="chip" onClick={() => { setText(ex); ta.current?.focus(); }}>{ex}</button>
           ))}

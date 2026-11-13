@@ -91,7 +91,7 @@ try {
   // ── اختبار الاتصال من صفحة النماذج ──
   await page.goto(BASE + "/models");
   const opus = page.locator("article#claude-opus-5-5");
-  check("Claude Opus 5.5 مهيّأ ولم يُختبر بعد", (await opus.locator(".badge").first().innerText()).includes("مهيّأ"));
+  check("Claude Opus 5.5 مهيّأ ولم يُختبر بعد", (await opus.locator(".model-row__status .badge").innerText()).includes("مهيّأ"));
   await opus.getByRole("button", { name: "التفاصيل" }).click();
   await page.getByRole("button", { name: "اختبر الاتصال" }).click();
   await page.getByText("نجح اختبار الاتصال.").waitFor();
@@ -157,7 +157,7 @@ try {
   await page.getByRole("button", { name: "أعد التوليد" }).waitFor({ timeout: 30000 });
   check("إعادة المحاولة بعد الخطأ تنجح", (await page.locator(".msg-meta").count()) >= 3);
   await page.goto(BASE + "/models");
-  check("بعد نجاح إعادة المحاولة تعود حالة النموذج إلى «يعمل»", (await page.locator("article#claude-opus-5-5 .badge").first().innerText()).includes("يعمل"));
+  check("بعد نجاح إعادة المحاولة تعود حالة النموذج إلى «يعمل»", (await page.locator("article#claude-opus-5-5 .model-row__status .badge").innerText()).includes("يعمل"));
 
   // ── وكيل متخصص: تعليماته تصل إلى المزوّد ولا تصل إلى المتصفح ──
   await page.goto(BASE + "/consult/new?agent=coding");

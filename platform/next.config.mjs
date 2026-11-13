@@ -21,13 +21,16 @@ const csp = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  // لا يُنشئ «next dev» ملف AGENTS.md تلقائيًا داخل المشروع.
+  agentRules: false,
   serverExternalPackages: ["pg"],
   turbopack: { root },
   outputFileTracingRoot: root,
   async headers() {
     return [
       { source: "/fonts/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/brand/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=604800" }] },
+      // أسماء ملفات الرسومات ثابتة (بلا بصمة محتوى)، فلا تُعلَّم «غير قابلة للتغيير».
+      { source: "/art/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=604800" }] },
       {
         source: "/:path*",
         headers: [

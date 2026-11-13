@@ -1,25 +1,14 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/Shell";
+import { PAGES } from "@/content/pages";
+import { ProsePage } from "@/components/site/ProsePage";
+import { getLang } from "@/lib/i18n-server";
 
-export const metadata: Metadata = { title: "سياسة الخصوصية" };
+export async function generateMetadata(): Promise<Metadata> {
+  const d = PAGES.privacy[await getLang()];
+  return { title: d.title, description: d.description };
+}
 
-const S: [string, string[]][] = [
-  ["ما نجمعه", ["الاسم والبريد الإلكتروني وكلمة مرور مجزّأة (لا تُخزَّن كلمة المرور نفسها).", "نصوص استشاراتك وإجاباتها والمراجعات والمفضلات والتفضيلات.", "لا نجمع بيانات موقع، ولا نستخدم أدوات تتبّع أو إعلانات."]],
-  ["أين تُخزَّن", ["في قاعدة بيانات المنصة على خادمها. محادثات كل حساب معزولة عن غيره ولا يصل إليها إلا صاحبها بعد تسجيل الدخول."]],
-  ["الإرسال إلى جهات خارجية", ["عند اختيار نموذج تشغّله جهة خارجية يُرسَل نص الاستشارة وسجل محادثتها إلى مزوّد ذلك النموذج لمعالجته وفق سياساته. يُطلب إذنك الصريح قبل أول إرسال، ويمكنك سحبه من الملف الشخصي.", "المحرك التجريبي والمراجع القاعدي يعملان على خادم المنصة ولا يرسلان شيئًا إلى الخارج.", "الصور المصغّرة للفيديوهات تُحمَّل من خوادم يوتيوب مباشرة عند فتح صفحات المكتبة."]],
-  ["ملفات الارتباط والتخزين المحلي", ["ملف ارتباط واحد للجلسة (لا يقرؤه JavaScript) وآخر لتفضيل المظهر.", "تخزين المتصفح المحلي يُستخدم لمؤقت تذكير الاستراحة ولحفظ مسودة استشارتك مؤقتًا أثناء تسجيل الدخول."]],
-  ["حقوقك", ["حذف أي استشارة منفردة، أو حذف الحساب وكل بياناته نهائيًا من الملف الشخصي.", "تصدير أي استشارة ملفًا نصيًا من أعلى المحادثة."]],
-  ["حدود هذه السياسة", ["هسّارة مشروع تخرج جامعي. هذه السياسة تصف ما ينفّذه النظام فعلًا، وليست وثيقة قانونية مراجَعة من مختص."]],
-];
-
-export default function Privacy() {
-  return (
-    <>
-      <div className="container page" style={{ maxWidth: 820 }}>
-        <div className="page-head"><h1 className="t-h2">سياسة الخصوصية</h1></div>
-        <div className="stack">{S.map(([h, items]) => <section key={h} className="card"><h2 className="t-h4">{h}</h2><ul className="muted" style={{ listStyle: "disc", paddingInlineStart: 24, display: "grid", gap: 6 }}>{items.map((i) => <li key={i}>{i}</li>)}</ul></section>)}</div>
-      </div>
-      <Footer />
-    </>
-  );
+export default async function Page() {
+  const lang = await getLang();
+  return <ProsePage doc={PAGES.privacy[lang]} lang={lang} />;
 }

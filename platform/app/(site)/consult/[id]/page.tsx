@@ -3,8 +3,12 @@ import { notFound } from "next/navigation";
 import { Workspace } from "@/components/Workspace";
 import { all, get, type ConsultRow, type MessageRow } from "@/lib/db";
 import { requireUser } from "@/lib/guard";
+import { getT } from "@/lib/i18n-server";
 
-export const metadata: Metadata = { title: "استشارة" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t("استشارة", "Consultation") };
+}
 
 export default async function ConsultPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

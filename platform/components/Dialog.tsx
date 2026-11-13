@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useT } from "./app";
 import { Icon } from "./Icon";
 
 // نافذة حوارية مبنية على <dialog> الأصلي: حبس التركيز وزر الهروب يوفرهما المتصفح.
@@ -8,6 +9,7 @@ export function Dialog({ open, onClose, title, children, variant }: {
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const id = useId();
+  const t = useT();
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
@@ -17,7 +19,7 @@ export function Dialog({ open, onClose, title, children, variant }: {
   return (
     <dialog
       ref={ref}
-      className={`dialog${variant ? " sheet" : ""}${variant === "sheet-start" ? " start" : ""}`}
+      className={`dialog${variant ? " drawer" : ""}${variant === "sheet-start" ? " start" : ""}`}
       aria-labelledby={id}
       onCancel={(e) => { e.preventDefault(); onClose(); }}
       onClick={(e) => { if (e.target === ref.current) onClose(); }}
@@ -25,8 +27,8 @@ export function Dialog({ open, onClose, title, children, variant }: {
       {open && (
         <>
           <div className="dialog-head">
-            <h2 id={id} className="t-h4">{title}</h2>
-            <button className="btn btn-ghost btn-icon btn-sm" onClick={onClose} aria-label="إغلاق"><Icon name="close" /></button>
+            <h2 id={id}>{title}</h2>
+            <button className="btn btn-ghost btn-icon btn-sm" onClick={onClose} aria-label={t("إغلاق", "Close")}><Icon name="close" /></button>
           </div>
           {children}
         </>

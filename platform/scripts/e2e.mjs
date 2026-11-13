@@ -51,23 +51,36 @@ try {
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 
-  // ── ١. الزائر: الصفحة التعريفية ──
+  // ── ١. الزائر: الصفحة الرئيسية بتصميم الموقع المرجعي ──
   await page.goto(BASE + "/");
-  check("الصفحة التعريفية تعرض العنوان الرئيسي", await page.getByRole("heading", { level: 1 }).innerText().then((t) => t.includes("مستشارك الذكي")));
+  check("الصفحة الرئيسية تعرض العنوان الرئيسي", await page.getByRole("heading", { level: 1 }).innerText().then((t) => t.includes("ذكاءٌ يُرشِد")));
+  check("الواجهة العربية من اليمين", await page.evaluate(() => document.documentElement.dir === "rtl" && document.documentElement.lang === "ar"));
+  check("رسمة الرأس محمّلة", await page.locator(".art img").evaluate((img) => img.complete && img.naturalWidth > 0));
   await shot(page, "01-landing-light-desktop", true);
-  await axe(page, "الصفحة التعريفية (فاتح)");
-  await noOverflow(page, "التعريفية/حاسب");
+  await axe(page, "الصفحة الرئيسية (فاتح)");
+  await noOverflow(page, "الرئيسية/حاسب");
 
-  // معاينة حية
+  // الصفحات التعريفية والمقالات بالعربية
+  for (const [p, n] of [["/platform", "platform"], ["/models", "models"], ["/consulting", "consulting"], ["/insights", "insights"], ["/insights/multi-agent-deliberation", "insight-article"], ["/resources", "resources"], ["/resources/security", "resource-doc"], ["/about", "about"], ["/careers", "careers"], ["/programs", "programs"], ["/contact", "contact"], ["/privacy", "privacy"], ["/terms", "terms"], ["/help", "help"]]) {
+    const r = await page.goto(BASE + p);
+    check(`صفحة ${n} تعمل (200)`, r?.status() === 200);
+    await noOverflow(page, `${n}/حاسب`);
+    if (["platform", "consulting", "insight-article", "resources", "privacy"].includes(n)) await axe(page, `${n} (عربي)`);
+    if (n === "consulting") await shot(page, "01b-consulting-ar", true);
+  }
+  const nf = await page.goto(BASE + "/no-such-page");
+  check("صفحة غير موجودة تعرض 404 بتصميم الموقع", nf?.status() === 404 && (await page.locator("h1").innerText()).includes("لا يقود"));
+
+  // معاينة حية (المحرك التجريبي والمراجع القاعدي دون حساب) في صفحة الاستشارات
+  await page.goto(BASE + "/consulting");
   await page.getByRole("button", { name: "أرسل السؤال" }).click();
   await page.getByRole("button", { name: /شغّل مراجعة/ }).click({ timeout: 20000 });
   await page.getByText("المراجع القاعدي").first().waitFor();
   check("المعاينة الحية: رد ثم مراجعة", true);
 
-  // ── ٢. استشارة الزائر تُحفظ خلال تسجيل الدخول ──
+  // ── ٢. الزائر يبدأ استشارة فيُطلب منه الدخول ثم يعود إلى المسار ──
   const Q = "لدي تطبيق يعتمد على نموذج لغوي، لكن استجابته بطيئة. أريد معرفة السبب وتحسين الأداء.";
-  await page.locator("#quick-consult").fill(Q);
-  await page.locator("#start").getByRole("button", { name: "أرسل" }).click();
+  await page.locator(".cta").getByRole("link", { name: "ابدأ استشارة" }).click();
   await page.waitForURL(/\/login\?next=/);
   await shot(page, "02-login-light-desktop");
   await axe(page, "تسجيل الدخول");
@@ -83,8 +96,8 @@ try {
   await shot(page, "03-signup-light-desktop");
   await page.getByRole("button", { name: "أنشئ الحساب" }).click();
   await page.waitForURL(/\/consult\/new/);
-  await page.waitForFunction((q) => document.querySelector("#quick-consult")?.value === q, Q);
-  check("نص الاستشارة استُعيد بعد إنشاء الحساب", true);
+  check("بعد إنشاء الحساب يعود المستخدم إلى بدء الاستشارة", true);
+  await page.locator("#quick-consult").fill(Q);
 
   // ── ٣. الاستشارة ──
   await page.locator("form.composer").getByRole("button", { name: "أرسل" }).click();
@@ -108,8 +121,8 @@ try {
   await page.getByRole("button", { name: "حفظ الاستشارة" }).click();
   await page.getByRole("button", { name: "إزالة من المحفوظات" }).waitFor();
   await page.getByRole("button", { name: "اجعله نموذجي المفضل" }).click();
-  await page.locator(".account-model").waitFor();
-  check("النموذج المفضل يظهر بجانب اسم المستخدم", await page.locator(".account-btn").innerText().then((t) => t.includes("أحمد") && t.includes("المحرك التجريبي")));
+  await page.locator(".account__model").waitFor();
+  check("النموذج المفضل يظهر بجانب اسم المستخدم", await page.locator(".account__btn").innerText().then((t) => t.includes("أحمد") && t.includes("المحرك التجريبي")));
 
   // إيقاف التوليد + إعادة التوليد
   await page.locator("#ws-input").fill("خطة مشروع تخرج من ثمانية أسابيع: ما المراحل والمتطلبات والمخاطر وكيف أقسّم العمل على الفريق خلال المدة المحددة مع معايير قبول واضحة لكل مرحلة؟ " .repeat(2));
@@ -220,14 +233,21 @@ try {
       await mp.getByRole("button", { name: "مراجعة نقدية" }).first().click();
       await mp.locator("dialog[open]").waitFor(); await shot(mp, "32-consult-review-mobile");
       await axe(mp, "الاستشارة/هاتف");
-      const small = await mp.evaluate(() => [...document.querySelectorAll(".tabbar a")].map((a) => a.getBoundingClientRect()).filter((r) => r.width && (r.width < 44 || r.height < 44)).length);
-      check("الهاتف: أهداف اللمس في شريط التنقل ≥ ٤٤ بكسل", small === 0);
+      const small = await mp.evaluate(() => [...document.querySelectorAll(".nav a, .nav summary, .nav button")].map((a) => a.getBoundingClientRect()).filter((r) => r.width && (r.width < 24 || r.height < 24)).length);
+      check("الهاتف: أهداف اللمس في شريط التنقل ≥ ٢٤ بكسل (WCAG 2.5.8)", small === 0);
+      await mp.keyboard.press("Escape");
+      await mp.locator("dialog[open]").waitFor({ state: "detached" }).catch(() => {});
+      await mp.locator(".menu summary").click();
+      await mp.locator(".menu__panel").waitFor();
+      check("الهاتف: قائمة التنقل تُفتح وتحوي أقسام المنصة وزر اللغة", await mp.locator(".menu__panel").innerText().then((t) => t.includes("الاستشارات") && t.includes("English")));
+      await shot(mp, "33-nav-menu-mobile");
     }
     await m.close();
   }
   // الزائر على الهاتف (فاتح وداكن)
   for (const scheme of ["light", "dark"]) {
     const g = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "ar", colorScheme: scheme });
+    if (scheme === "dark") await g.addCookies([{ name: "hs_theme", value: "dark", url: BASE }]); // الداكن اختيار صريح لا يتبع النظام
     const gp = await g.newPage();
     await gp.goto(BASE + "/"); await noOverflow(gp, `التعريفية/هاتف/${scheme}`); await shot(gp, `40-landing-${scheme}-mobile`, true);
     if (scheme === "dark") { await axe(gp, "التعريفية (داكن، هاتف)"); await gp.setViewportSize({ width: 1366, height: 860 }); await shot(gp, "41-landing-dark-desktop", true); await gp.goto(BASE + "/login"); await shot(gp, "42-login-dark-desktop"); await axe(gp, "الدخول (داكن)"); }
@@ -236,6 +256,37 @@ try {
     if (scheme === "light") { await gp.goto(BASE + "/"); await gp.evaluate(() => (document.documentElement.style.fontSize = "200%")); await noOverflow(gp, "التعريفية/هاتف/نص ٢٠٠٪"); }
     await g.close();
   }
+
+  // ── اللغة الإنجليزية: زر التبديل، والمسار نفسه بالإنجليزية ──
+  await page.goto(BASE + "/home");
+  await page.locator(".nav__end .lang").click();
+  await page.waitForFunction(() => document.documentElement.lang === "en" && document.documentElement.dir === "ltr");
+  await page.locator("h1").filter({ hasText: "Welcome, أحمد" }).waitFor();
+  check("زر اللغة يبدّل الواجهة إلى الإنجليزية من اليسار", true);
+  check("تفضيل اللغة محفوظ في ملف ارتباط", (await ctx.cookies()).some((c) => c.name === "hs_lang" && c.value === "en"));
+  await page.locator("#quick-consult").fill("My graduation project plan: eight weeks, two people. What phases and acceptance criteria should it have?");
+  await page.locator("form.composer").getByRole("button", { name: "Send" }).click();
+  await page.waitForURL(/\/consult\/[\w-]{8,}$/);
+  await page.getByRole("button", { name: "Regenerate" }).waitFor({ timeout: 30000 });
+  check("الإنجليزية: المحرك التجريبي يجيب بالإنجليزية", await page.locator(".ws-thread").innerText().then((t) => t.includes("Suggested phases") && t.includes("Demo template — not AI")));
+  await page.getByRole("button", { name: "Critical review" }).first().click();
+  await page.getByRole("button", { name: "Run the review" }).click();
+  await page.locator(".finding, .ws-panel .notice").first().waitFor();
+  check("الإنجليزية: المراجعة النقدية بالإنجليزية", await page.locator(".ws-panel").innerText().then((t) => t.includes("Rule-based reviewer") && !/[\u0600-\u06FF]{3}/.test(t.replace(/أحمد/g, ""))));
+  await shot(page, "50-consult-review-en");
+  await axe(page, "الاستشارة (إنجليزي)");
+  for (const [p, n] of [["/", "home"], ["/models", "models"], ["/lab", "lab"], ["/agents", "agents"], ["/media", "media"], ["/profile", "profile"], ["/insights/citation-first-reasoning", "insight"], ["/resources/getting-started", "resource"]]) {
+    await page.goto(BASE + p);
+    await noOverflow(page, `${n}/en`);
+    await shot(page, `51-${n}-en`, true);
+    if (["models", "lab", "agents", "insight"].includes(n)) await axe(page, `${n} (إنجليزي)`);
+  }
+  const enErr = await ctx.request.post(BASE + "/api/consultations", { data: { text: "", modelId: "hessara-demo" } });
+  check("الإنجليزية: رسائل أخطاء الواجهة البرمجية بالإنجليزية", (await enErr.json()).error?.startsWith("Write the consultation text"));
+  await page.goto(BASE + "/profile");
+  await page.locator("#p-lang").selectOption("ar");
+  await page.waitForFunction(() => document.documentElement.lang === "ar" && document.documentElement.dir === "rtl");
+  check("العودة إلى العربية من الملف الشخصي", true);
 
   // ── ١٤. فحوص أمان ──
   const anon = await fetch(BASE + "/api/consultations");

@@ -1,13 +1,16 @@
-import { cookies } from "next/headers";
 import { EyeRest } from "@/components/EyeRest";
-import { Header } from "@/components/Shell";
+import { Nav } from "@/components/site/Nav";
+import { getT } from "@/lib/i18n-server";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const t = (await cookies()).get("hs_theme")?.value;
+  const t = await getT();
   return (
     <>
-      <Header theme={t === "dark" || t === "light" ? t : null} />
-      <main id="main" className="main">{children}</main>
+      <a className="skip" href="#main">{t("تخطَّ إلى المحتوى", "Skip to content")}</a>
+      <div className="page">
+        <Nav />
+        <main id="main">{children}</main>
+      </div>
       <EyeRest />
     </>
   );

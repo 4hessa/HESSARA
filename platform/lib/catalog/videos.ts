@@ -16,30 +16,33 @@ export type Video = {
   verifiedAt: string;
 };
 
-export const CATEGORIES: { id: string; name: string; target: number }[] = [
-  { id: "intro", name: "مدخل إلى الذكاء الاصطناعي", target: 25 },
-  { id: "math", name: "الرياضيات الأساسية للذكاء الاصطناعي", target: 15 },
-  { id: "programming", name: "البرمجة التطبيقية", target: 20 },
-  { id: "ml", name: "تعلم الآلة", target: 20 },
-  { id: "dl", name: "التعلم العميق", target: 20 },
-  { id: "llm", name: "النماذج اللغوية وتطويرها", target: 25 },
-  { id: "transformers", name: "المحولات والتقسيم إلى رموز", target: 15 },
-  { id: "finetune", name: "الضبط الدقيق والتدريب", target: 15 },
-  { id: "agents", name: "بناء الوكلاء الذكيين", target: 20 },
-  { id: "local", name: "التشغيل والاستضافة المحلية", target: 15 },
-  { id: "eval", name: "التقييم والأمان والاعتمادية", target: 10 },
+export const CATEGORIES: { id: string; name: string; en: string; target: number }[] = [
+  { id: "intro", name: "مدخل إلى الذكاء الاصطناعي", en: "Introduction to AI", target: 25 },
+  { id: "math", name: "الرياضيات الأساسية للذكاء الاصطناعي", en: "Core maths for AI", target: 15 },
+  { id: "programming", name: "البرمجة التطبيقية", en: "Applied programming", target: 20 },
+  { id: "ml", name: "تعلم الآلة", en: "Machine learning", target: 20 },
+  { id: "dl", name: "التعلم العميق", en: "Deep learning", target: 20 },
+  { id: "llm", name: "النماذج اللغوية وتطويرها", en: "Language models and their development", target: 25 },
+  { id: "transformers", name: "المحولات والتقسيم إلى رموز", en: "Transformers and tokenisation", target: 15 },
+  { id: "finetune", name: "الضبط الدقيق والتدريب", en: "Fine-tuning and training", target: 15 },
+  { id: "agents", name: "بناء الوكلاء الذكيين", en: "Building intelligent agents", target: 20 },
+  { id: "local", name: "التشغيل والاستضافة المحلية", en: "Running and hosting locally", target: 15 },
+  { id: "eval", name: "التقييم والأمان والاعتمادية", en: "Evaluation, safety, and reliability", target: 10 },
 ];
 export const TARGET_TOTAL = CATEGORIES.reduce((n, c) => n + c.target, 0);
 
-export const PATHS: { id: string; name: string; about: string }[] = [
-  { id: "zero", name: "من الصفر إلى أساسيات الذكاء الاصطناعي", about: "المفاهيم الأولى والرياضيات اللازمة." },
-  { id: "how-llm", name: "كيف تعمل النماذج اللغوية", about: "من الشبكة العصبية إلى المحوّل والرموز." },
-  { id: "agent", name: "بناء وكيل ذكي", about: "الأدوات والتخطيط وحلقة التنفيذ." },
-  { id: "train-small", name: "تدريب نموذج صغير", about: "بناء نموذج لغوي مصغّر وتدريبه." },
-  { id: "run-local", name: "تشغيل نموذج على الحاسب الشخصي", about: "المتطلبات وأدوات التشغيل المحلي." },
-  { id: "host", name: "استضافة نموذج أو وكيل وربطه بتطبيق", about: "الواجهات البرمجية والنشر." },
-  { id: "evaluate", name: "تقييم جودة النماذج والوكلاء", about: "المقاييس ومجموعات التقييم." },
+export const PATHS: { id: string; name: string; about: string; en: string; aboutEn: string }[] = [
+  { id: "zero", name: "من الصفر إلى أساسيات الذكاء الاصطناعي", about: "المفاهيم الأولى والرياضيات اللازمة.", en: "From zero to the basics of AI", aboutEn: "First concepts and the maths you need." },
+  { id: "how-llm", name: "كيف تعمل النماذج اللغوية", about: "من الشبكة العصبية إلى المحوّل والرموز.", en: "How language models work", aboutEn: "From the neural network to the transformer and tokens." },
+  { id: "agent", name: "بناء وكيل ذكي", about: "الأدوات والتخطيط وحلقة التنفيذ.", en: "Building an intelligent agent", aboutEn: "Tools, planning, and the execution loop." },
+  { id: "train-small", name: "تدريب نموذج صغير", about: "بناء نموذج لغوي مصغّر وتدريبه.", en: "Training a small model", aboutEn: "Building and training a miniature language model." },
+  { id: "run-local", name: "تشغيل نموذج على الحاسب الشخصي", about: "المتطلبات وأدوات التشغيل المحلي.", en: "Running a model on your own computer", aboutEn: "Requirements and tools for running locally." },
+  { id: "host", name: "استضافة نموذج أو وكيل وربطه بتطبيق", about: "الواجهات البرمجية والنشر.", en: "Hosting a model or agent and connecting it to an app", aboutEn: "APIs and deployment." },
+  { id: "evaluate", name: "تقييم جودة النماذج والوكلاء", about: "المقاييس ومجموعات التقييم.", en: "Evaluating models and agents", aboutEn: "Metrics and evaluation sets." },
 ];
+
+/** تسميات المستوى (القيمة المخزّنة عربية في ملف البيانات). */
+export const LEVEL_EN: Record<string, string> = { "مبتدئ": "Beginner", "متوسط": "Intermediate", "متقدم": "Advanced" };
 
 export const VIDEOS = verified as Video[];
 export const videoById = (id: string) => VIDEOS.find((v) => v.id === id);

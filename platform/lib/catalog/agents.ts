@@ -133,4 +133,121 @@ export const AGENTS: AgentDef[] = [
   },
 ];
 
-export const agentById = (id: string | null | undefined) => AGENTS.find((a) => a.id === id);
+const NO_TOOLS_EN = ["Text analysis only: no code execution, no browsing, and no access to files or external systems."];
+const APPROVAL_EN = ["Takes no external action. Everything it proposes stays a proposal that you carry out yourself."];
+
+/** النسخة الإنجليزية: البنية والمعرّفات نفسها، والنصوص مترجمة. */
+export const AGENTS_EN: AgentDef[] = [
+  {
+    id: "coding",
+    name: "Coding agent",
+    icon: "code",
+    scope: "Diagnosing errors, reviewing code, and proposing fixes with tests that verify them.",
+    canDo: ["Read pasted code or an error message and identify the likely cause", "Propose a fix and explain its effect", "Write a test that proves the fix"],
+    tools: NO_TOOLS_EN,
+    needsApproval: APPROVAL_EN,
+    limits: ["It does not run code, so its diagnosis is an inference from the text, not an execution result.", "It needs the full error message and the calling context to be accurate."],
+    examples: ["The function returns an empty value for an empty list. Why?", "Review this function for edge cases."],
+    intake: [
+      { key: "lang", label: "Language and runtime", placeholder: "e.g. Python 3.12 on Linux" },
+      { key: "error", label: "Error message or unexpected behaviour", placeholder: "Paste the full message", multiline: true, required: true },
+      { key: "code", label: "Relevant code", placeholder: "Paste the smallest part that reproduces the problem", multiline: true },
+      { key: "tried", label: "What have you tried?", placeholder: "Optional" },
+    ],
+    sections: ["Likely diagnosis", "Evidence from the text provided", "Proposed fix", "A test that proves the fix", "What I could not verify"],
+    reviewMode: "technical",
+  },
+  {
+    id: "systems",
+    name: "Systems engineering agent",
+    icon: "layers",
+    scope: "Analysing technical architecture, scalability, reliability, and the choice of components.",
+    canDo: ["Compare architectural options against explicit criteria", "Identify single points of failure and bottlenecks", "Propose a gradual migration plan"],
+    tools: NO_TOOLS_EN,
+    needsApproval: APPROVAL_EN,
+    limits: ["Quantitative estimates depend on the figures you provide; it does not measure the real system.", "It cannot see your actual infrastructure or cloud bills."],
+    examples: ["Should I split the notification service out of the monolith now?", "How do I handle ten times the current load?"],
+    intake: [
+      { key: "system", label: "Description of the current system", placeholder: "Components, database, how it is deployed", multiline: true, required: true },
+      { key: "load", label: "Load and known figures", placeholder: "Requests per second, data size, response time" },
+      { key: "goal", label: "Goal or constraint", placeholder: "e.g. 99.9% availability on a limited budget" },
+    ],
+    sections: ["Understanding the current state", "Bottlenecks and points of failure", "Options and their trade-offs", "Recommendation and the conditions it depends on", "Migration and rollback plan"],
+    reviewMode: "risk",
+  },
+  {
+    id: "ai",
+    name: "AI agent",
+    icon: "neural",
+    scope: "Choosing models, designing experiments, and analysing evaluations and training steps.",
+    canDo: ["Propose a baseline and a repeatable experiment", "Diagnose a slow or low-quality application built on a language model", "Design an evaluation set and its metrics"],
+    tools: NO_TOOLS_EN,
+    needsApproval: APPROVAL_EN,
+    limits: ["It does not train models or run evaluations; it only designs them.", "Its knowledge of model versions and prices may be out of date and must be checked at the source."],
+    examples: ["My LLM-based app is slow. Where do I start?", "Do I need fine-tuning, or is retrieval enough?"],
+    intake: [
+      { key: "task", label: "Task and data", placeholder: "What does the model do, and what is the size and type of the data?", multiline: true, required: true },
+      { key: "metric", label: "How do you measure success now?", placeholder: "The metric and its current value, if any" },
+      { key: "constraint", label: "Constraints", placeholder: "Latency, cost, hardware, privacy" },
+    ],
+    sections: ["Framing the problem and the metric", "Baseline", "Hypotheses in order of priority", "Experiment design", "Evaluation risks and limits of the conclusion"],
+    reviewMode: "evidence",
+  },
+  {
+    id: "research",
+    name: "Scientific research agent",
+    icon: "flask",
+    scope: "Framing hypotheses, designing methodology, and analysing limitations without inventing results or references.",
+    canDo: ["Turn an idea into a testable research question", "Propose a methodology, variables, and controls", "Identify threats to validity and limitations"],
+    tools: NO_TOOLS_EN,
+    needsApproval: APPROVAL_EN,
+    limits: ["It does not search scientific databases and cannot confirm that a reference exists.", "It names no specific references; it describes the kind of sources to look for."],
+    examples: ["How do I frame a hypothesis for a graduation project on evaluating Arabic language models?", "What are the threats to validity in my experiment design?"],
+    intake: [
+      { key: "topic", label: "Topic or idea", placeholder: "Describe the idea in two sentences", multiline: true, required: true },
+      { key: "stage", label: "Current stage", placeholder: "Initial idea, proposal, data collection, writing" },
+      { key: "resources", label: "Available resources", placeholder: "Data, hardware, time" },
+    ],
+    sections: ["The research question", "A falsifiable hypothesis", "Methodology and variables", "Threats to validity and limitations", "What to search for in the literature"],
+    reviewMode: "logic",
+  },
+  {
+    id: "security",
+    name: "Information security agent",
+    icon: "shield",
+    scope: "Reviewing risks, defensive controls, and security configurations you are authorised to examine.",
+    canDo: ["Threat-model a described design", "Review pasted configuration or code for common vulnerabilities", "Propose defensive controls in order of priority"],
+    tools: NO_TOOLS_EN,
+    needsApproval: ["It assumes you own the system or are authorised to examine it.", ...APPROVAL_EN],
+    limits: ["Defensive only: it does not write attack tools or help break into other people's systems.", "It does not scan the live system; the review rests on what you paste."],
+    examples: ["Review the authentication settings in this file.", "What are the threats to the file-upload endpoint in my app?"],
+    intake: [
+      { key: "asset", label: "What do you want to protect?", placeholder: "The system, the data, the users", multiline: true, required: true },
+      { key: "config", label: "Configuration or code to review", placeholder: "Remove keys and secrets before pasting", multiline: true },
+      { key: "auth", label: "Your role towards the system", placeholder: "Owner, authorised developer, student in a lab environment" },
+    ],
+    sections: ["Assets and trust boundaries", "Threats ranked by severity", "Recommended controls", "How to check a control works", "What needs review by a human specialist"],
+    reviewMode: "risk",
+  },
+  {
+    id: "planning",
+    name: "Technical planning agent",
+    icon: "route",
+    scope: "Turning requirements into development phases, tasks, and measurable deliverables.",
+    canDo: ["Split a project into phases with acceptance criteria", "Identify dependencies and the critical path", "Propose the smallest version that proves the idea"],
+    tools: NO_TOOLS_EN,
+    needsApproval: APPROVAL_EN,
+    limits: ["Duration estimates are approximate and depend on what you say about the team and its experience.", "It does not create tasks in project-management tools."],
+    examples: ["I have eight weeks for a graduation project. How should I split them?", "Turn these requirements into phases with acceptance criteria."],
+    intake: [
+      { key: "goal", label: "Final goal", placeholder: "What must work at the end?", multiline: true, required: true },
+      { key: "time", label: "Time and team", placeholder: "e.g. 8 weeks, two people" },
+      { key: "fixed", label: "What is fixed and cannot change?", placeholder: "A deadline, an imposed technology, committee requirements" },
+    ],
+    sections: ["Goal and success criterion", "The smallest version that proves the idea", "Phases and their acceptance criteria", "Dependencies and risks", "What is deliberately postponed"],
+    reviewMode: "feasibility",
+  },
+];
+
+export const agentsFor = (lang: "ar" | "en" = "ar") => (lang === "en" ? AGENTS_EN : AGENTS);
+export const agentById = (id: string | null | undefined, lang: "ar" | "en" = "ar") => agentsFor(lang).find((a) => a.id === id);

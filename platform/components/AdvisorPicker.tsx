@@ -1,7 +1,7 @@
 "use client";
 // اختيار المستشار: نموذج، ومعه اختياريًا وكيل متخصص. النماذج غير المهيّأة تُعرض معطّلة مع سببها.
 import { useState } from "react";
-import { AGENTS } from "@/lib/catalog/agents";
+import { agentsFor } from "@/lib/catalog/agents";
 import { useApp } from "./app";
 import { StatusBadge, VendorMark } from "./bits";
 import { Dialog } from "./Dialog";
@@ -17,7 +17,8 @@ export function defaultModel(models: { id: string; status: string; engine: strin
 export function AdvisorPicker({ value, onChange, lockAgent, compact }: {
   value: Advisor; onChange: (a: Advisor) => void; lockAgent?: boolean; compact?: boolean;
 }) {
-  const { models } = useApp();
+  const { models, lang, t } = useApp();
+  const AGENTS = agentsFor(lang);
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"models" | "agents">("models");
   const model = models.find((m) => m.id === value.modelId);
@@ -25,19 +26,19 @@ export function AdvisorPicker({ value, onChange, lockAgent, compact }: {
   return (
     <>
       <button type="button" className="picker-btn" onClick={() => setOpen(true)} aria-haspopup="dialog"
-        aria-label={`المستشار: ${model?.name ?? "غير محدد"}${agent ? `، ${agent.name}` : ""}. اضغط للتغيير`}>
+        aria-label={t(`المستشار: ${model?.name ?? "غير محدد"}${agent ? `، ${agent.name}` : ""}. اضغط للتغيير`, `Advisor: ${model?.name ?? "not set"}${agent ? `, ${agent.name}` : ""}. Press to change`)}>
         {model && <VendorMark vendorKey={model.vendorKey} small />}
-        <span><bdi>{model?.name ?? "اختر نموذجًا"}</bdi>{agent && !compact ? ` · ${agent.name}` : ""}</span>
+        <span><bdi>{model?.name ?? t("اختر نموذجًا", "Choose a model")}</bdi>{agent && !compact ? ` · ${agent.name}` : ""}</span>
         <Icon name="chevron" size={16} />
       </button>
-      <Dialog open={open} onClose={() => setOpen(false)} title="اختر مستشارك">
+      <Dialog open={open} onClose={() => setOpen(false)} title={t("اختر مستشارك", "Choose your advisor")}>
         {!lockAgent && (
-          <div className="tabs" role="tablist" style={{ paddingInline: "var(--s-5)" }}>
-            <button role="tab" className="tab" aria-selected={tab === "models"} onClick={() => setTab("models")}>النموذج</button>
-            <button role="tab" className="tab" aria-selected={tab === "agents"} onClick={() => setTab("agents")}>الوكيل المتخصص (اختياري)</button>
+          <div className="tabs" role="tablist" style={{ paddingInline: "1.1rem" }}>
+            <button role="tab" className="tab" aria-selected={tab === "models"} onClick={() => setTab("models")}>{t("النموذج", "Model")}</button>
+            <button role="tab" className="tab" aria-selected={tab === "agents"} onClick={() => setTab("agents")}>{t("الوكيل المتخصص (اختياري)", "Specialised agent (optional)")}</button>
           </div>
         )}
-        <div className="dialog-body" role="radiogroup" aria-label={tab === "models" ? "النماذج" : "الوكلاء"}>
+        <div className="dialog-body" role="radiogroup" aria-label={tab === "models" ? t("النماذج", "Models") : t("الوكلاء", "Agents")}>
           {tab === "models" || lockAgent
             ? models.map((m) => {
                 const disabled = m.status === "not_configured";
@@ -47,9 +48,9 @@ export function AdvisorPicker({ value, onChange, lockAgent, compact }: {
                     <VendorMark vendorKey={m.vendorKey} />
                     <span className="stack-sm" style={{ gap: 2 }}>
                       <strong><bdi>{m.name}</bdi></strong>
-                      <span className="t-caption">{disabled ? "غير مهيّأ على الخادم — يحتاج مفتاح خدمة." : m.tasks.join(" · ")}</span>
+                      <span className="t-caption">{disabled ? t("غير مهيّأ على الخادم — يحتاج مفتاح خدمة.", "Not configured on the server; it needs a service key.") : m.tasks.join(" · ")}</span>
                     </span>
-                    <StatusBadge model={m} />
+                    <StatusBadge model={m} lang={lang} />
                   </button>
                 );
               })
@@ -57,7 +58,7 @@ export function AdvisorPicker({ value, onChange, lockAgent, compact }: {
               <>
                 <button type="button" role="radio" className="option" aria-checked={!value.agentId} onClick={() => { onChange({ ...value, agentId: null }); setOpen(false); }}>
                   <span className="icon-tile"><Icon name="consult" /></span>
-                  <span className="stack-sm" style={{ gap: 2 }}><strong>بدون وكيل</strong><span className="t-caption">استشارة عامة بتعليمات المنصة الأساسية.</span></span>
+                  <span className="stack-sm" style={{ gap: 2 }}><strong>{t("بدون وكيل", "No agent")}</strong><span className="t-caption">{t("استشارة عامة بتعليمات المنصة الأساسية.", "A general consultation with the platform’s base instructions.")}</span></span>
                   <span />
                 </button>
                 {AGENTS.map((a) => (

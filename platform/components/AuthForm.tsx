@@ -2,11 +2,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { api } from "./app";
+import { api, useApp } from "./app";
 import { Icon } from "./Icon";
 
 export function AuthForm({ mode, next }: { mode: "login" | "signup"; next: string }) {
   const router = useRouter();
+  const { t } = useApp();
   const signup = mode === "signup";
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -20,15 +21,15 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next: strin
     const password = String(f.get("password") || "");
     const name = String(f.get("name") || "").trim();
     const v: Record<string, string> = {};
-    if (signup && !name) v.name = "اكتب اسمك.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) v.email = "اكتب بريدًا إلكترونيًا صحيحًا، مثل name@example.com";
-    if (signup ? password.length < 8 : !password) v.password = signup ? "كلمة المرور يجب ألا تقل عن ٨ أحرف." : "اكتب كلمة المرور.";
-    if (signup && !f.get("accept")) v.accept = "يلزم قبول الشروط وسياسة الخصوصية للمتابعة.";
+    if (signup && !name) v.name = t("اكتب اسمك.", "Enter your name.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) v.email = t("اكتب بريدًا إلكترونيًا صحيحًا، مثل name@example.com", "Enter a valid email address, such as name@example.com");
+    if (signup ? password.length < 8 : !password) v.password = signup ? t("كلمة المرور يجب ألا تقل عن ٨ أحرف.", "The password must be at least 8 characters.") : t("اكتب كلمة المرور.", "Enter your password.");
+    if (signup && !f.get("accept")) v.accept = t("يلزم قبول الشروط وسياسة الخصوصية للمتابعة.", "You need to accept the terms and the privacy policy to continue.");
     setErrs(v); setError("");
     if (Object.keys(v).length) { (e.currentTarget.querySelector("[aria-invalid=true]") as HTMLElement | null)?.focus(); return; }
     setBusy(true);
     const r = await api(`/api/auth/${mode}`, { body: { email, password, name, accept: !!f.get("accept") } });
-    if (!r.ok) { setBusy(false); setError(r.data.error ?? "تعذر إتمام الطلب."); return; }
+    if (!r.ok) { setBusy(false); setError(r.data.error ?? t("تعذر إتمام الطلب.", "The request could not be completed.")); return; }
     router.push(next); router.refresh();
   }
   const q = next !== "/home" ? `?next=${encodeURIComponent(next)}` : "";
@@ -39,36 +40,36 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next: strin
       {error && <div className="notice notice-danger" role="alert"><Icon name="alert" /><span>{error}</span></div>}
       {signup && (
         <div className="field">
-          <label className="label" htmlFor="name">الاسم</label>
+          <label className="label" htmlFor="name">{t("الاسم", "Name")}</label>
           <input className="input" id="name" name="name" autoComplete="name" maxLength={60} aria-invalid={!!errs.name} aria-describedby={errs.name ? "name-err" : undefined} />
           {err("name")}
         </div>
       )}
       <div className="field">
-        <label className="label" htmlFor="email">البريد الإلكتروني</label>
+        <label className="label" htmlFor="email">{t("البريد الإلكتروني", "Email address")}</label>
         <input className="input" id="email" name="email" type="email" dir="ltr" autoComplete="email" inputMode="email" placeholder="name@example.com" aria-invalid={!!errs.email} aria-describedby={errs.email ? "email-err" : undefined} />
         {err("email")}
       </div>
       <div className="field">
-        <div className="row-between"><label className="label" htmlFor="password">كلمة المرور</label>
-          {!signup && <Link href="/help#password" className="link t-small">نسيت كلمة المرور؟</Link>}</div>
+        <div className="row-between"><label className="label" htmlFor="password">{t("كلمة المرور", "Password")}</label>
+          {!signup && <Link href="/help#password" className="link t-small">{t("نسيت كلمة المرور؟", "Forgot your password?")}</Link>}</div>
         <div className="input-wrap">
           <input className="input" id="password" name="password" type={show ? "text" : "password"} dir="ltr" autoComplete={signup ? "new-password" : "current-password"} aria-invalid={!!errs.password} aria-describedby={errs.password ? "password-err" : signup ? "password-hint" : undefined} />
-          <button type="button" className="btn btn-ghost btn-icon" aria-label={show ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"} aria-pressed={show} onClick={() => setShow((s) => !s)}><Icon name={show ? "eyeOff" : "eye"} /></button>
+          <button type="button" className="btn btn-ghost btn-icon" aria-label={show ? t("إخفاء كلمة المرور", "Hide password") : t("إظهار كلمة المرور", "Show password")} aria-pressed={show} onClick={() => setShow((s) => !s)}><Icon name={show ? "eyeOff" : "eye"} /></button>
         </div>
-        {signup && !errs.password && <span id="password-hint" className="hint">٨ أحرف على الأقل.</span>}
+        {signup && !errs.password && <span id="password-hint" className="hint">{t("٨ أحرف على الأقل.", "At least 8 characters.")}</span>}
         {err("password")}
       </div>
       {signup && (
         <div className="field">
           <label className="check"><input type="checkbox" name="accept" aria-invalid={!!errs.accept} aria-describedby={errs.accept ? "accept-err" : undefined} />
-            <span className="t-small">أوافق على <Link className="link" href="/terms" target="_blank">شروط الاستخدام</Link> و<Link className="link" href="/privacy" target="_blank">سياسة الخصوصية</Link>، وأعلم أن الإجابات قد تكون مولَّدة بالذكاء الاصطناعي.</span></label>
+            <span className="t-small">{t("أوافق على", "I agree to the")} <Link className="link" href="/terms" target="_blank">{t("شروط الاستخدام", "Terms of Use")}</Link> {t("و", "and the ")}<Link className="link" href="/privacy" target="_blank">{t("سياسة الخصوصية", "Privacy Policy")}</Link>{t("، وأعلم أن الإجابات قد تكون مولَّدة بالذكاء الاصطناعي.", ", and I understand that answers may be generated by AI.")}</span></label>
           {err("accept")}
         </div>
       )}
-      <button className="btn btn-primary btn-block" disabled={busy}>{busy && <span className="spinner" />}{signup ? "أنشئ الحساب" : "سجّل الدخول"}</button>
+      <button className="btn btn-primary btn-block" disabled={busy}>{busy && <span className="spinner" />}{signup ? t("أنشئ الحساب", "Create the account") : t("سجّل الدخول", "Sign in")}</button>
       <p className="t-small muted" style={{ textAlign: "center" }}>
-        {signup ? <>لديك حساب؟ <Link className="link" href={`/login${q}`}>سجّل الدخول</Link></> : <>ليس لديك حساب؟ <Link className="link" href={`/login${q ? q + "&" : "?"}mode=signup`}>أنشئ حسابًا جديدًا</Link></>}
+        {signup ? <>{t("لديك حساب؟", "Already have an account?")} <Link className="link" href={`/login${q}`}>{t("سجّل الدخول", "Sign in")}</Link></> : <>{t("ليس لديك حساب؟", "No account yet?")} <Link className="link" href={`/login${q ? q + "&" : "?"}mode=signup`}>{t("أنشئ حسابًا جديدًا", "Create a new account")}</Link></>}
       </p>
     </form>
   );

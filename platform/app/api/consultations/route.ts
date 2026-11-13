@@ -4,6 +4,7 @@ import { titleFrom } from "@/lib/consult";
 import { all, run, type ConsultRow } from "@/lib/db";
 import { authed, fail, LIMITS, ok, readJson, str } from "@/lib/http";
 import { isUsable } from "@/lib/providers";
+import { tOf } from "@/lib/i18n";
 
 export const GET = authed(async (req, user) => {
   const url = new URL(req.url);
@@ -23,11 +24,12 @@ export const GET = authed(async (req, user) => {
 });
 
 export const POST = authed(async (req, user) => {
+  const t = tOf(req);
   const b = await readJson(req);
   const text = str(b?.text, LIMITS.message);
-  if (!text) return fail(400, `اكتب نص الاستشارة (حتى ${LIMITS.message} حرف).`);
+  if (!text) return fail(400, t(`اكتب نص الاستشارة (حتى ${LIMITS.message} حرف).`, `Write the consultation text (up to ${LIMITS.message} characters).`));
   const modelId = typeof b?.modelId === "string" ? b.modelId : "";
-  if (!isUsable(modelId)) return fail(409, "النموذج المختار غير متاح. اختر نموذجًا آخر.");
+  if (!isUsable(modelId)) return fail(409, t("النموذج المختار غير متاح. اختر نموذجًا آخر.", "The chosen model is not available. Choose another model."));
   const agentId = typeof b?.agentId === "string" && agentById(b.agentId) ? b.agentId : null;
   const id = newId();
   const now = Date.now();

@@ -18,11 +18,17 @@ export interface ProviderAdapter {
 export type ProviderErrorKind = "auth" | "rate_limit" | "unavailable" | "refused" | "bad_request" | "network" | "truncated";
 
 // دون «خصائص المعاملات» في المُنشئ: صيغة لا يدعمها تشغيل Node المباشر لملفات TypeScript (تحتاجه اختبارات الوحدات).
+// الرسالة بلغتين: message بالعربية (السجلات والاختبارات)، و text(lang) لما يُعرض للمستخدم.
 export class ProviderError extends Error {
   kind: ProviderErrorKind;
-  constructor(message: string, kind: ProviderErrorKind = "unavailable") {
-    super(message);
+  en: string;
+  constructor(message: string | { ar: string; en: string }, kind: ProviderErrorKind = "unavailable") {
+    super(typeof message === "string" ? message : message.ar);
+    this.en = typeof message === "string" ? message : message.en;
     this.kind = kind;
+  }
+  text(lang: "ar" | "en") {
+    return lang === "ar" ? this.message : this.en;
   }
 }
 

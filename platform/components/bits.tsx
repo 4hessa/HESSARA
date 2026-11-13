@@ -1,15 +1,6 @@
 // عناصر عرض صغيرة مشتركة (تعمل على الخادم والعميل).
-import Link from "next/link";
+import { intlLocale, type Lang } from "@/lib/i18n";
 import type { ModelView } from "@/lib/providers";
-
-export function Logo({ href = "/", large }: { href?: string; large?: boolean }) {
-  return (
-    <Link href={href} className={`logo${large ? " logo-lg" : ""}`} aria-label="هسّارة — الصفحة الرئيسية">
-      <span className="logo-mark" aria-hidden="true" />
-      <span className="ltr" lang="en">HESSARA</span>
-    </Link>
-  );
-}
 
 // رمز نصي محايد للجهة المطوّرة. ليس شعارًا رسميًا ولا يحاكي أي علامة تجارية.
 const MONO: Record<string, string> = {
@@ -45,16 +36,16 @@ export function Avatar({ id, large, label }: { id: string; large?: boolean; labe
   );
 }
 
-export const STATUS_LABEL: Record<ModelView["status"], { text: string; cls: string }> = {
-  ready: { text: "يعمل", cls: "badge-ok" },
-  configured: { text: "مهيّأ — لم يُختبر بعد", cls: "badge-accent" },
-  not_configured: { text: "غير مهيّأ", cls: "" },
-  failed: { text: "فشل آخر اختبار", cls: "badge-danger" },
+export const STATUS_LABEL: Record<ModelView["status"], { ar: string; en: string; cls: string }> = {
+  ready: { ar: "يعمل", en: "Ready", cls: "badge-ok" },
+  configured: { ar: "مهيّأ — لم يُختبر بعد", en: "Configured, not yet tested", cls: "badge-accent" },
+  not_configured: { ar: "غير مهيّأ", en: "Not configured", cls: "" },
+  failed: { ar: "فشل آخر اختبار", en: "Last test failed", cls: "badge-danger" },
 };
-export function StatusBadge({ model }: { model: ModelView }) {
-  const s = model.engine === "demo" ? { text: "تجريبي — يعمل دون مفاتيح", cls: "badge-warn" } : STATUS_LABEL[model.status];
-  return <span className={`badge ${s.cls}`}>{s.text}</span>;
+export function StatusBadge({ model, lang = "ar" }: { model: ModelView; lang?: Lang }) {
+  const s = model.engine === "demo" ? { ar: "تجريبي — يعمل دون مفاتيح", en: "Demo — runs without keys", cls: "badge-warn" } : STATUS_LABEL[model.status];
+  return <span className={`badge ${s.cls}`}>{s[lang]}</span>;
 }
 
-export const fmtDate = (ts: number) =>
-  new Intl.DateTimeFormat("ar", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }).format(ts);
+export const fmtDate = (ts: number, lang: Lang = "ar") =>
+  new Intl.DateTimeFormat(intlLocale(lang), { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }).format(ts);

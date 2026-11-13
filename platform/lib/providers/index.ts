@@ -1,5 +1,6 @@
 // توجيه النماذج: يحوّل معرّف الفهرس إلى موائم + معرّف المزوّد، ويحسب الحالة الفعلية.
-import { MODELS, modelById, type ModelDef, type ModelStatus } from "../catalog/models.ts";
+import type { Lang } from "../i18n.ts";
+import { localizeModel, MODELS, modelById, type ModelDef, type ModelStatus } from "../catalog/models.ts";
 import { anthropicAdapter } from "./anthropic.ts";
 import { demoAdapter } from "./demo.ts";
 import { geminiAdapter } from "./gemini.ts";
@@ -8,12 +9,12 @@ import type { ProviderAdapter } from "./types.ts";
 
 const env = (name?: string) => (name ? process.env[name]?.trim() || undefined : undefined);
 
-type Check = { ok: boolean; at: number; error?: string };
+type Check = { ok: boolean; at: number; error?: { ar: string; en: string } };
 const g = globalThis as typeof globalThis & { __hessaraChecks?: Map<string, Check> };
 const checks = (g.__hessaraChecks ??= new Map());
 
-export function recordCheck(id: string, ok: boolean, error?: string) {
-  checks.set(id, { ok, at: Date.now(), error });
+export function recordCheck(id: string, ok: boolean, error?: string | { ar: string; en: string }) {
+  checks.set(id, { ok, at: Date.now(), error: typeof error === "string" ? { ar: error, en: error } : error });
 }
 
 export type ResolvedModel = { def: ModelDef; adapter: ProviderAdapter; apiModel: string };
@@ -59,7 +60,7 @@ export type ModelView = Omit<ModelDef, "env" | "apiModel"> & {
   engine: "llm" | "demo";
 };
 
-export function modelView(def: ModelDef): ModelView {
+export function modelView(def: ModelDef, lang: Lang = "ar"): ModelView {
   const missing = missingConfig(def);
   const check = checks.get(def.id);
   let status: ModelStatus;
@@ -67,7 +68,7 @@ export function modelView(def: ModelDef): ModelView {
   else if (missing.length) status = "not_configured";
   else if (check) status = check.ok ? "ready" : "failed";
   else status = "configured";
-  const { env: _e, apiModel, ...rest } = def;
+  const { env: _e, apiModel, ...rest } = localizeModel(def, lang);
   void _e;
   return {
     ...rest,
@@ -75,14 +76,14 @@ export function modelView(def: ModelDef): ModelView {
     version: def.adapter === "demo" ? null : apiModel || env(def.env.model) || null,
     missing,
     checkedAt: check?.at ?? null,
-    checkError: check && !check.ok ? check.error ?? null : null,
+    checkError: check && !check.ok ? check.error?.[lang] ?? null : null,
     engine: def.adapter === "demo" ? "demo" : "llm",
   };
 }
 
 /** للزائر غير المسجَّل تُحجب تفاصيل التهيئة (أسماء المتغيرات الناقصة وسبب فشل الاختبار). */
-export const listModels = (detailed = false): ModelView[] =>
-  MODELS.map(modelView).map((m) => (detailed ? m : { ...m, missing: [], checkError: null }));
+export const listModels = (detailed = false, lang: Lang = "ar"): ModelView[] =>
+  MODELS.map((d) => modelView(d, lang)).map((m) => (detailed ? m : { ...m, missing: [], checkError: null }));
 export const isUsable = (id: string) => resolveModel(id) !== null;
 
 /** أول نموذج لغوي حقيقي مهيّأ؛ يُستخدم لمحرك المراجعة. */

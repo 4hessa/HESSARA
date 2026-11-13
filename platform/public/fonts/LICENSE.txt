@@ -1,3 +1,11 @@
+Fonts in this folder, all under the SIL Open Font License, Version 1.1 (text below):
+- IBM Plex Sans Arabic, IBM Plex Mono: Copyright 2019 IBM Corp.
+- Newsreader: Copyright 2020 The Newsreader Project Authors (https://github.com/productiontype/Newsreader)
+- Roboto Condensed: Copyright 2011 Google Inc. All Rights Reserved.
+- Markazi Text: Copyright 2017 The Markazi Text Project Authors (https://github.com/BornaIz/markazitext)
+Newsreader, Roboto Condensed and Markazi Text are the variable builds distributed by Fontsource
+(@fontsource-variable packages), subset to Latin, Latin Extended, and Arabic.
+
 Copyright 2019 IBM Corp. All rights reserved. IBMPlexSansArabic-ExtraLight.ttf: Copyright 2019 IBM Corp. All rights reserved. IBMPlexSansArabic-Light.ttf: Copyright 2019 IBM Corp. All rights reserved. IBMPlexSansArabic-Regular.ttf: Copyright 2019 IBM Corp. All rights reserved. IBMPlexSansArabic-Medium.ttf: Copyright 2019 IBM Corp. All rights reserved. IBMPlexSansArabic-SemiBold.ttf: Copyright 2019 IBM Corp. All rights reserved. IBMPlexSansArabic-Bold.ttf: Copyright 2019 IBM Corp. All rights reserved.
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
