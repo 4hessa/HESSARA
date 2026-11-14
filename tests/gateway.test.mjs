@@ -108,6 +108,8 @@ test("أخطاء البوابة: نقص الرصيد والمصادقة ومعر
   try {
     const m = P.resolveModel("deepseek");
     const cases = [
+      // نص ردّ البوابة الحقيقي لحساب بلا بطاقة، كما سُجّل على الموقع الحي
+      [jsonError(403, "AI Gateway requires a valid credit card on file to service requests. Please visit https://vercel.com/d?to=x to add a card and unlock your free credits."), /بطاقة دفع صالحة/],
       [jsonError(402, "Payment required"), /رصيد بوابة Vercel/],
       [jsonError(403, "Insufficient funds: please top up your credits"), /رصيد بوابة Vercel/],
       [jsonError(401, "Invalid token"), /AI_GATEWAY_API_KEY/],
@@ -116,7 +118,7 @@ test("أخطاء البوابة: نقص الرصيد والمصادقة ومعر
     ];
     for (const [h, re] of cases) {
       handlers.push(h);
-      await assert.rejects(ask(m), (e) => e instanceof ProviderError && re.test(e.message) && !/Payment|funds|Invalid|not found|Too many/.test(e.message));
+      await assert.rejects(ask(m), (e) => e instanceof ProviderError && re.test(e.message) && !/Payment|funds|Invalid|not found|Too many|visit/.test(e.message));
     }
   } finally {
     delete process.env.AI_GATEWAY_API_KEY;

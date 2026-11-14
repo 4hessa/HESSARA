@@ -10,7 +10,8 @@ import { Icon } from "./Icon";
 export type Advisor = { modelId: string; agentId: string | null };
 
 export function defaultModel(models: { id: string; status: string; engine: string }[], pref?: string | null): string {
-  const usable = models.filter((m) => m.status !== "not_configured");
+  // نموذج فشل آخر اتصال به لا يُختار تلقائيًا (يبقى قابلًا للاختيار يدويًا)، فلا تبدأ الاستشارة بخطأ معروف سلفًا.
+  const usable = models.filter((m) => m.status !== "not_configured" && m.status !== "failed");
   return usable.find((m) => m.id === pref)?.id ?? usable.find((m) => m.engine === "llm")?.id ?? "hessara-demo";
 }
 

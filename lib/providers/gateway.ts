@@ -53,6 +53,12 @@ export async function gatewayError(res: Response): Promise<ProviderError> {
     /* نص عادي */
   }
   console.error("[gateway]", res.status, message.slice(0, 300));
+  // ردّ البوابة الفعلي (٢٠٢٦-١١-١٤) لحساب بلا بطاقة: 403 "AI Gateway requires a valid credit card on file ... to unlock your free credits".
+  if (/credit card|card on file/i.test(message))
+    return new ProviderError({
+      ar: "بوابة Vercel تطلب إضافة بطاقة دفع صالحة إلى الحساب لفتح الرصيد المجاني. تُضاف من تبويب AI Gateway في لوحة Vercel.",
+      en: "The Vercel AI Gateway needs a valid payment card on the account to unlock its free credits. Add one from the AI Gateway tab in the Vercel dashboard.",
+    }, "auth");
   if (res.status === 402 || /insufficient|credit|balance|funds|payment|top[ -]?up/i.test(message))
     return new ProviderError({
       ar: "رصيد بوابة Vercel للذكاء الاصطناعي لا يكفي. يُضاف من تبويب AI Gateway في لوحة Vercel.",
