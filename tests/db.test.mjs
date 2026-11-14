@@ -26,3 +26,12 @@ test("طبقة البيانات: على Vercel دون DATABASE_URL يُعدّ ا
     for (const [k, v] of Object.entries(saved)) v === undefined ? delete process.env[k] : (process.env[k] = v);
   }
 });
+
+test("طبقة البيانات: sslmode الضعيف الدلالة يُثبَّت على التحقق الكامل، وغيره لا يُمس", async () => {
+  const { secureSslMode } = await import("../lib/db.ts");
+  assert.equal(secureSslMode("postgres://u:p@h/db?sslmode=require"), "postgres://u:p@h/db?sslmode=verify-full");
+  assert.equal(secureSslMode("postgres://u:p@h/db?channel_binding=require&sslmode=require"), "postgres://u:p@h/db?channel_binding=require&sslmode=verify-full");
+  assert.equal(secureSslMode("postgres://u:p@h/db?sslmode=prefer&x=1"), "postgres://u:p@h/db?sslmode=verify-full&x=1");
+  assert.equal(secureSslMode("postgres://u:p@h/db?sslmode=disable"), "postgres://u:p@h/db?sslmode=disable");
+  assert.equal(secureSslMode("postgres://u:p@h/db"), "postgres://u:p@h/db");
+});

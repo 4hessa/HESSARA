@@ -110,6 +110,8 @@ test("أخطاء البوابة: نقص الرصيد والمصادقة ومعر
     const cases = [
       // نص ردّ البوابة الحقيقي لحساب بلا بطاقة، كما سُجّل على الموقع الحي
       [jsonError(403, "AI Gateway requires a valid credit card on file to service requests. Please visit https://vercel.com/d?to=x to add a card and unlock your free credits."), /بطاقة دفع صالحة/],
+      // نص ردّ البوابة الحقيقي لنموذج لا يتاح في الرصيد المجاني (سُجّل لنموذج Jev على الموقع الحي)
+      [jsonError(403, "Free tier users do not have access to this model. Upgrade to paid credits at https://vercel.com/d?to=x for unrestricted access."), /غير متاح ضمن الرصيد المجاني/],
       [jsonError(402, "Payment required"), /رصيد بوابة Vercel/],
       [jsonError(403, "Insufficient funds: please top up your credits"), /رصيد بوابة Vercel/],
       [jsonError(401, "Invalid token"), /AI_GATEWAY_API_KEY/],

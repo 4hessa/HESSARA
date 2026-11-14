@@ -59,6 +59,12 @@ export async function gatewayError(res: Response): Promise<ProviderError> {
       ar: "بوابة Vercel تطلب إضافة بطاقة دفع صالحة إلى الحساب لفتح الرصيد المجاني. تُضاف من تبويب AI Gateway في لوحة Vercel.",
       en: "The Vercel AI Gateway needs a valid payment card on the account to unlock its free credits. Add one from the AI Gateway tab in the Vercel dashboard.",
     }, "auth");
+  // ردّ البوابة الفعلي لنموذج Jev (٢٠٢٦-١١-١٤): 403 "Free tier users do not have access to this model. Upgrade to paid credits ...".
+  if (/free tier/i.test(message))
+    return new ProviderError({
+      ar: "هذا النموذج غير متاح ضمن الرصيد المجاني لبوابة Vercel، ويحتاج رصيدًا مدفوعًا يُشحن من تبويب AI Gateway في لوحة Vercel.",
+      en: "This model is not available on the Vercel AI Gateway's free credits; it needs paid credits, added from the AI Gateway tab in the Vercel dashboard.",
+    }, "auth");
   if (res.status === 402 || /insufficient|credit|balance|funds|payment|top[ -]?up/i.test(message))
     return new ProviderError({
       ar: "رصيد بوابة Vercel للذكاء الاصطناعي لا يكفي. يُضاف من تبويب AI Gateway في لوحة Vercel.",

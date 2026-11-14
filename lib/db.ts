@@ -126,9 +126,15 @@ async function sqliteDriver(): Promise<Driver> {
 // من عدة اتصالات قد يفشل في Postgres بتعارض على فهرس أسماء الأنواع.
 const SCHEMA_LOCK = 72519430;
 
+/**
+ * مكتبة pg تعامل اليوم sslmode=prefer|require|verify-ca معاملة verify-full (تحقق كامل من شهادة الخادم واسمه)،
+ * وتحذّر من أن إصدارها القادم سيضعف ذلك إلى دلالات libpq. نثبّت السلوك الآمن الحالي صراحةً.
+ */
+export const secureSslMode = (url: string) => url.replace(/([?&]sslmode=)(prefer|require|verify-ca)(?=&|$)/i, "$1verify-full");
+
 async function pgDriver(url: string): Promise<Driver> {
   const { Pool } = await import("pg");
-  const pool = new Pool({ connectionString: url, max: 5, idleTimeoutMillis: 10_000 });
+  const pool = new Pool({ connectionString: secureSslMode(url), max: 5, idleTimeoutMillis: 10_000 });
   // خطأ على اتصال خامل (مثل إغلاقه من جهة الخادم) يُطلق حدثًا على المجمّع؛ دون مستمع تنهار العملية كلها.
   pool.on("error", (e) => console.error("[db] idle client error:", e.message));
   const client = await pool.connect();
