@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { LandingPreview } from "@/components/LandingPreview";
 import { Cta, SectionHead, Steps, Tiles } from "@/components/site/Blocks";
 import { Mock } from "@/components/site/Mock";
 import { MarketingPage } from "@/components/site/Page";
@@ -14,7 +14,9 @@ const C = {
     sub: "Your AI-Powered Advisory Platform",
     p1: "HESSARA connects you with AI models from several providers and with specialised agents, to work through complex challenges, explore solutions, and make informed decisions.",
     p2: "Every answer names the model that wrote it, and any answer can go through a critical review before you act on it.",
-    b1: "Explore the Suite", b2: "Talk to an Advisor",
+    b1: "Start a Consultation", b2: "Try It Without an Account",
+    e0: "Try It", t0: "Ask a Question Now",
+    lede0: "A live connection to the HESSARA server, with no account: send a sample question to the demo engine, then run the rule-based reviewer on its answer. With an account, the same path runs on the AI models.",
     e1: "Applications", t1: "Our Specialized Intelligence Suite",
     tiles: [
       { icon: "compass", title: "Guided Consultation", text: "Specialised agents that ask for the context your question needs.", href: "/consulting" },
@@ -36,7 +38,9 @@ const C = {
     sub: "منصتك الاستشارية المدعومة بالذكاء الاصطناعي",
     p1: "تصلك هسّارة بنماذج ذكاء اصطناعي من عدة مزوّدين وبوكلاء متخصصين، لتفكّك التحديات المعقدة وتستكشف الحلول وتتخذ قرارات مدروسة.",
     p2: "كل إجابة تحمل اسم النموذج الذي كتبها، وأي إجابة يمكن إخضاعها لمراجعة نقدية قبل أن تبني عليها.",
-    b1: "استكشف المنظومة", b2: "تحدّث إلى مستشار",
+    b1: "ابدأ استشارة", b2: "جرّبها دون حساب",
+    e0: "جرّبها", t0: "اطرح سؤالًا الآن",
+    lede0: "اتصال حي بخادم هسّارة دون حساب: أرسل سؤالًا تجريبيًا إلى المحرك التجريبي، ثم شغّل المراجع القاعدي على إجابته. ومع حساب يجري المسار نفسه بنماذج الذكاء الاصطناعي.",
     e1: "التطبيقات", t1: "منظومة ذكاء متخصصة",
     tiles: [
       { icon: "compass", title: "استشارة موجَّهة", text: "وكلاء متخصصون يطلبون السياق الذي يحتاجه سؤالك.", href: "/consulting" },
@@ -78,12 +82,16 @@ export default async function Home() {
           <p className="hero__sub">{c.sub}</p>
           <div className="hero__copy"><p>{c.p1}</p><p>{c.p2}</p></div>
           <div className="btn-row">
-            <a className="btn" href="#suite">{c.b1}</a>
-            <Link className="btn btn--ghost" href="/consulting">{c.b2}</Link>
+            <a className="btn" href="/consult/new">{c.b1}</a>
+            <a className="btn btn--ghost" href="#try">{c.b2}</a>
           </div>
         </>
       }
     >
+      <section className="section section--wide" id="try">
+        <div className="head"><SectionHead eyebrow={c.e0} title={c.t0} lede={c.lede0} /></div>
+        <LandingPreview />
+      </section>
       <section className="section" id="suite">
         <SectionHead eyebrow={c.e1} title={c.t1} />
         <Tiles items={c.tiles} />

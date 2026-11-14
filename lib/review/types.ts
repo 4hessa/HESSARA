@@ -1,8 +1,9 @@
 export type Severity = "high" | "medium" | "low";
 export type Finding = { severity: Severity; title: string; detail: string; quote?: string; suggestion?: string };
-export type Verdict = { criterion: string; status: "pass" | "fail" | "unclear"; reason: string };
+/** probability: احتمال الاستيفاء حين يحكم نموذج قرار احتمالي (Jev). */
+export type Verdict = { criterion: string; status: "pass" | "fail" | "unclear"; reason: string; probability?: number };
 export type ReviewResult = {
-  engine: "llm" | "heuristic";
+  engine: "llm" | "heuristic" | "jev";
   engineLabel: string;
   summary: string;
   strengths: string[];
@@ -54,7 +55,7 @@ export const REVIEW_MODES: ReviewMode[] = [
   {
     id: "judge",
     name: "المحكّم المنظّم",
-    short: "حكم لكل معيار تكتبه أنت: مستوفى، غير مستوفى، أو غير محسوم.",
+    short: "حكم لكل معيار تكتبه أنت: مستوفى، غير مستوفى، أو غير محسوم، باحتمال من نموذج التقييم Jev حين يتاح.",
     criteria: [],
     needsCriteria: true,
   },
@@ -95,7 +96,7 @@ export const REVIEW_MODES_EN: ReviewMode[] = [
   {
     id: "judge",
     name: "Structured judge",
-    short: "A verdict for each criterion you write: met, not met, or undecided.",
+    short: "A verdict for each criterion you write: met, not met, or undecided, with a probability from the Jev evaluation model when it is available.",
     criteria: [],
     needsCriteria: true,
   },

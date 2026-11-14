@@ -3,6 +3,7 @@ import { all, get, run, type ReviewRow } from "@/lib/db";
 import { authed, fail, LIMITS, ok, rateLimit, readJson, str } from "@/lib/http";
 import { firstLlm } from "@/lib/providers";
 import { runReview } from "@/lib/review";
+import { jevAvailable } from "@/lib/review/jev";
 import { modeById } from "@/lib/review/types";
 import { langOf, makeT } from "@/lib/i18n";
 
@@ -36,8 +37,9 @@ export const POST = authed(async (req, user) => {
       messageId = b.messageId;
     }
   }
-  const wantsLlm = b?.engine !== "heuristic" && !!firstLlm(user.pref_model);
-  if (wantsLlm && !user.external_consent)
+  // النص يُرسَل إلى جهة خارجية إن وُجد نموذج لغوي، أو كان النمط المحكّم المنظّم و Jev متاحًا.
+  const wantsExternal = b?.engine !== "heuristic" && (!!firstLlm(user.pref_model) || (mode.id === "judge" && jevAvailable()));
+  if (wantsExternal && !user.external_consent)
     return Response.json({ error: t("يلزم موافقتك على إرسال النص إلى مزوّد خارجي للمراجعة.", "Your consent is needed to send the text to an external provider for review."), code: "consent" }, { status: 412 });
 
   const result = await runReview({

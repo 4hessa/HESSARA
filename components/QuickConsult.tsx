@@ -3,6 +3,8 @@
 // للزائر: يُحفظ النص مؤقتًا في تخزين جلسة المتصفح فقط، بإفصاح ظاهر، ثم يُستعاد بعد الدخول.
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { agentsFor } from "@/lib/catalog/agents";
+import { suggestAgent } from "@/lib/catalog/suggestAgent";
 import { AdvisorPicker, defaultModel, type Advisor } from "./AdvisorPicker";
 import { api, useApp } from "./app";
 import { Icon } from "./Icon";
@@ -13,11 +15,12 @@ export const pendingKey = (id: string) => `hs_pending:${id}`;
 export function QuickConsult({ examples, initialAgent, initialModel, initialText, autoFocus, restoreDraft }: {
   examples?: string[]; initialAgent?: string | null; initialModel?: string | null; initialText?: string; autoFocus?: boolean; restoreDraft?: boolean;
 }) {
-  const { user, models, t } = useApp();
+  const { user, models, t, lang } = useApp();
   const router = useRouter();
   const [text, setText] = useState(initialText ?? "");
   const [advisor, setAdvisor] = useState<Advisor>({ modelId: defaultModel(models, initialModel ?? user?.prefModel), agentId: initialAgent ?? user?.prefAgent ?? null });
   const [busy, setBusy] = useState(false);
+  const [dismissed, setDismissed] = useState<string | null>(null);
   const [error, setError] = useState("");
   const ta = useRef<HTMLTextAreaElement>(null);
 
@@ -38,6 +41,10 @@ export function QuickConsult({ examples, initialAgent, initialModel, initialText
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, window.innerHeight * 0.4)}px`;
   }, [text]);
+
+  // اقتراح وكيل متخصص من كلمات السؤال، ما لم يُختر وكيل أو يُتجاهل الاقتراح نفسه.
+  const suggested = advisor.agentId ? null : suggestAgent(text);
+  const suggestedAgent = suggested && suggested !== dismissed ? agentsFor(lang).find((a) => a.id === suggested) : undefined;
 
   async function submit() {
     const value = text.trim();
@@ -73,6 +80,18 @@ export function QuickConsult({ examples, initialAgent, initialModel, initialText
           </button>
         </div>
       </form>
+      {suggestedAgent && (
+        <div className="notice notice-accent agent-suggest" role="status">
+          <Icon name="info" />
+          <div className="agent-suggest__body">
+            <span className="t-small">{t("اقتراح بحسب كلمات سؤالك:", "Suggested from the wording of your question:")} <strong>{suggestedAgent.name}</strong></span>
+            <span className="row">
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setAdvisor({ ...advisor, agentId: suggestedAgent.id })}>{t("استشر هذا الوكيل", "Consult this agent")}</button>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setDismissed(suggestedAgent.id)}>{t("تجاهل", "Dismiss")}</button>
+            </span>
+          </div>
+        </div>
+      )}
       {error && <p className="field-error" role="alert"><Icon name="alert" size={16} /> {error}</p>}
       <p id="quick-consult-hint" className="t-caption">
         {user
