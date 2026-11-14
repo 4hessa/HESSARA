@@ -7,6 +7,9 @@ import { modeById, type ReviewResult } from "./types.ts";
 
 export type EngineChoice = "auto" | "heuristic";
 
+// سبب الفشل يوضع بين قوسين داخل جملة، فتُحذف نقطته الأخيرة كي لا تتكرر العلامة.
+const reason = (e: unknown, lang: "ar" | "en", fallback: string) => (e instanceof ProviderError ? e.text(lang) : fallback).replace(/[.。]\s*$/, "");
+
 /**
  * يشغّل المراجعة ويصرّح دائمًا بالمحرك المستخدم:
  * المحكّم المنظّم يُحكم بنموذج القرار Jev حين يتاح؛ وبقية الأنماط بنموذج لغوي إن وُجد؛ وإلا بالمراجع القاعدي.
@@ -27,8 +30,8 @@ export async function runReview(opts: {
       // رفض البوابة (مصادقة أو رصيد) يعني أن أي نموذج يمر بها سيُرفض للسبب نفسه.
       gatewayRefused = e instanceof ProviderError && e.kind === "auth";
       notes.push(lang === "ar"
-        ? `تعذر الحكم بنموذج التقييم Jev (${e instanceof ProviderError ? e.text("ar") : "خطأ غير متوقع"}).`
-        : `The Jev evaluation model could not judge (${e instanceof ProviderError ? e.text("en") : "an unexpected error"}).`);
+        ? `تعذر الحكم بنموذج التقييم Jev (${reason(e, "ar", "خطأ غير متوقع")}).`
+        : `The Jev evaluation model could not judge (${reason(e, "en", "an unexpected error")}).`);
     }
   }
   const candidate = opts.engine === "heuristic" ? null : firstLlm(opts.preferredModel);
@@ -40,8 +43,8 @@ export async function runReview(opts: {
       return r;
     } catch (e) {
       notes.push(lang === "ar"
-        ? `تعذرت المراجعة بالنموذج اللغوي (${e instanceof ProviderError ? e.text("ar") : "خطأ في تحليل مخرجات النموذج"}).`
-        : `The language-model review failed (${e instanceof ProviderError ? e.text("en") : "the model's output could not be parsed"}).`);
+        ? `تعذرت المراجعة بالنموذج اللغوي (${reason(e, "ar", "خطأ في تحليل مخرجات النموذج")}).`
+        : `The language-model review failed (${reason(e, "en", "the model's output could not be parsed")}).`);
     }
   }
   const r = heuristicReview(opts.mode, opts.text, criteria, lang);
