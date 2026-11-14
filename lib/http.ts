@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { currentUser } from "./auth";
 import type { UserRow } from "./db";
 import { tOf } from "./i18n";
+import { requestToken } from "./providers/gateway";
 
 export const LIMITS = {
   message: 12_000, // أحرف لكل رسالة
@@ -57,7 +58,8 @@ export function authed<C = unknown>(handler: Handler<C>) {
     if (req.method !== "GET" && !sameOrigin(req)) return fail(403, t("مصدر الطلب غير مسموح.", "Request origin not allowed."));
     const user = await currentUser();
     if (!user) return fail(401, t("يلزم تسجيل الدخول.", "You need to sign in."));
-    return handler(req, user, ctx);
+    // رمز OIDC الذي ترسله Vercel مع الاستدعاء يبقى متاحًا لبوابة الذكاء الاصطناعي طوال معالجة الطلب.
+    return requestToken.run(req.headers.get("x-vercel-oidc-token") ?? undefined, () => handler(req, user, ctx));
   };
 }
 

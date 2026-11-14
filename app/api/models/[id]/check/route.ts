@@ -25,11 +25,11 @@ export const POST = authed<{ params: Promise<{ id: string }> }>(async (req, user
     if (!out.trim()) throw new ProviderError(signal.aborted
       ? { ar: "انتهت مهلة الاختبار (30 ثانية) دون رد.", en: "The test timed out (30 seconds) with no reply." }
       : { ar: "أعاد المزوّد ردًا فارغًا.", en: "The provider returned an empty reply." });
-    recordCheck(id, true);
+    await recordCheck(id, true);
   } catch (e) {
     // إجابة مبتورة تثبت أن الاتصال والمفتاح يعملان.
-    if (e instanceof ProviderError && e.kind === "truncated") recordCheck(id, true);
-    else recordCheck(id, false, e instanceof ProviderError ? { ar: e.message, en: e.en } : { ar: "فشل الاتصال.", en: "The connection failed." });
+    if (e instanceof ProviderError && e.kind === "truncated") await recordCheck(id, true);
+    else await recordCheck(id, false, e instanceof ProviderError ? { ar: e.message, en: e.en } : { ar: "فشل الاتصال.", en: "The connection failed." });
   }
   return ok({ model: modelView(m.def, lang) });
 });

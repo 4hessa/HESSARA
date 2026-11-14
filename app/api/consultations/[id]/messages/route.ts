@@ -105,7 +105,7 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
         } else if (!text.trim()) send({ t: "error", message: t("أعاد النموذج ردًا فارغًا. أعد المحاولة.", "The model returned an empty reply. Try again.") });
         else {
           await save("complete");
-          if (model.def.adapter !== "demo") recordCheck(c.model_id, true);
+          if (model.def.adapter !== "demo") await recordCheck(c.model_id, true);
           send({ t: "done", id: assistantId, status: "complete" });
         }
       } catch (e) {
@@ -114,7 +114,7 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
           const message = e instanceof ProviderError ? e.text(lang) : t("حدث خطأ غير متوقع أثناء توليد الإجابة.", "An unexpected error occurred while generating the answer.");
           if (!(e instanceof ProviderError)) console.error("[consult] stream error", (e as Error).name);
           // الامتناع وحد المعدل والبتر لا تعني أن الاتصال بالنموذج معطّل.
-          else if (e.kind !== "refused" && e.kind !== "rate_limit" && e.kind !== "truncated") recordCheck(c.model_id, false, { ar: e.message, en: e.en });
+          else if (e.kind !== "refused" && e.kind !== "rate_limit" && e.kind !== "truncated") await recordCheck(c.model_id, false, { ar: e.message, en: e.en });
           await save("stopped");
           send({ t: "error", message, partial: !!text.trim(), id: assistantId });
         }

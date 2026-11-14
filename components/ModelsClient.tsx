@@ -89,6 +89,8 @@ export function ModelsClient({ favs }: { favs: string[] }) {
               {d.note && <p className="notice"><Icon name="info" /><span>{d.note}</span></p>}
               <dl className="stack-sm t-small">
                 <div><dt className="label">{t("المزوّد", "Provider")}</dt><dd style={{ margin: 0 }}><bdi>{d.vendor}</bdi></dd></div>
+                {d.route === "gateway" && <div><dt className="label">{t("طريق الاتصال", "Connection")}</dt><dd style={{ margin: 0 }}>{t("بوابة Vercel للذكاء الاصطناعي، وتُحاسَب من رصيد البوابة في حساب Vercel.", "The Vercel AI Gateway, billed to the gateway credit in the Vercel account.")}</dd></div>}
+                {d.route === "direct" && <div><dt className="label">{t("طريق الاتصال", "Connection")}</dt><dd style={{ margin: 0 }}>{t("مفتاح المزوّد مباشرة.", "The provider's own key.")}</dd></div>}
                 <div><dt className="label">{t("الإصدار المستخدم", "Version in use")}</dt><dd style={{ margin: 0 }}>{d.version ? <code className="ltr">{d.version}</code> : d.engine === "demo" ? t("لا ينطبق", "Not applicable") : t("لم يُحدَّد على الخادم — لا تفترض المنصة إصدارًا.", "Not set on the server; the platform does not assume a version.")}</dd></div>
                 <div><dt className="label">{t("المدخلات المدعومة", "Supported input")}</dt><dd style={{ margin: 0 }}>{d.inputs}</dd></div>
                 <div><dt className="label">{t("التكلفة", "Cost")}</dt><dd style={{ margin: 0 }}>{d.pricing ?? (d.engine === "demo" ? t("بلا تكلفة.", "Free.") : t("غير متحقق منها في المنصة؛ راجع صفحة المزوّد الرسمية.", "Not verified by the platform; see the provider's official page."))}</dd></div>

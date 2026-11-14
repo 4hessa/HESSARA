@@ -83,6 +83,14 @@ const SCHEMA = `
       detail TEXT NOT NULL,
       created_at BIGINT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS model_checks (
+      model_id TEXT PRIMARY KEY,
+      ok INTEGER NOT NULL,
+      at BIGINT NOT NULL,
+      ref TEXT NOT NULL,
+      error_ar TEXT,
+      error_en TEXT
+    );
 `;
 
 const toPg = (sql: string) => { let i = 0; return sql.replace(/\?/g, () => "$" + ++i); };

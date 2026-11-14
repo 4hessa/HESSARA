@@ -1,9 +1,10 @@
 // موائم لواجهات «chat/completions» المتوافقة مع OpenAI
 // (OpenAI نفسها، DeepSeek، مستضيفو Llama وQwen، والخوادم المحلية مثل Ollama).
 import { httpError, safeFetch, sseData } from "./sse.ts";
-import type { ProviderAdapter, StreamRequest } from "./types.ts";
+import type { ProviderAdapter, ProviderError, StreamRequest } from "./types.ts";
 
-export function openaiCompatAdapter(cfg: { baseUrl: string; apiKey?: string }): ProviderAdapter {
+/** onError: تحويل ردّ الخطأ إلى رسالة خاصة بالمزوّد (تستخدمه بوابة Vercel). */
+export function openaiCompatAdapter(cfg: { baseUrl: string; apiKey?: string; onError?: (res: Response) => Promise<ProviderError> }): ProviderAdapter {
   return {
     async *stream(req: StreamRequest) {
       const res = await safeFetch(`${cfg.baseUrl.replace(/\/$/, "")}/chat/completions`, {
@@ -19,7 +20,7 @@ export function openaiCompatAdapter(cfg: { baseUrl: string; apiKey?: string }): 
           messages: [{ role: "system", content: req.system }, ...req.messages],
         }),
       });
-      if (!res.ok) throw httpError(res.status);
+      if (!res.ok) throw cfg.onError ? await cfg.onError(res) : httpError(res.status);
       for await (const data of sseData(res)) {
         if (data === "[DONE]") break;
         try {

@@ -5,5 +5,5 @@ import { listModels } from "@/lib/providers";
 
 export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
-  return ok({ models: listModels(!!(await currentUser()), langOf(req)) });
+  return ok({ models: await listModels(!!(await currentUser()), langOf(req)) });
 }

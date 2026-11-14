@@ -1,5 +1,5 @@
 // فهرس النماذج. الحالة تُحسب وقت التشغيل من إعدادات الخادم، ولا يُعرض نموذج
-// «متاحًا» ما لم يكن مفتاحه ومعرّف إصداره مضبوطين فعلًا.
+// «متاحًا» ما لم يكن طريق الوصول إليه مضبوطًا فعلًا: بوابة Vercel، أو مفتاح المزوّد ومعرّف إصداره.
 export type ModelStatus = "ready" | "configured" | "not_configured" | "failed";
 
 export type ModelDef = {
@@ -16,12 +16,15 @@ export type ModelDef = {
   pricing?: string; // يُذكر فقط إن وُجد مصدر
   /** معرّف ثابت موثّق، أو اسم متغير البيئة الذي يحدده. */
   apiModel?: string;
+  /** معرّف النموذج في بوابة Vercel للذكاء الاصطناعي (مصدره قائمة نماذج البوابة)؛ يُستخدم حين تكون البوابة متاحة. */
+  gateway?: string;
   env: { key?: string; model?: string; baseUrl?: string; defaultBaseUrl?: string };
   note?: string;
 };
 
 const TEXT_ONLY = "نص فقط في هذه النسخة من هسّارة (لا ملفات ولا صور).";
 const CLAUDE_PRICING_NOTE = "وفق جدول أسعار المزوّد المخزَّن بتاريخ ٢٠٢٦-١١-٠٣ — راجع الصفحة الرسمية قبل الاعتماد عليه.";
+const GATEWAY_PRICING_NOTE = "وفق قائمة أسعار بوابة Vercel بتاريخ ٢٠٢٦-١١-١٤ — راجعها قبل الاعتماد عليها.";
 
 export const MODELS: ModelDef[] = [
   {
@@ -49,6 +52,7 @@ export const MODELS: ModelDef[] = [
     tasks: ["تحليل معقّد", "برمجة", "مراجعة نقدية"],
     inputs: TEXT_ONLY,
     apiModel: "claude-opus-5-5",
+    gateway: "anthropic/claude-opus-5.5",
     docsUrl: "https://platform.claude.com/docs/en/about-claude/models/overview",
     pricing: `٤ دولارات للإدخال و٢٠ دولارًا للإخراج لكل مليون رمز. ${CLAUDE_PRICING_NOTE}`,
     env: { key: "ANTHROPIC_API_KEY" },
@@ -64,6 +68,7 @@ export const MODELS: ModelDef[] = [
     tasks: ["استشارات يومية", "برمجة", "تلخيص"],
     inputs: TEXT_ONLY,
     apiModel: "claude-sonnet-5-5",
+    gateway: "anthropic/claude-sonnet-5.5",
     docsUrl: "https://platform.claude.com/docs/en/about-claude/models/overview",
     pricing: `دولاران للإدخال و١٠ دولارات للإخراج لكل مليون رمز. ${CLAUDE_PRICING_NOTE}`,
     env: { key: "ANTHROPIC_API_KEY" },
@@ -79,6 +84,7 @@ export const MODELS: ModelDef[] = [
     tasks: ["أسئلة سريعة", "تصنيف", "مراجعات قصيرة"],
     inputs: TEXT_ONLY,
     apiModel: "claude-haiku-5-5",
+    gateway: "anthropic/claude-haiku-5.5",
     docsUrl: "https://platform.claude.com/docs/en/about-claude/models/overview",
     pricing: `٠٫١٠ دولار للإدخال و٠٫٥٠ دولار للإخراج لكل مليون رمز (حتى ١٠٠ ألف رمز في الطلب). ${CLAUDE_PRICING_NOTE}`,
     env: { key: "ANTHROPIC_API_KEY" },
@@ -90,10 +96,12 @@ export const MODELS: ModelDef[] = [
     vendorKey: "openai",
     adapter: "openai",
     category: "سحابي",
-    description: "عائلة نماذج OpenAI. الإصدار المستخدم يحدده مشغّل المنصة في إعدادات الخادم ولا تفترضه هسّارة.",
+    description: "عائلة نماذج OpenAI. عبر بوابة Vercel يُستخدم GPT 5.6 Terra؛ ومع مفتاح OpenAI مباشر يحدد مشغّل المنصة الإصدار.",
     tasks: ["استشارات عامة", "برمجة"],
     inputs: TEXT_ONLY,
     docsUrl: "https://platform.openai.com/docs/models",
+    gateway: "openai/gpt-5.6-terra",
+    pricing: `عبر البوابة: دولاران للإدخال و١٢ دولارًا للإخراج لكل مليون رمز. ${GATEWAY_PRICING_NOTE}`,
     env: { key: "OPENAI_API_KEY", model: "OPENAI_MODEL", defaultBaseUrl: "https://api.openai.com/v1" },
   },
   {
@@ -103,10 +111,12 @@ export const MODELS: ModelDef[] = [
     vendorKey: "google",
     adapter: "gemini",
     category: "سحابي",
-    description: "عائلة نماذج Google. الإصدار يحدده مشغّل المنصة في إعدادات الخادم.",
+    description: "عائلة نماذج Google. عبر بوابة Vercel يُستخدم Gemini 3.5 Flash؛ ومع مفتاح Gemini مباشر يحدد مشغّل المنصة الإصدار.",
     tasks: ["استشارات عامة", "تحليل"],
     inputs: TEXT_ONLY,
     docsUrl: "https://ai.google.dev/gemini-api/docs/models",
+    gateway: "google/gemini-3.5-flash",
+    pricing: `عبر البوابة: ١٫٥ دولار للإدخال و٩ دولارات للإخراج لكل مليون رمز. ${GATEWAY_PRICING_NOTE}`,
     env: { key: "GEMINI_API_KEY", model: "GEMINI_MODEL" },
   },
   {
@@ -116,10 +126,12 @@ export const MODELS: ModelDef[] = [
     vendorKey: "deepseek",
     adapter: "openai",
     category: "سحابي",
-    description: "نماذج DeepSeek عبر واجهة متوافقة مع OpenAI. الإصدار يحدده مشغّل المنصة.",
+    description: "نماذج DeepSeek. عبر بوابة Vercel يُستخدم DeepSeek V4.1 Flash؛ ومع مفتاح DeepSeek مباشر يحدد مشغّل المنصة الإصدار.",
     tasks: ["برمجة", "استدلال"],
     inputs: TEXT_ONLY,
     docsUrl: "https://api-docs.deepseek.com/",
+    gateway: "deepseek/deepseek-v4.1-flash",
+    pricing: `عبر البوابة: ٠٫٣٠ دولار للإدخال و١٫٢٠ دولار للإخراج لكل مليون رمز. ${GATEWAY_PRICING_NOTE}`,
     env: { key: "DEEPSEEK_API_KEY", model: "DEEPSEEK_MODEL", baseUrl: "DEEPSEEK_BASE_URL", defaultBaseUrl: "https://api.deepseek.com" },
   },
   {
@@ -129,9 +141,11 @@ export const MODELS: ModelDef[] = [
     vendorKey: "alibaba",
     adapter: "openai",
     category: "سحابي",
-    description: "نماذج Qwen عبر مستضيف يوفّر واجهة متوافقة مع OpenAI. العنوان والإصدار يحددهما مشغّل المنصة.",
+    description: "نماذج Qwen. عبر بوابة Vercel يُستخدم Qwen 3.8 Flash؛ ومع مستضيف آخر متوافق مع OpenAI يحدد مشغّل المنصة العنوان والإصدار.",
     tasks: ["استشارات عامة", "برمجة"],
     inputs: TEXT_ONLY,
+    gateway: "alibaba/qwen3.8-flash",
+    pricing: `عبر البوابة: ٠٫١٥ دولار للإدخال و٠٫٤٧ دولار للإخراج لكل مليون رمز. ${GATEWAY_PRICING_NOTE}`,
     env: { key: "QWEN_API_KEY", model: "QWEN_MODEL", baseUrl: "QWEN_BASE_URL" },
   },
   {
@@ -141,10 +155,12 @@ export const MODELS: ModelDef[] = [
     vendorKey: "meta",
     adapter: "openai",
     category: "سحابي",
-    description: "نماذج Llama مفتوحة الأوزان لدى مستضيف خارجي بواجهة متوافقة مع OpenAI. العنوان والإصدار يحددهما مشغّل المنصة.",
+    description: "نماذج Llama مفتوحة الأوزان. عبر بوابة Vercel يُستخدم Llama 4 Maverick؛ ومع مستضيف آخر متوافق مع OpenAI يحدد مشغّل المنصة العنوان والإصدار.",
     tasks: ["استشارات عامة", "تجارب"],
     inputs: TEXT_ONLY,
     docsUrl: "https://www.llama.com/docs/overview/",
+    gateway: "meta/llama-4-maverick",
+    pricing: `عبر البوابة: ٠٫٢٤ دولار للإدخال و٠٫٩٧ دولار للإخراج لكل مليون رمز. ${GATEWAY_PRICING_NOTE}`,
     env: { key: "LLAMA_API_KEY", model: "LLAMA_MODEL", baseUrl: "LLAMA_BASE_URL" },
   },
   {
@@ -166,6 +182,7 @@ export const MODELS: ModelDef[] = [
 /** النصوص الإنجليزية لكل نموذج؛ الحقول التقنية (المعرّفات والمتغيرات والروابط) مشتركة. */
 const TEXT_ONLY_EN = "Text only in this version of HESSARA (no files or images).";
 const CLAUDE_PRICING_NOTE_EN = "From the provider's price list as stored on 2026-11-03; check the official page before relying on it.";
+const GATEWAY_PRICING_NOTE_EN = "From the Vercel AI Gateway price list as of 2026-11-14; check it before relying on it.";
 type ModelText = Pick<ModelDef, "description" | "tasks" | "inputs"> & Partial<Pick<ModelDef, "name" | "vendor" | "pricing" | "note">>;
 const EN: Record<string, ModelText> = {
   "hessara-demo": {
@@ -195,29 +212,34 @@ const EN: Record<string, ModelText> = {
     pricing: `US$0.10 input and US$0.50 output per million tokens (up to 100k tokens per request). ${CLAUDE_PRICING_NOTE_EN}`,
   },
   gpt: {
-    description: "OpenAI's model family. The version used is set by the platform operator in the server settings; HESSARA does not assume one.",
+    description: "OpenAI's model family. Through the Vercel AI Gateway it uses GPT 5.6 Terra; with a direct OpenAI key the platform operator sets the version.",
     tasks: ["General consultations", "Programming"],
     inputs: TEXT_ONLY_EN,
+    pricing: `Through the gateway: US$2 input and US$12 output per million tokens. ${GATEWAY_PRICING_NOTE_EN}`,
   },
   gemini: {
-    description: "Google's model family. The version is set by the platform operator in the server settings.",
+    description: "Google's model family. Through the Vercel AI Gateway it uses Gemini 3.5 Flash; with a direct Gemini key the platform operator sets the version.",
     tasks: ["General consultations", "Analysis"],
     inputs: TEXT_ONLY_EN,
+    pricing: `Through the gateway: US$1.50 input and US$9 output per million tokens. ${GATEWAY_PRICING_NOTE_EN}`,
   },
   deepseek: {
-    description: "DeepSeek models through an OpenAI-compatible interface. The version is set by the platform operator.",
+    description: "DeepSeek models. Through the Vercel AI Gateway it uses DeepSeek V4.1 Flash; with a direct DeepSeek key the platform operator sets the version.",
     tasks: ["Programming", "Reasoning"],
     inputs: TEXT_ONLY_EN,
+    pricing: `Through the gateway: US$0.30 input and US$1.20 output per million tokens. ${GATEWAY_PRICING_NOTE_EN}`,
   },
   qwen: {
-    description: "Qwen models through a host that offers an OpenAI-compatible interface. The address and version are set by the platform operator.",
+    description: "Qwen models. Through the Vercel AI Gateway it uses Qwen 3.8 Flash; with another OpenAI-compatible host the platform operator sets the address and version.",
     tasks: ["General consultations", "Programming"],
     inputs: TEXT_ONLY_EN,
+    pricing: `Through the gateway: US$0.15 input and US$0.47 output per million tokens. ${GATEWAY_PRICING_NOTE_EN}`,
   },
   llama: {
-    description: "Open-weight Llama models at an external host with an OpenAI-compatible interface. The address and version are set by the platform operator.",
+    description: "Open-weight Llama models. Through the Vercel AI Gateway it uses Llama 4 Maverick; with another OpenAI-compatible host the platform operator sets the address and version.",
     tasks: ["General consultations", "Experiments"],
     inputs: TEXT_ONLY_EN,
+    pricing: `Through the gateway: US$0.24 input and US$0.97 output per million tokens. ${GATEWAY_PRICING_NOTE_EN}`,
   },
   local: {
     name: "Local model",
