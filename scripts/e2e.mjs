@@ -56,6 +56,12 @@ try {
   check("الصفحة الرئيسية تعرض العنوان الرئيسي", await page.getByRole("heading", { level: 1 }).innerText().then((t) => t.includes("ذكاءٌ يُرشِد")));
   check("الواجهة العربية من اليمين", await page.evaluate(() => document.documentElement.dir === "rtl" && document.documentElement.lang === "ar"));
   check("رسمة الرأس محمّلة", await page.locator(".art img").evaluate((img) => img.complete && img.naturalWidth > 0));
+  {
+    const x = page.locator("footer").getByRole("link", { name: /@4hessa على منصة X/ });
+    const [href, target, rel] = await Promise.all([x.getAttribute("href"), x.getAttribute("target"), x.getAttribute("rel")]);
+    const box = await x.boundingBox();
+    check("أيقونة X في التذييل تقود إلى الحساب في تبويب جديد", href === "https://x.com/4hessa" && target === "_blank" && /noopener/.test(rel ?? "") && box.width >= 24 && box.height >= 24, `${href} ${target} ${rel} ${box?.width}x${box?.height}`);
+  }
   await shot(page, "01-landing-light-desktop", true);
   await axe(page, "الصفحة الرئيسية (فاتح)");
   await noOverflow(page, "الرئيسية/حاسب");
