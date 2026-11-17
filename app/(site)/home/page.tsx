@@ -3,6 +3,9 @@ import Link from "next/link";
 import { fmtDate, VendorMark } from "@/components/bits";
 import { Icon } from "@/components/Icon";
 import { FirstSteps } from "@/components/FirstSteps";
+import { ModelNotice } from "@/components/ModelNotice";
+import { SusInvite } from "@/components/SusInvite";
+import { susStatus } from "@/lib/sus";
 import { QuickConsult } from "@/components/QuickConsult";
 import { AppPage } from "@/components/site/Page";
 import { agentById, agentsFor } from "@/lib/catalog/agents";
@@ -38,6 +41,7 @@ export default async function Home() {
     .map((r) => modelById(r.model_id)).filter((m) => !!m).map((m) => localizeModel(m, lang));
   const savedVideos = favs.filter((f) => f.kind === "video").map((f) => VIDEOS.find((v) => v.id === f.ref)).filter((v) => !!v);
   const videos = (savedVideos.length ? savedVideos : user.personalize ? VIDEOS.slice(0, 3) : []).slice(0, 3);
+  const sus = await susStatus(user.id);
   const prefDef = modelById(user.pref_model);
   const pref = prefDef ? localizeModel(prefDef, lang) : undefined;
 
@@ -54,10 +58,12 @@ export default async function Home() {
       <div className="stack-lg">
         <section className="stack" aria-label={t("ابدأ استشارة", "Start a consultation")} style={{ maxWidth: "46rem", marginInline: "auto", width: "100%" }}>
           {recent.length === 0 && <FirstSteps />}
+          <ModelNotice />
           <QuickConsult />
           <div className="chips" aria-label={t("ابدأ من مهمة", "Start from a task")}>
             {STARTERS.map((s) => <Link key={s.label} href={s.href} className="chip"><Icon name={s.icon} size={16} /> {s.label}</Link>)}
           </div>
+          {sus === "eligible" && <SusInvite />}
         </section>
 
         <div className="grid-2">

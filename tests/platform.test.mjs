@@ -7,7 +7,7 @@ import path from "node:path";
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "hessara-platform-"));
 process.env.HESSARA_DB_PATH = path.join(dir, "test.db");
-for (const k of ["DATABASE_URL", "HESSARA_PGLITE", "VERCEL", "HESSARA_DAILY_LIMIT", "HESSARA_ADMIN_EMAILS", "HESSARA_TRUST_PROXY"]) delete process.env[k];
+for (const k of ["DATABASE_URL", "HESSARA_PGLITE", "VERCEL", "HESSARA_DAILY_LIMIT", "HESSARA_PLATFORM_DAILY_LIMIT", "HESSARA_ADMIN_EMAILS", "HESSARA_TRUST_PROXY"]) delete process.env[k];
 test.after(() => fs.rmSync(dir, { recursive: true, force: true }));
 
 const { run } = await import("../lib/db.ts");
@@ -48,10 +48,10 @@ test("الحد اليومي: يُحتسب كل استدعاء ناجح، ويُ�
   process.env.HESSARA_DAILY_LIMIT = "2";
   try {
     const user = { id: "u1", email: "a@example.com" };
-    assert.deepEqual(await U.quotaFor(user), { used: 0, limit: 2, left: 2 });
+    assert.deepEqual(await U.quotaFor(user), { used: 0, limit: 2, left: 2, platformLeft: 100 });
     await U.countUse("u1"); await U.countUse("u1");
     const q = await U.quotaFor(user);
-    assert.deepEqual(q, { used: 2, limit: 2, left: 0 });
+    assert.deepEqual(q, { used: 2, limit: 2, left: 0, platformLeft: 98 });
     assert.equal(U.quotaExhausted(q), true);
     process.env.HESSARA_ADMIN_EMAILS = "owner@example.com, A@Example.com";
     const qa = await U.quotaFor(user);
@@ -62,7 +62,29 @@ test("الحد اليومي: يُحتسب كل استدعاء ناجح، ويُ�
   process.env.HESSARA_DAILY_LIMIT = "abc";
   assert.equal(U.dailyLimit(), 20, "قيمة غير صالحة تعود إلى الافتراضي");
   delete process.env.HESSARA_DAILY_LIMIT;
-  assert.match(U.quotaMessage(20, "ar"), /بلغت حدّك اليومي .*\(20\)/);
+  assert.match(U.quotaMessage({ limit: 20, left: 0, platformLeft: 5 }, "ar"), /بلغت حدّك اليومي .*\(20\)/);
+});
+
+test("سقف المنصة: مجموع استدعاءات كل المستخدمين يوقف الجميع عند بلوغه، عدا صاحب المشروع", async () => {
+  // u1 استهلك استدعاءين اليوم في الاختبار السابق
+  await run("INSERT INTO users (id, email, name, pass_hash, created_at) VALUES (?,?,?,?,?)", "u2", "b@example.com", "B", "x", Date.now());
+  process.env.HESSARA_PLATFORM_DAILY_LIMIT = "3";
+  try {
+    const user = { id: "u2", email: "b@example.com" };
+    const q0 = await U.quotaFor(user);
+    assert.deepEqual(q0, { used: 0, limit: 20, left: 20, platformLeft: 1 });
+    assert.equal(U.quotaExhausted(q0), false);
+    await U.countUse("u2");
+    const q1 = await U.quotaFor(user);
+    assert.equal(q1.left, 19, "حد المستخدم لم يُستنفد");
+    assert.equal(q1.platformLeft, 0);
+    assert.equal(U.quotaExhausted(q1), true, "سقف المنصة يوقفه رغم بقاء حصته");
+    assert.match(U.quotaMessage(q1, "ar"), /سقفها اليومي المشترك/);
+    assert.match(U.quotaMessage(q1, "en"), /shared daily cap/);
+    process.env.HESSARA_ADMIN_EMAILS = "b@example.com";
+    assert.equal(U.quotaExhausted(await U.quotaFor(user)), false, "صاحب المشروع بلا سقف");
+  } finally { delete process.env.HESSARA_PLATFORM_DAILY_LIMIT; delete process.env.HESSARA_ADMIN_EMAILS; }
+  assert.equal(U.platformDailyLimit(), 100, "السقف الافتراضي");
 });
 
 test("عدّاد الزيارات: المعرّفات في الروابط تُستبدل، ومسارات الواجهة البرمجية والإدارة لا تُحصى", () => {

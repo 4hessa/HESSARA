@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AgentIntake } from "@/components/AgentIntake";
+import { ModelNotice } from "@/components/ModelNotice";
 import { QuickConsult } from "@/components/QuickConsult";
 import { AppPage } from "@/components/site/Page";
 import { agentById } from "@/lib/catalog/agents";
@@ -29,6 +30,7 @@ export default async function NewConsult({ searchParams }: { searchParams: Promi
         : t("اشرح المشكلة بما يكفي من السياق، واختر النموذج أو الوكيل من الزر أسفل الحقل.", "Describe the problem with enough context, and choose the model or agent from the button under the field.")}
       narrow
     >
+      <ModelNotice className="model-notice--gap" />
       {agent ? (
         <div className="stack">
           <AgentIntake agent={agent} initialModel={sp.model} />

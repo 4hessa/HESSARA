@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { agentById } from "@/lib/catalog/agents";
 import type { ConsultRow, MessageRow } from "@/lib/db";
 import { AdvisorPicker } from "./AdvisorPicker";
+import { ModelNotice } from "./ModelNotice";
 import { api, useApp } from "./app";
 import { fmtDate, VendorMark } from "./bits";
 import { Dialog } from "./Dialog";
@@ -286,6 +287,8 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
                 {streaming ? <Markdown text={streaming} /> : <span className="typing" aria-label={t("جارٍ التوليد", "Generating")}><i /><i /><i /></span>}
               </div>
             )}
+            {/* رسالة الخطأ أدق من التنبيه العام، فلا يُعرضان معًا */}
+            {model?.engine === "llm" && !busy && !error && <ModelNotice />}
             {error && (
               <div className="notice notice-danger" role="alert">
                 <Icon name="alert" />

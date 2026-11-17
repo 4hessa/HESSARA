@@ -23,7 +23,7 @@ export const POST = authed<{ params: Promise<{ id: string }> }>(async (req, user
     if (!llm) return fail(409, t("لا يوجد نموذج لغوي مهيّأ لتوليد نسخة منقّحة. الصق نسختك المعدّلة يدويًا للمقارنة.", "No language model is configured to generate a revised version. Paste your own edited version to compare."));
     if (!user.external_consent) return Response.json({ error: t("يلزم موافقتك على إرسال النص إلى مزوّد خارجي.", "Your consent is needed to send the text to an external provider."), code: "consent" }, { status: 412 });
     const quota = await quotaFor(user);
-    if (quotaExhausted(quota)) return Response.json({ error: quotaMessage(quota.limit, lang), code: "quota", quota }, { status: 429 });
+    if (quotaExhausted(quota)) return Response.json({ error: quotaMessage(quota, lang), code: "quota", quota }, { status: 429 });
     try {
       revised = (await llmRevise(llm, r.input, JSON.parse(r.result), AbortSignal.any([req.signal, AbortSignal.timeout(120_000)]), lang)).trim();
       source = "llm";

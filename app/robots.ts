@@ -4,7 +4,7 @@ import { SITE } from "@/lib/site";
 // كما في الموقع المرجعي: الزحف مسموح، ويُذكر رابط خريطة الموقع حين يُعرف العنوان العام.
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/s/", "/admin"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/s/", "/admin", "/survey"] },
     ...(SITE ? { sitemap: `${SITE}/sitemap.xml` } : {}),
   };
 }

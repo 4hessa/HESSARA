@@ -8,6 +8,7 @@ import { recordCheck, resolveModel } from "@/lib/providers";
 import { ProviderError } from "@/lib/providers/types";
 import { langOf, makeT } from "@/lib/i18n";
 import { countUse, quotaExhausted, quotaFor, quotaMessage } from "@/lib/usage";
+import { recordServerError } from "@/lib/errors";
 
 export const maxDuration = 300; // ثوانٍ: أقصى مدة للدالة على الاستضافة عديمة الحالة
 
@@ -37,7 +38,7 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
   // الحد اليومي للنماذج الحقيقية يُفحص قبل حفظ الرسالة، فلا تبقى رسالة بلا إجابة.
   const realModel = model.def.adapter !== "demo";
   const quota = realModel ? await quotaFor(user) : null;
-  if (quota && quotaExhausted(quota)) return Response.json({ error: quotaMessage(quota.limit, lang), code: "quota", quota }, { status: 429 });
+  if (quota && quotaExhausted(quota)) return Response.json({ error: quotaMessage(quota, lang), code: "quota", quota }, { status: 429 });
 
   const now = Date.now();
   let userMsgId: string | null = null;
@@ -120,7 +121,10 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
         if (abort.signal.aborted) await save("stopped");
         else {
           const message = e instanceof ProviderError ? e.text(lang) : t("حدث خطأ غير متوقع أثناء توليد الإجابة.", "An unexpected error occurred while generating the answer.");
-          if (!(e instanceof ProviderError)) console.error("[consult] stream error", (e as Error).name);
+          if (!(e instanceof ProviderError)) {
+            console.error("[consult] stream error", (e as Error).name);
+            await recordServerError(e, "/api/consultations/[id]/messages");
+          }
           // الامتناع وحد المعدل والبتر لا تعني أن الاتصال بالنموذج معطّل.
           else if (e.kind !== "refused" && e.kind !== "rate_limit" && e.kind !== "truncated") await recordCheck(c.model_id, false, { ar: e.message, en: e.en });
           await save("stopped");

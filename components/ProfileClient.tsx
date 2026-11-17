@@ -116,6 +116,13 @@ export function ProfileClient() {
         <div className="row"><Link className="btn btn-secondary btn-sm" href="/consult?saved=1"><Icon name="bookmark" size={18} /> {t("استشاراتي المحفوظة", "My saved consultations")}</Link></div>
       </section>
 
+      <section className="card" aria-labelledby="p-data">
+        <h2 id="p-data" className="t-h3">{t("بياناتك", "Your data")}</h2>
+        <p className="t-small muted">{t("ملف واحد فيه كل ما تحفظه المنصة عنك: الحساب وتفضيلاته، والاستشارات برسائلها وتقييماتها، والمراجعات، والمفضلات، واستبيان سهولة الاستخدام. لا يتضمن كلمة المرور.",
+          "One file with everything the platform stores about you: your account and preferences, consultations with their messages and ratings, reviews, favourites, and the usability questionnaire. It does not include your password.")}</p>
+        <div><a className="btn btn-secondary btn-sm" href="/api/me/export" download><Icon name="download" size={18} /> {t("نزّل نسخة من بياناتك", "Download a copy of your data")}</a></div>
+      </section>
+
       <section className="card" aria-labelledby="p-del">
         <h2 id="p-del" className="t-h3">{t("حذف الحساب", "Delete account")}</h2>
         <p className="t-small muted">{t("يحذف حسابك وكل استشاراتك ومراجعاتك ومفضلاتك من قاعدة بيانات المنصة نهائيًا.", "Permanently deletes your account and all your consultations, reviews, and favourites from the platform's database.")}</p>

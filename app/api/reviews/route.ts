@@ -53,7 +53,7 @@ export const POST = authed(async (req, user) => {
     lang,
     signal: AbortSignal.any([req.signal, AbortSignal.timeout(120_000)]),
   });
-  if (overQuota) result.limits.unshift(quotaMessage(quota!.limit, lang));
+  if (overQuota) result.limits.unshift(quotaMessage(quota!, lang));
   if (result.engine === "llm" || result.engine === "jev") await countUse(user.id).catch(() => {});
   const id = newId();
   await run("INSERT INTO reviews (id, user_id, consultation_id, message_id, mode, criteria, input, result, engine, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",

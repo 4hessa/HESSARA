@@ -241,6 +241,8 @@ Tell us which idea interests you, and what you hope to do, through the [contact 
 - Your ratings of answers, and the reason if you choose one from the list.
 - A daily count of your calls to real AI models, to apply the daily limit.
 - How many times each page was opened each day, with no visitor identifier: no address and no cookie. Nothing is counted when your browser asks sites not to track it.
+- Your answers to the usability questionnaire, if you choose to fill it in. The project owner sees them only aggregated with others, without your name or email.
+- Technical errors: when something fails on the server or in your browser, the type of error, a cleaned message, and the page template are counted per day, with no visitor identifier and no text you wrote. They are deleted after 30 days.
 - We collect no location data and use no tracking or advertising tools.
 
 ## Where it is stored
@@ -257,11 +259,12 @@ In the platform's database on its server. Each account's consultations are isola
 ## Cookies and local storage
 
 - A session cookie that JavaScript cannot read, a cookie for your theme, and a cookie for your language.
-- The browser's local storage holds the break-reminder timer, and a temporary draft of your consultation while you sign in.
+- The browser's local storage holds the break-reminder timer, whether you have dismissed the getting-started card, and a temporary draft of your consultation while you sign in.
 
 ## Your rights
 
 - Delete any single consultation, or delete your account and all its data permanently, from your profile.
+- Download a copy of everything the platform stores about you, in one file, from your profile.
 - Export any consultation as a text file, or print its report, from the top of the conversation.
 - Stop any share link at any time; it stops working at once.`,
     },
@@ -279,6 +282,8 @@ In the platform's database on its server. Each account's consultations are isola
 - تقييمك للإجابات، وسبب التقييم إن اخترته من القائمة.
 - عدد استدعاءاتك اليومية لنماذج الذكاء الاصطناعي الحقيقية، لتطبيق الحد اليومي.
 - عدد مرات فتح كل صفحة في كل يوم، دون أي معرّف للزائر: لا عنوان ولا ملف ارتباط. ولا يُحتسب شيء إن طلب متصفحك من المواقع عدم تتبّعه.
+- إجاباتك عن استبيان سهولة الاستخدام إن اخترت ملأه. لا يراها صاحب المشروع إلا مجمّعة مع غيرها، دون اسمك أو بريدك.
+- الأخطاء التقنية: حين يتعطل شيء في الخادم أو في متصفحك يُحصى في كل يوم نوع الخطأ ورسالته بعد تنقيتها وقالب الصفحة، دون أي معرّف للزائر ودون أي نص كتبته. تُحذف بعد ٣٠ يومًا.
 - لا نجمع بيانات موقع، ولا نستخدم أدوات تتبّع أو إعلانات.
 
 ## أين تُخزَّن
@@ -295,11 +300,12 @@ In the platform's database on its server. Each account's consultations are isola
 ## ملفات الارتباط والتخزين المحلي
 
 - ملف ارتباط للجلسة لا يقرؤه JavaScript، وآخر لتفضيل المظهر، وثالث للغة الواجهة.
-- يُستخدم التخزين المحلي في المتصفح لمؤقت تذكير الاستراحة، ولحفظ مسودة استشارتك مؤقتًا أثناء تسجيل الدخول.
+- يُستخدم التخزين المحلي في المتصفح لمؤقت تذكير الاستراحة، ولتذكّر إخفائك لوحة البداية، ولحفظ مسودة استشارتك مؤقتًا أثناء تسجيل الدخول.
 
 ## حقوقك
 
 - حذف أي استشارة منفردة، أو حذف الحساب وكل بياناته نهائيًا من الملف الشخصي.
+- تنزيل نسخة من كل ما تحفظه المنصة عنك في ملف واحد، من الملف الشخصي.
 - تصدير أي استشارة ملفًا نصيًا، أو طباعة تقريرها، من أعلى المحادثة.
 - إيقاف أي رابط مشاركة في أي وقت، فيتوقف عن العمل فورًا.`,
     },

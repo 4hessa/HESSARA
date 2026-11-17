@@ -56,6 +56,7 @@ try {
   check("الصفحة الرئيسية تعرض العنوان الرئيسي", await page.getByRole("heading", { level: 1 }).innerText().then((t) => t.includes("ذكاءٌ يُرشِد")));
   check("الواجهة العربية من اليمين", await page.evaluate(() => document.documentElement.dir === "rtl" && document.documentElement.lang === "ar"));
   check("رسمة الرأس محمّلة", await page.locator(".art img").evaluate((img) => img.complete && img.naturalWidth > 0));
+  check("تنبيه حالة النماذج يظهر في الرئيسية ما دام لا يعمل نموذج حقيقي", (await page.getByTestId("model-notice").innerText()).includes("لا يوجد الآن نموذج ذكاء اصطناعي حقيقي مؤكَّد العمل"));
   {
     const x = page.locator("footer").getByRole("link", { name: /@4hessa على منصة X/ });
     const [href, target, rel] = await Promise.all([x.getAttribute("href"), x.getAttribute("target"), x.getAttribute("rel")]);
@@ -112,6 +113,7 @@ try {
   await page.getByRole("button", { name: "أعد التوليد" }).waitFor({ timeout: 30000 });
   check("وصلت إجابة مكتملة", await page.getByText("تحليل الأسباب المحتملة").isVisible());
   check("هوية النموذج ظاهرة على الإجابة", await page.locator(".msg-meta").first().innerText().then((t) => t.includes("المحرك التجريبي")));
+  check("لا تنبيه لحالة النماذج داخل استشارة بالمحرك التجريبي", (await page.getByTestId("model-notice").count()) === 0);
   await shot(page, "04-consult-light-desktop");
 
   // ── ٤. المراجعة النقدية ──
@@ -142,6 +144,7 @@ try {
   const home = await page.locator("main").innerText();
   check("اللوحة: تحية بالاسم + النموذج المفضل", home.includes("مرحبًا أحمد") && home.includes("نموذجك المفضل"));
   check("اللوحة: الاستشارة السابقة والمحفوظة موجودتان", (await page.locator("a.ws-item").count()) >= 2);
+  check("اللوحة: تنبيه حالة النماذج ظاهر", await page.getByTestId("model-notice").isVisible());
   await shot(page, "06-home-light-desktop", true);
   await axe(page, "اللوحة");
   await page.goto(consultUrl);
@@ -235,6 +238,30 @@ try {
   await page.getByRole("switch", { name: /تذكير راحة العين/ }).uncheck();
   await page.getByText("حُفظ التغيير.").waitFor();
   check("تعطيل التذكير من الإعدادات", true);
+  // تنزيل نسخة من كل البيانات
+  const [dl] = await Promise.all([page.waitForEvent("download"), page.getByRole("link", { name: "نزّل نسخة من بياناتك" }).click()]);
+  const exportedRaw = fs.readFileSync(await dl.path(), "utf8");
+  const exported = JSON.parse(exportedRaw);
+  check("تنزيل البيانات: الحساب والاستشارات برسائلها وتقييماتها، دون كلمة المرور ورموز الجلسات",
+    exported.account?.email === "ahmad@example.com" && exported.consultations?.length >= 2 &&
+      exported.consultations.some((c) => c.messages.some((m) => m.role === "assistant" && m.rating === "not_helpful" && m.not_helpful_reason)) &&
+      exported.reviews?.length >= 1 && !/pass_hash|token_hash|correct-horse/.test(exportedRaw),
+    `${exported.consultations?.length} استشارة، ${dl.suggestedFilename()}`);
+  // استبيان سهولة الاستخدام: يُعرض بعد استشارتين
+  await page.goto(BASE + "/home");
+  check("دعوة استبيان سهولة الاستخدام تظهر بعد استشارتين", await page.getByRole("heading", { name: "رأيك في سهولة استخدام المنصة" }).isVisible());
+  await page.getByRole("link", { name: "ابدأ التقييم" }).click();
+  await page.waitForURL(/\/survey$/);
+  await axe(page, "استبيان سهولة الاستخدام");
+  await page.getByRole("button", { name: "أرسل التقييم" }).click();
+  check("الاستبيان يرفض الإرسال الناقص ويذكر العبارات الناقصة", (await page.locator("form.sus").getByRole("alert").innerText()).includes("بقيت عبارات دون إجابة"));
+  const picks = [4, 2, 4, 1, 4, 2, 5, 2, 4, 3];
+  for (let i = 0; i < 10; i++) await page.locator(`input[name="q${i + 1}"][value="${picks[i]}"]`).check();
+  await shot(page, "12b-survey-light-desktop", true);
+  await page.getByRole("button", { name: "أرسل التقييم" }).click();
+  await page.waitForURL(/\/home$/);
+  await page.getByText("شكرًا، سُجّل تقييمك.").waitFor();
+  check("الاستبيان يُحفظ وتختفي الدعوة", (await page.getByRole("heading", { name: "رأيك في سهولة استخدام المنصة" }).count()) === 0);
 
   // ── ١١. لوحة المفاتيح ──
   await page.goto(BASE + "/home");
@@ -349,12 +376,30 @@ try {
   // عدّاد الزيارات: متصفح عادي يُحصى (والمعرّف في الرابط يُستبدل)، وأدوات الاختبار لا تُحصى
   const pv = await fetch(BASE + "/api/pv", { method: "POST", headers: { "content-type": "application/json", "user-agent": "Mozilla/5.0 (Windows NT 10.0) Chrome/140 Safari/537.36" }, body: JSON.stringify({ p: "/consult/" + id }) });
   check("عدّاد الزيارات يقبل الطلب دون أي معرّف للزائر", pv.status === 204);
+  // خطأ JavaScript في متصفح زائر عادي يُحصى في سجل الأخطاء، ورسالته منقّاة
+  const visitor = await browser.newContext({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36" });
+  const vp = await visitor.newPage();
+  // المستمع يُسجَّل بعد اكتمال تحميل الواجهة، في الدورة نفسها التي يُرسل فيها عدّاد الزيارات طلبه
+  const hydrated = vp.waitForRequest((r) => r.url().endsWith("/api/pv"));
+  await vp.goto(BASE + "/insights");
+  await hydrated;
+  const reported = vp.waitForResponse((r) => r.url().endsWith("/api/client-error"));
+  await vp.addScriptTag({ content: "setTimeout(() => { const e = new Error('probe leak@example.com 987654'); e.name = 'E2EProbe'; throw e; });" });
+  check("خطأ في متصفح الزائر يُرسل إلى سجل الأخطاء", (await reported).status() === 204);
+  await visitor.close();
   // صفحة الإحصاءات: لصاحب المشروع فقط
   check("إحصاءات المنصة غير موجودة لغير صاحب المشروع (404)", (await ctx.request.get(BASE + "/admin")).status() === 404);
   await op.goto(BASE + "/admin");
   const adminText = await op.locator("main").innerText();
-  check("إحصاءات المنصة تظهر لصاحب المشروع بأعداد مجمّعة", /إحصاءات المنصة|Platform statistics/.test(adminText) && (await op.locator(".kpi").count()) === 6 && adminText.includes("/consult/:id"));
+  check("إحصاءات المنصة تظهر لصاحب المشروع بأعداد مجمّعة", /إحصاءات المنصة|Platform statistics/.test(adminText) && (await op.locator(".kpi").count()) === 9 && adminText.includes("/consult/:id"));
   check("إحصاءات المنصة لا تعرض محتوى الاستشارات", !adminText.includes("تحليل الأسباب المحتملة") && !adminText.includes("ahmad@example.com"));
+  check("الإحصاءات: نتيجة استبيان سهولة الاستخدام (إجابة واحدة، 77.5)", /77\.5|٧٧٫٥/.test(adminText) && /SUS/.test(adminText));
+  check("الإحصاءات: سجل الأخطاء يعرض خطأ المتصفح دون البريد والأرقام", adminText.includes("E2EProbe") && adminText.includes("probe [email] [n]") && !adminText.includes("leak@example.com"));
+  const susCsv = await other.request.get(BASE + "/api/admin/sus");
+  const susLines = (await susCsv.text()).trim().split("\n");
+  check("الإحصاءات: تنزيل إجابات الاستبيان دون أسماء", susCsv.ok() && susLines[0].startsWith("q1,q2") && susLines.length === 2 && susLines[1].startsWith("4,2,4,1,4,2,5,2,4,3,77.5,ar,"));
+  check("تنزيل إجابات الاستبيان مرفوض لغير صاحب المشروع (404)", (await ctx.request.get(BASE + "/api/admin/sus")).status() === 404);
+  await shot(op, "16-admin", true);
   await axe(op, "إحصاءات المنصة");
   await other.close();
   const cookie = (await ctx.cookies()).find((c) => c.name === "hs_session");

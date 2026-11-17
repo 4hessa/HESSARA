@@ -1,0 +1,25 @@
+# تحديثات الحزم: طلب دمج أسبوعي يجمع التحديثات الصغيرة، وطلب منفصل لكل تحديث كبير، فيمر كل منها على الاختبارات
+# قبل الدمج. تنبيهات الثغرات الأمنية نفسها تُفعَّل من إعدادات المستودع (Code security → Dependabot alerts).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: sunday
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci

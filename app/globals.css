@@ -524,6 +524,19 @@ a.entry:hover { background: color-mix(in srgb, var(--solid) 90%, transparent); p
 .agent-suggest__body { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 0.75rem; }
 .notice-ok { background: var(--solid); border-color: var(--ink); }
 .notice-warn { background: var(--panel); border: 1px dashed var(--ink); }
+.model-notice--hero { width: min(30rem, 100%); margin: 1.2rem auto 0; text-align: start; }
+/* استبيان سهولة الاستخدام */
+.sus__item { margin: 0; min-width: 0; padding: 0.75rem 0.9rem 0.65rem; border: 1px solid var(--line); border-radius: 0.34rem; background: var(--solid); }
+.sus__item legend { padding: 0 0.3rem; font-size: 0.9rem; line-height: 1.5; font-weight: 500; }
+.sus__n { color: var(--soft); font-variant-numeric: tabular-nums; }
+.sus__opts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.4rem; margin-top: 0.45rem; }
+.sus__opt { display: flex; align-items: center; justify-content: center; gap: 0.35rem; min-height: 2.75rem; border: 1px solid var(--line); border-radius: 0.3rem; cursor: pointer; font-variant-numeric: tabular-nums; }
+.sus__opt:hover { background: var(--panel); }
+.sus__opt:has(input:checked) { border-color: var(--ink); background: var(--panel); font-weight: 700; }
+.sus__opt input { margin: 0; accent-color: var(--ink); }
+.sus__ends { display: flex; justify-content: space-between; gap: 1rem; margin-top: 0.3rem; font-size: 0.74rem; color: var(--soft); }
+.sus-invite { border-inline-start: 2px solid var(--ink); }
+.model-notice--gap { margin-bottom: 1rem; }
 .notice-danger { background: var(--solid); border: 1px solid var(--ink); border-inline-start-width: 4px; font-weight: 500; }
 .empty { text-align: center; padding: 2.4rem 1.5rem; border: 1px dashed var(--line-strong); border-radius: 0.35rem; display: grid; gap: 0.7rem; justify-items: center; color: var(--soft); font-size: 0.86rem; }
 .skeleton { background: linear-gradient(90deg, var(--panel), var(--hair), var(--panel)); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: 0.34rem; }
