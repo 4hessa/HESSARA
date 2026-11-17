@@ -1,6 +1,6 @@
 "use client";
-// تذييل الموقع المرجعي: أربعة أعمدة داخل العمود الأوسط. حُذفت أيقونات وسائل التواصل لأنها لم تكن
-// مرتبطة بأي حساب فعلي، وحلّ محلها مبدّلا اللغة والمظهر، مع تنبيه المحتوى المولَّد.
+// تذييل الموقع المرجعي: أربعة أعمدة داخل العمود الأوسط، ثم سطر فيه حساب المشروع على منصة X
+// ومبدّلا اللغة والمظهر، ثم تنبيه المحتوى المولَّد. لا تُضاف أيقونة تواصل إلا لحساب فعلي.
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useApp } from "../app";
@@ -13,6 +13,21 @@ const COLS: Col[] = [
   { title: ["عن هسّارة", "Company"], links: [["من نحن", "About Us", "/about"], ["تواصل معنا", "Contact Us", "/contact"], ["الوظائف", "Careers", "/careers"], ["المساعدة", "Help", "/help"]] },
   { title: ["البرامج", "Programs"], links: [["البرامج", "Programs", "/programs"], ["شروط الاستخدام", "Terms & Usability", "/terms"], ["سياسة الخصوصية", "Privacy Policy", "/privacy"]] },
 ];
+
+// حساب المشروع على منصة X. الشعار بشكله الرسمي (مملوء) لا بخط الأيقونات، وبلون النص.
+const X_URL = "https://x.com/4hessa";
+
+function XLink() {
+  const { t } = useApp();
+  return (
+    <a className="footer__x" href={X_URL} target="_blank" rel="noopener noreferrer" title="@4hessa"
+      aria-label={t("حساب ‎@4hessa على منصة X (يفتح في تبويب جديد)", "@4hessa on X (opens in a new tab)")}>
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+      </svg>
+    </a>
+  );
+}
 
 function ThemeToggle() {
   const { t } = useApp();
@@ -46,7 +61,7 @@ export function Footer() {
         ))}
       </div>
       <div className="footer__base">
-        <span lang="en">© HESSARA</span>
+        <div><span lang="en">© HESSARA</span><XLink /></div>
         <div><LangToggle /><ThemeToggle /></div>
       </div>
       <p className="footer__note">
