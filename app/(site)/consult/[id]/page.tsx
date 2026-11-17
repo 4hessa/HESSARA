@@ -4,6 +4,7 @@ import { Workspace } from "@/components/Workspace";
 import { all, get, type ConsultRow, type MessageRow } from "@/lib/db";
 import { requireUser } from "@/lib/guard";
 import { getT } from "@/lib/i18n-server";
+import { quotaFor } from "@/lib/usage";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
@@ -17,5 +18,10 @@ export default async function ConsultPage({ params }: { params: Promise<{ id: st
   if (!c) notFound();
   const messages = await all<MessageRow>("SELECT * FROM messages WHERE consultation_id = ? ORDER BY created_at, id", c.id);
   const history = await all<ConsultRow>("SELECT * FROM consultations WHERE user_id = ? ORDER BY updated_at DESC LIMIT 100", user.id);
-  return <Workspace key={c.id} consultation={{ ...c }} messages={messages.map((m) => ({ ...m }))} history={history.map((h) => ({ ...h }))} />;
+  const share = await get<{ token: string }>("SELECT token FROM shares WHERE consultation_id = ?", c.id);
+  const quota = await quotaFor(user);
+  return (
+    <Workspace key={c.id} consultation={{ ...c }} messages={messages.map((m) => ({ ...m }))} history={history.map((h) => ({ ...h }))}
+      quota={{ left: quota.left, limit: quota.limit }} shareToken={share?.token ?? null} />
+  );
 }

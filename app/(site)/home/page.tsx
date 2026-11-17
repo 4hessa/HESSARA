@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { fmtDate, VendorMark } from "@/components/bits";
 import { Icon } from "@/components/Icon";
+import { FirstSteps } from "@/components/FirstSteps";
 import { QuickConsult } from "@/components/QuickConsult";
 import { AppPage } from "@/components/site/Page";
 import { agentById, agentsFor } from "@/lib/catalog/agents";
@@ -52,6 +53,7 @@ export default async function Home() {
     >
       <div className="stack-lg">
         <section className="stack" aria-label={t("ابدأ استشارة", "Start a consultation")} style={{ maxWidth: "46rem", marginInline: "auto", width: "100%" }}>
+          {recent.length === 0 && <FirstSteps />}
           <QuickConsult />
           <div className="chips" aria-label={t("ابدأ من مهمة", "Start from a task")}>
             {STARTERS.map((s) => <Link key={s.label} href={s.href} className="chip"><Icon name={s.icon} size={16} /> {s.label}</Link>)}

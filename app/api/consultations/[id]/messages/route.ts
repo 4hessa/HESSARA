@@ -7,6 +7,7 @@ import { authed, fail, LIMITS, rateLimit, readJson, str } from "@/lib/http";
 import { recordCheck, resolveModel } from "@/lib/providers";
 import { ProviderError } from "@/lib/providers/types";
 import { langOf, makeT } from "@/lib/i18n";
+import { countUse, quotaExhausted, quotaFor, quotaMessage } from "@/lib/usage";
 
 export const maxDuration = 300; // ثوانٍ: أقصى مدة للدالة على الاستضافة عديمة الحالة
 
@@ -33,6 +34,10 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
   if (!model) return fail(409, t("النموذج المختار لهذه الاستشارة لم يعد متاحًا. اختر نموذجًا آخر.", "The model chosen for this consultation is no longer available. Choose another model."));
   if (model.def.adapter !== "demo" && !user.external_consent)
     return Response.json({ error: t("يلزم موافقتك على إرسال نص الاستشارة إلى مزوّد خارجي.", "Your consent is needed to send the consultation text to an external provider."), code: "consent" }, { status: 412 });
+  // الحد اليومي للنماذج الحقيقية يُفحص قبل حفظ الرسالة، فلا تبقى رسالة بلا إجابة.
+  const realModel = model.def.adapter !== "demo";
+  const quota = realModel ? await quotaFor(user) : null;
+  if (quota && quotaExhausted(quota)) return Response.json({ error: quotaMessage(quota.limit, lang), code: "quota", quota }, { status: 429 });
 
   const now = Date.now();
   let userMsgId: string | null = null;
@@ -76,8 +81,11 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
         if (closed) return;
         try { controller.enqueue(enc.encode(JSON.stringify(o) + "\n")); } catch { closed = true; }
       };
+      let counted = false;
       const save = async (status: string) => {
         if (!text.trim()) return;
+        // استدعاء نموذج حقيقي أنتج نصًا كلّف رصيدًا، فيُحتسب من الحد اليومي ولو أُوقف قبل اكتماله.
+        if (realModel && !counted) { counted = true; await countUse(user.id).catch(() => {}); }
         try { await persist(status); } catch { /* حُذفت الاستشارة أو الحساب أثناء البث: لا شيء يُحفظ */ }
       };
       const persist = async (status: string) => {
@@ -106,7 +114,7 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
         else {
           await save("complete");
           if (model.def.adapter !== "demo") await recordCheck(c.model_id, true);
-          send({ t: "done", id: assistantId, status: "complete" });
+          send({ t: "done", id: assistantId, status: "complete", left: quota?.left != null ? Math.max(0, quota.left - 1) : null });
         }
       } catch (e) {
         if (abort.signal.aborted) await save("stopped");

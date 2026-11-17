@@ -63,7 +63,8 @@ export function authed<C = unknown>(handler: Handler<C>) {
   };
 }
 
-// محدِّد معدل بسيط في الذاكرة (يكفي لخادم واحد؛ يحتاج مخزنًا مشتركًا عند التوسع الأفقي).
+// محدِّد معدل بسيط في ذاكرة كل نسخة خادم: يكفي لتهدئة الطلبات المتكررة. حدود الدخول والحسابات
+// التي يجب ألا تُتجاوز بتوزيع المحاولات على النسخ تُحفظ في قاعدة البيانات (lib/limits.ts).
 const buckets = new Map<string, { n: number; reset: number }>();
 export function rateLimit(key: string, max: number, windowMs: number): boolean {
   const now = Date.now();
@@ -77,13 +78,6 @@ export function rateLimit(key: string, max: number, windowMs: number): boolean {
   return b.n <= max;
 }
 
-/** عدّاد إخفاقات: يُفحص قبل المحاولة، يزيد عند الفشل فقط، ويُصفَّر عند النجاح. */
-export const isBlocked = (key: string, max: number) => {
-  const b = buckets.get(key);
-  return !!b && b.reset >= Date.now() && b.n >= max;
-};
-export const noteFailure = (key: string, windowMs: number) => void rateLimit(key, Infinity, windowMs);
-export const clearFailures = (key: string) => void buckets.delete(key);
 
 /**
  * حد لكل عنوان عميل. ترويسة X-Forwarded-For يكتبها العميل نفسه ما لم يكن أمام الخادم وسيط موثوق،

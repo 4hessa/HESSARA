@@ -62,7 +62,21 @@ export function HistoryList({ items, currentId, savedOnly }: { items: ConsultRow
   );
 }
 
-export function Workspace({ consultation: c0, messages: m0, history }: { consultation: ConsultRow; messages: Msg[]; history: ConsultRow[] }) {
+/** أسباب «إجابة غير مفيدة»: قائمة ثابتة تُحصى في صفحة الإحصاءات. */
+export const FEEDBACK_REASONS = [
+  { id: "inaccurate", ar: "غير دقيقة", en: "Inaccurate" },
+  { id: "incomplete", ar: "ناقصة", en: "Incomplete" },
+  { id: "off_topic", ar: "لا تجيب عن السؤال", en: "Does not answer the question" },
+  { id: "unclear", ar: "غير واضحة", en: "Unclear" },
+  { id: "other", ar: "سبب آخر", en: "Another reason" },
+] as const;
+
+export function Workspace({ consultation: c0, messages: m0, history, quota, shareToken: share0 }: {
+  consultation: ConsultRow; messages: Msg[]; history: ConsultRow[];
+  /** ما تبقّى من الحد اليومي للنماذج الحقيقية؛ null لصاحب المشروع (بلا حد). */
+  quota?: { left: number | null; limit: number | null } | null;
+  shareToken?: string | null;
+}) {
   const { models, user, setUser, toast, ensureConsent, t, lang } = useApp();
   const router = useRouter();
   const [c, setC] = useState(c0);
@@ -74,6 +88,11 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
   const [sideOpen, setSideOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [wide, setWide] = useState(true);
+  const [left, setLeft] = useState<number | null>(quota?.left ?? null);
+  const [shareToken, setShareToken] = useState<string | null>(share0 ?? null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareBusy, setShareBusy] = useState(false);
+  const [reasonFor, setReasonFor] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -136,7 +155,7 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
             assistantId = ev.id;
             if (ev.userMessageId) setMsgs((m) => m.map((x) => (x.id === tempId ? { ...x, id: ev.userMessageId } : x)));
           } else if (ev.t === "d") { acc += ev.v; setStreaming(acc); }
-          else if (ev.t === "done") finished = true;
+          else if (ev.t === "done") { finished = true; if (typeof ev.left === "number") setLeft(ev.left); }
           else if (ev.t === "error") failed = ev.message;
         }
       }
@@ -175,6 +194,7 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
   };
   const feedback = async (m: Msg, value: 1 | -1) => {
     const v = m.feedback === value ? null : value;
+    setReasonFor(v === -1 ? m.id : null);
     setMsgs((all) => all.map((x) => (x.id === m.id ? { ...x, feedback: v } : x)));
     const r = await api(`/api/messages/${m.id}/feedback`, { body: { value: v } });
     if (!r.ok) toast(t("تعذر حفظ التقييم.", "Could not save your rating."));
@@ -209,6 +229,8 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
           <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={!!c.saved} aria-label={c.saved ? t("إزالة من المحفوظات", "Remove from saved") : t("حفظ الاستشارة", "Save the consultation")}
             onClick={() => patch({ saved: !c.saved }, c.saved ? t("أُزيلت من المحفوظات.", "Removed from saved.") : t("حُفظت الاستشارة في المحفوظات.", "Consultation saved."))}><Icon name="bookmark" /></button>
           <a className="btn btn-ghost btn-icon btn-sm hide-mobile" href={`/api/consultations/${c.id}/export`} aria-label={t("تصدير الاستشارة ملفًا نصيًا", "Export the consultation as a text file")}><Icon name="export" /></a>
+          <a className="btn btn-ghost btn-icon btn-sm hide-mobile" href={`/consult/${c.id}/report`} aria-label={t("تقرير الاستشارة للطباعة", "Printable consultation report")}><Icon name="print" /></a>
+          <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={!!shareToken} aria-label={t("مشاركة الاستشارة برابط", "Share the consultation by link")} onClick={() => setShareOpen(true)}><Icon name="share" /></button>
           <button className="btn btn-ghost btn-icon btn-sm" aria-label={t("حذف الاستشارة", "Delete the consultation")} onClick={() => setConfirmDelete(true)}><Icon name="trash" /></button>
         </div>
 
@@ -243,6 +265,18 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
                     <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={m.feedback === 1} aria-label={t("إجابة مفيدة", "Helpful answer")} onClick={() => feedback(m, 1)}><Icon name="up" size={18} /></button>
                     <button className="btn btn-ghost btn-icon btn-sm" aria-pressed={m.feedback === -1} aria-label={t("إجابة غير مفيدة", "Unhelpful answer")} onClick={() => feedback(m, -1)}><Icon name="down" size={18} /></button>
                   </div>
+                  {reasonFor === m.id && m.feedback === -1 && (
+                    <div className="chips" role="group" aria-label={t("ما المشكلة في الإجابة؟", "What was wrong with the answer?")}>
+                      <span className="t-caption">{t("ما المشكلة؟", "What was wrong?")}</span>
+                      {FEEDBACK_REASONS.map((r) => (
+                        <button key={r.id} type="button" className="chip" onClick={async () => {
+                          setReasonFor(null);
+                          const res = await api(`/api/messages/${m.id}/feedback`, { body: { value: -1, reason: r.id } });
+                          toast(res.ok ? t("شكرًا، سُجّل السبب.", "Thanks, the reason was recorded.") : res.data.error ?? t("تعذر الحفظ.", "Could not save."));
+                        }}>{r[lang]}</button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -284,7 +318,10 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && window.matchMedia("(pointer: fine)").matches) { e.preventDefault(); submit(); } }} />
             <div className="composer-bar">
-              <span className="t-caption grow">{t("تحقق من الإجابات قبل الاعتماد عليها.", "Check answers before relying on them.")}</span>
+              <span className="t-caption grow">
+                {t("تحقق من الإجابات قبل الاعتماد عليها.", "Check answers before relying on them.")}
+                {model?.engine === "llm" && left !== null && quota?.limit != null && <> {t(`تبقّى لك اليوم ${left} من ${quota.limit} استدعاء للنماذج الحقيقية.`, `${left} of ${quota.limit} real-model calls left today.`)}</>}
+              </span>
               {busy
                 ? <button type="button" className="btn btn-secondary btn-sm" onClick={() => abortRef.current?.abort()}><Icon name="stop" size={18} /> {t("أوقف التوليد", "Stop generating")}</button>
                 : <button type="submit" className="btn btn-primary btn-sm" disabled={!draft.trim()}><Icon name="send" size={18} /> {t("أرسل", "Send")}</button>}
@@ -303,6 +340,41 @@ export function Workspace({ consultation: c0, messages: m0, history }: { consult
       <Dialog open={!!panel && !wide} onClose={() => setPanel(null)} title={t("المراجعة النقدية", "Critical review")} variant="sheet">{panelBody}</Dialog>
       <Dialog open={sideOpen} onClose={() => setSideOpen(false)} title={t("سجل الاستشارات", "Consultation history")} variant="sheet-start">
         <div onClick={(e) => { if ((e.target as HTMLElement).closest("a")) setSideOpen(false); }}><HistoryList items={history} currentId={c.id} /></div>
+      </Dialog>
+      <Dialog open={shareOpen} onClose={() => setShareOpen(false)} title={t("مشاركة الاستشارة", "Share the consultation")}>
+        <div className="dialog-body stack">
+          <p className="t-small">{t("الرابط يتيح لأي شخص يملكه قراءة هذه الاستشارة ومراجعاتها دون حساب، ولا يمكنه التعديل عليها. لا يظهر فيه اسمك ولا بريدك، ولا تفهرسه محركات البحث، وتستطيع إيقافه في أي وقت.", "Anyone with the link can read this consultation and its reviews without an account, but cannot change it. It shows neither your name nor your email, search engines do not index it, and you can stop it at any time.")}</p>
+          {shareToken && (
+            <div className="field">
+              <label className="label" htmlFor="share-url">{t("رابط المشاركة", "Share link")}</label>
+              <input id="share-url" className="input ltr" readOnly value={`${typeof window === "undefined" ? "" : window.location.origin}/s/${shareToken}`} onFocus={(e) => e.currentTarget.select()} />
+            </div>
+          )}
+          <a className="link t-small" href={`/consult/${c.id}/report`}>{t("فتح التقرير الجاهز للطباعة", "Open the printable report")}</a>
+        </div>
+        <div className="dialog-foot">
+          {shareToken ? (
+            <>
+              <button className="btn btn-primary" onClick={async () => {
+                try { await navigator.clipboard.writeText(`${window.location.origin}/s/${shareToken}`); toast(t("نُسخ الرابط.", "Link copied.")); } catch { toast(t("تعذر النسخ من المتصفح.", "The browser could not copy.")); }
+              }}><Icon name="copy" size={18} /> {t("انسخ الرابط", "Copy the link")}</button>
+              <button className="btn btn-secondary" disabled={shareBusy} onClick={async () => {
+                setShareBusy(true);
+                const r = await api(`/api/consultations/${c.id}/share`, { method: "DELETE" });
+                setShareBusy(false);
+                if (r.ok) { setShareToken(null); toast(t("أُوقفت المشاركة، ولم يعد الرابط يعمل.", "Sharing stopped; the link no longer works.")); } else toast(r.data.error ?? t("تعذر الإيقاف.", "Could not stop sharing."));
+              }}>{t("أوقف المشاركة", "Stop sharing")}</button>
+            </>
+          ) : (
+            <button className="btn btn-primary" disabled={shareBusy} onClick={async () => {
+              setShareBusy(true);
+              const r = await api<{ token: string }>(`/api/consultations/${c.id}/share`, { method: "POST" });
+              setShareBusy(false);
+              if (r.ok) setShareToken(r.data.token); else toast(r.data.error ?? t("تعذر إنشاء الرابط.", "Could not create the link."));
+            }}><Icon name="share" size={18} /> {t("أنشئ رابط المشاركة", "Create the share link")}</button>
+          )}
+          <button className="btn btn-ghost" onClick={() => setShareOpen(false)}>{t("إغلاق", "Close")}</button>
+        </div>
       </Dialog>
       <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} title={t("حذف الاستشارة", "Delete the consultation")}>
         <div className="dialog-body"><p>{t("ستُحذف هذه الاستشارة ورسائلها ومراجعاتها نهائيًا. لا يمكن التراجع.", "This consultation, its messages, and its reviews will be deleted permanently. This cannot be undone.")}</p></div>

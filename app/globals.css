@@ -471,6 +471,51 @@ a.entry:hover { background: color-mix(in srgb, var(--solid) 90%, transparent); p
 .notice { display: grid; grid-template-columns: 1rem 1fr; gap: 0.6rem; padding: 0.65rem 0.85rem; border-radius: 0.34rem; border: 1px solid var(--line); background: var(--panel); font-size: 0.82rem; line-height: 1.4; }
 .notice > svg { margin-top: 0.15rem; }
 .notice-accent { background: var(--panel); border: 0; border-inline-start: 2px solid var(--ink); border-radius: 0; }
+/* ---------- إحصاءات المنصة: صف أرقام رئيسية وجداول ---------- */
+.kpi-row { display: grid; gap: 0.75rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) { .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { display: grid; gap: 0.2rem; align-content: start; padding: 0.85rem 1rem; border: 1px solid var(--line); border-radius: 0.35rem; background: var(--tint); }
+.kpi__label { font-size: 0.8rem; color: var(--soft); }
+.kpi__value { font-family: var(--sans); font-weight: 600; font-size: 1.9rem; line-height: 1.1; }
+.kpi__note { font-size: 0.74rem; color: var(--soft); }
+.table-wrap { overflow-x: auto; }
+.stat-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.stat-table th, .stat-table td { text-align: start; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--hair); vertical-align: top; }
+.stat-table th { font-weight: 600; color: var(--soft); font-size: 0.78rem; }
+.stat-table td:not(:first-child) { font-variant-numeric: tabular-nums; }
+/* لوحة البداية لأول دخول */
+.first-steps { display: grid; gap: 0.8rem; padding: 1rem 1.1rem; border: 1px solid var(--ink); border-radius: 0.35rem; background: var(--solid); }
+.first-steps ol { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.first-steps li { counter-increment: step; display: grid; gap: 0.15rem; padding-inline-start: 2rem; position: relative; font-size: 0.84rem; }
+.first-steps li::before { content: counter(step); position: absolute; inset-inline-start: 0; top: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; border: 1px solid var(--ink); display: grid; place-items: center; font-size: 0.76rem; font-weight: 600; }
+@media (max-width: 640px) { .grid-2 .stat-table { font-size: 0.8rem; } }
+
+/* ---------- تقرير الاستشارة (صفحة صاحبها ورابط المشاركة) ---------- */
+.report { display: grid; gap: 1.6rem; }
+.report__title { font-family: var(--serif); font-weight: 500; font-size: 1.5rem; line-height: 1.15; margin-top: 0.3rem; }
+.report__meta { display: flex; flex-wrap: wrap; gap: 0.35rem 1.4rem; font-size: 0.82rem; margin-top: 0.6rem; }
+.report__meta div { display: flex; gap: 0.35rem; }
+.report__meta dt { color: var(--soft); }
+.report__meta dd { margin: 0; }
+.report__thread { display: grid; gap: 1rem; }
+.report__q, .report__a { padding: 0.9rem 1rem; border: 1px solid var(--hair); border-radius: 0.34rem; background: var(--solid); break-inside: avoid-page; }
+.report__q { background: var(--panel); }
+.report__text { white-space: pre-wrap; }
+.report__who { font-size: 0.86rem; font-weight: 600; display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 0.55rem; }
+.report__reviews { display: grid; gap: 1rem; }
+.report__review { border-inline-start: 2px solid var(--ink); padding-inline-start: 0.9rem; display: grid; gap: 0.4rem; break-inside: avoid-page; }
+.report__review ul { display: grid; gap: 0.3rem; padding-inline-start: 1.1rem; }
+.report__foot { display: grid; gap: 0.3rem; font-size: 0.78rem; color: var(--soft); border-top: 1px solid var(--hair); padding-top: 0.8rem; }
+@media print {
+  /* للتقرير رأسه الخاص، فلا يُطبع عنوان الصفحة مرتين. */
+  .nav, .footer, .no-print, .art-band, .eye-rest, .toast-region, .app-hero { display: none !important; }
+  html, body { background: #fff !important; color: #000 !important; }
+  .sheet { box-shadow: none !important; width: 100% !important; margin: 0 !important; background: #fff !important; }
+  .app-hero { padding-top: 0 !important; }
+  .report__q, .report__a { border-color: #bbb; }
+  a { color: inherit; text-decoration: none; }
+  @page { margin: 16mm; }
+}
 /* اقتراح الوكيل تحت حقل الاستشارة: النص والزران يلتفّان على الهاتف بدل أن يتجاوزا العرض. */
 .agent-suggest__body { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 0.75rem; }
 .notice-ok { background: var(--solid); border-color: var(--ink); }

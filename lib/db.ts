@@ -91,6 +91,34 @@ const SCHEMA = `
       error_ar TEXT,
       error_en TEXT
     );
+    CREATE TABLE IF NOT EXISTS usage_daily (
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      day TEXT NOT NULL,
+      calls INTEGER NOT NULL,
+      PRIMARY KEY (user_id, day)
+    );
+    CREATE TABLE IF NOT EXISTS rate_limits (
+      bucket TEXT PRIMARY KEY,
+      hits INTEGER NOT NULL,
+      reset_at BIGINT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS shares (
+      token TEXT PRIMARY KEY,
+      consultation_id TEXT NOT NULL UNIQUE REFERENCES consultations(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at BIGINT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS feedback_reasons (
+      message_id TEXT PRIMARY KEY REFERENCES messages(id) ON DELETE CASCADE,
+      reason TEXT NOT NULL,
+      created_at BIGINT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS page_views (
+      day TEXT NOT NULL,
+      path TEXT NOT NULL,
+      views INTEGER NOT NULL,
+      PRIMARY KEY (day, path)
+    );
 `;
 
 const toPg = (sql: string) => { let i = 0; return sql.replace(/\?/g, () => "$" + ++i); };

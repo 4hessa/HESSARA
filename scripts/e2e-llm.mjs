@@ -180,6 +180,21 @@ try {
   check("المختبر: نسخة منقّحة مولَّدة وفروقها معروضة", (await page.locator("#lab-revised").inputValue()).includes("مفتاح تبديل"));
   await page.screenshot({ path: path.join(OUT, "05-lab.png"), fullPage: true });
 
+  // ── الحد اليومي للنماذج الحقيقية (الافتراضي 20): بعد بلوغه تُرفض الإجابة برسالة صريحة، وتُراجَع النصوص بالمراجع القاعدي ──
+  const qc = await (await ctx.request.post(BASE + "/api/consultations", { data: { text: "سؤال لاختبار الحد اليومي", modelId: "claude-opus-5-5" } })).json();
+  let qStatus = 0, qBody = "", qSent = 0;
+  for (let i = 0; i < 30; i++) {
+    const r = await ctx.request.post(`${BASE}/api/consultations/${qc.id}/messages`, { data: { text: `رسالة رقم ${i + 1} لاختبار الحد` } });
+    qStatus = r.status(); qBody = await r.text();
+    if (qStatus === 429) break;
+    qSent++;
+  }
+  check("الحد اليومي: بعد بلوغه تُرفض الإجابة الحقيقية برسالة صريحة (429)", qStatus === 429 && qBody.includes("بلغت حدّك اليومي"), `قُبلت ${qSent} رسالة في هذه الحلقة`);
+  await page.goto(`${BASE}/consult/${qc.id}`);
+  check("الحد اليومي: المتبقي ظاهر تحت حقل الكتابة", (await page.locator(".ws-compose").innerText()).includes("تبقّى لك اليوم 0 من 20"));
+  const overReview = await (await ctx.request.post(BASE + "/api/reviews", { data: { text: "انقل قاعدة البيانات إلى خادم أكبر وسيصبح التطبيق أسرع دائمًا.", mode: "technical" } })).json();
+  check("الحد اليومي: المراجعة بعده بالمراجع القاعدي مع ذكر السبب", overReview.result?.engine === "heuristic" && String(overReview.result?.limits?.[0]).includes("بلغت حدّك اليومي"));
+
   check("لا أخطاء JavaScript في المتصفح", errors.length === 0, errors.slice(0, 3).join(" | "));
 } catch (e) {
   check("تنفيذ السكربت", false, String(e.stack || e).slice(0, 700));

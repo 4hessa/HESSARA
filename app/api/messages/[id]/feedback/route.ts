@@ -1,6 +1,10 @@
+// تقييم إجابة: مفيدة (1) أو غير مفيدة (-1) أو إلغاء التقييم (null). مع «غير مفيدة» يُقبل سبب من قائمة ثابتة،
+// فتُحصى الأسباب في صفحة الإحصاءات دون نصوص حرة.
 import { get, run } from "@/lib/db";
 import { authed, fail, ok, readJson } from "@/lib/http";
 import { tOf } from "@/lib/i18n";
+
+const REASONS = new Set(["inaccurate", "incomplete", "off_topic", "unclear", "other"]);
 
 export const POST = authed<{ params: Promise<{ id: string }> }>(async (req, user, ctx) => {
   const t = tOf(req);
@@ -8,8 +12,16 @@ export const POST = authed<{ params: Promise<{ id: string }> }>(async (req, user
   const b = await readJson(req);
   const v = b?.value === 1 || b?.value === -1 ? b.value : b?.value === null ? null : undefined;
   if (v === undefined) return fail(400, t("قيمة غير صالحة.", "Invalid value."));
+  const reason = typeof b?.reason === "string" ? b.reason : undefined;
+  if (reason !== undefined && (v !== -1 || !REASONS.has(reason))) return fail(400, t("سبب غير صالح.", "Invalid reason."));
   const m = await get("SELECT m.id FROM messages m JOIN consultations c ON c.id = m.consultation_id WHERE m.id = ? AND c.user_id = ? AND m.role = 'assistant'", id, user.id);
   if (!m) return fail(404, t("الرسالة غير موجودة.", "Message not found."));
   await run("UPDATE messages SET feedback = ? WHERE id = ?", v, id);
+  if (v !== -1) await run("DELETE FROM feedback_reasons WHERE message_id = ?", id);
+  else if (reason)
+    await run(
+      "INSERT INTO feedback_reasons (message_id, reason, created_at) VALUES (?,?,?) ON CONFLICT (message_id) DO UPDATE SET reason = excluded.reason, created_at = excluded.created_at",
+      id, reason, Date.now(),
+    );
   return ok();
 });

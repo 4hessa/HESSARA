@@ -2,6 +2,7 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { get, run, type UserRow } from "./db";
+import { isAdmin } from "./usage";
 
 const COOKIE = "hs_session";
 const SESSION_DAYS = 30;
@@ -68,10 +69,13 @@ export type PublicUser = {
   id: string; name: string; email: string; avatar: string;
   prefModel: string | null; prefAgent: string | null;
   reminderEnabled: boolean; reminderMinutes: number; personalize: boolean; externalConsent: boolean;
+  /** صاحب المشروع (HESSARA_ADMIN_EMAILS): يرى صفحة الإحصاءات. */
+  admin: boolean;
 };
 export const toPublic = (u: UserRow): PublicUser => ({
   id: u.id, name: u.name, email: u.email, avatar: u.avatar,
   prefModel: u.pref_model, prefAgent: u.pref_agent,
   reminderEnabled: !!u.reminder_enabled, reminderMinutes: u.reminder_minutes,
   personalize: !!u.personalize, externalConsent: !!u.external_consent,
+  admin: isAdmin(u.email),
 });

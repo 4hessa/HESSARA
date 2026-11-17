@@ -6,6 +6,7 @@ import { diffWords } from "@/lib/review/diff";
 import { llmRevise } from "@/lib/review/llm";
 import { ProviderError } from "@/lib/providers/types";
 import { langOf, makeT } from "@/lib/i18n";
+import { countUse, quotaExhausted, quotaFor, quotaMessage } from "@/lib/usage";
 
 export const POST = authed<{ params: Promise<{ id: string }> }>(async (req, user, ctx) => {
   const lang = langOf(req);
@@ -21,6 +22,8 @@ export const POST = authed<{ params: Promise<{ id: string }> }>(async (req, user
     const llm = firstLlm(user.pref_model);
     if (!llm) return fail(409, t("لا يوجد نموذج لغوي مهيّأ لتوليد نسخة منقّحة. الصق نسختك المعدّلة يدويًا للمقارنة.", "No language model is configured to generate a revised version. Paste your own edited version to compare."));
     if (!user.external_consent) return Response.json({ error: t("يلزم موافقتك على إرسال النص إلى مزوّد خارجي.", "Your consent is needed to send the text to an external provider."), code: "consent" }, { status: 412 });
+    const quota = await quotaFor(user);
+    if (quotaExhausted(quota)) return Response.json({ error: quotaMessage(quota.limit, lang), code: "quota", quota }, { status: 429 });
     try {
       revised = (await llmRevise(llm, r.input, JSON.parse(r.result), AbortSignal.any([req.signal, AbortSignal.timeout(120_000)]), lang)).trim();
       source = "llm";
@@ -28,6 +31,7 @@ export const POST = authed<{ params: Promise<{ id: string }> }>(async (req, user
       return fail(502, e instanceof ProviderError ? e.text(lang) : t("تعذر توليد النسخة المنقّحة.", "Could not generate the revised version."));
     }
     if (!revised) return fail(502, t("أعاد النموذج نصًا فارغًا.", "The model returned empty text."));
+    await countUse(user.id).catch(() => {});
   }
   await run("UPDATE reviews SET revised = ? WHERE id = ?", revised, r.id);
   return ok({ revised, source, diff: diffWords(r.input, revised) });

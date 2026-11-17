@@ -6,6 +6,7 @@ import { runReview } from "@/lib/review";
 import { jevAvailable } from "@/lib/review/jev";
 import { modeById } from "@/lib/review/types";
 import { langOf, makeT } from "@/lib/i18n";
+import { countUse, quotaExhausted, quotaFor, quotaMessage } from "@/lib/usage";
 
 export const GET = authed(async (_req, user) =>
   ok({ reviews: await all<ReviewRow>("SELECT * FROM reviews WHERE user_id = ? ORDER BY created_at DESC LIMIT 50", user.id) }),
@@ -42,13 +43,18 @@ export const POST = authed(async (req, user) => {
   if (wantsExternal && !user.external_consent)
     return Response.json({ error: t("يلزم موافقتك على إرسال النص إلى مزوّد خارجي للمراجعة.", "Your consent is needed to send the text to an external provider for review."), code: "consent" }, { status: 412 });
 
+  // بعد بلوغ الحد اليومي تُجرى المراجعة بالمراجع القاعدي، مع ذكر السبب في حدود النتيجة.
+  const quota = wantsExternal ? await quotaFor(user) : null;
+  const overQuota = !!quota && quotaExhausted(quota);
   const result = await runReview({
     mode: mode.id, text, criteria,
-    engine: b?.engine === "heuristic" ? "heuristic" : "auto",
+    engine: b?.engine === "heuristic" || overQuota ? "heuristic" : "auto",
     preferredModel: user.pref_model,
     lang,
     signal: AbortSignal.any([req.signal, AbortSignal.timeout(120_000)]),
   });
+  if (overQuota) result.limits.unshift(quotaMessage(quota!.limit, lang));
+  if (result.engine === "llm" || result.engine === "jev") await countUse(user.id).catch(() => {});
   const id = newId();
   await run("INSERT INTO reviews (id, user_id, consultation_id, message_id, mode, criteria, input, result, engine, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
     id, user.id, consultationId, messageId, mode.id, JSON.stringify(criteria), text, JSON.stringify(result), result.engine, Date.now());

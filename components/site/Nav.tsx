@@ -90,6 +90,7 @@ function AccountMenu() {
           <Link role="menuitem" href="/consult"><Icon name="history" /> {t("سجل الاستشارات", "Consultation history")}</Link>
           <Link role="menuitem" href="/consult?saved=1"><Icon name="bookmark" /> {t("المحفوظات", "Saved")}</Link>
           <Link role="menuitem" href="/profile"><Icon name="settings" /> {t("الملف الشخصي والإعدادات", "Profile & settings")}</Link>
+          {user.admin && <Link role="menuitem" href="/admin"><Icon name="chart" /> {t("إحصاءات المنصة", "Platform statistics")}</Link>}
           <Link role="menuitem" href="/help"><Icon name="help" /> {t("المساعدة", "Help")}</Link>
           <button role="menuitem" onClick={async () => { await api("/api/auth/logout", { method: "POST" }); router.push("/"); router.refresh(); }}>
             <Icon name="logout" /> {t("تسجيل الخروج", "Sign out")}

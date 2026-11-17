@@ -21,7 +21,7 @@ const results = [];
 const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`); };
 
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)], {
-  env: { ...process.env, ...dbEnv, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: "15", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
+  env: { ...process.env, ...dbEnv, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: "15", HESSARA_ADMIN_EMAILS: "sara@example.com", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 let serverLog = "";
@@ -140,6 +140,34 @@ try {
   await axe(page, "اللوحة");
   await page.goto(consultUrl);
   check("إعادة فتح الاستشارة المحفوظة", await page.getByText("تحليل الأسباب المحتملة").isVisible());
+
+  // ── ٦ب. سبب التقييم، تقرير الطباعة، رابط المشاركة ──
+  await page.getByRole("button", { name: "إجابة غير مفيدة" }).first().click();
+  await page.getByRole("group", { name: "ما المشكلة في الإجابة؟" }).getByRole("button", { name: "ناقصة" }).click();
+  await page.getByText("شكرًا، سُجّل السبب.").waitFor();
+  check("تقييم «غير مفيدة» مع سبب من القائمة", true);
+  await page.goto(consultUrl + "/report");
+  const report = await page.locator(".report").innerText();
+  check("تقرير الاستشارة: السؤال والإجابة واسم النموذج والمراجعة", report.includes("تحليل الأسباب المحتملة") && report.includes("المحرك التجريبي") && report.includes("محلل المخاطر"));
+  await axe(page, "تقرير الاستشارة");
+  await page.goto(consultUrl);
+  await page.getByRole("button", { name: "مشاركة الاستشارة برابط" }).click();
+  await page.getByRole("button", { name: "أنشئ رابط المشاركة" }).click();
+  await page.locator("#share-url").waitFor();
+  const shareUrl = await page.locator("#share-url").inputValue();
+  check("إنشاء رابط مشاركة", /\/s\/[A-Za-z0-9_-]{20,}$/.test(shareUrl), shareUrl.replace(BASE, ""));
+  const anonCtx = await browser.newContext({ locale: "ar" });
+  const ap = await anonCtx.newPage();
+  const sharedResp = await ap.goto(shareUrl);
+  const shared = await ap.locator("main").innerText();
+  check("رابط المشاركة يُقرأ دون حساب ولا يكشف هوية صاحبه", sharedResp.status() === 200 && shared.includes("تحليل الأسباب المحتملة") && !shared.includes("ahmad@example.com") && !shared.includes("أحمد"));
+  check("رابط المشاركة لا تفهرسه محركات البحث", ((await ap.locator('meta[name="robots"]').getAttribute("content")) || "").includes("noindex"));
+  await axe(ap, "رابط المشاركة");
+  await page.getByRole("button", { name: "أوقف المشاركة" }).click();
+  await page.getByText("أُوقفت المشاركة").waitFor();
+  check("إيقاف المشاركة يعطّل الرابط فورًا (404)", (await anonCtx.request.get(shareUrl)).status() === 404);
+  await anonCtx.close();
+  await page.keyboard.press("Escape");
 
   // ── ٧. تذكير راحة العين ──
   await page.goto(BASE + "/home?eyetest=2");
@@ -300,6 +328,28 @@ try {
   check("أمان: صفحة استشارة الغير غير موجودة", crossPage.status() === 404);
   const crossExport = await other.request.get(`${BASE}/api/consultations/${id}/export`);
   check("أمان: تصدير استشارة الغير مرفوض", crossExport.status() === 404);
+  const crossShare = await other.request.post(`${BASE}/api/consultations/${id}/share`);
+  check("أمان: لا يُنشئ أحد رابط مشاركة لاستشارة غيره", crossShare.status() === 404);
+  const crossReport = await other.request.get(`${BASE}/consult/${id}/report`);
+  check("أمان: تقرير استشارة الغير غير موجود", crossReport.status() === 404);
+  // لوحة البداية لمستخدم جديد بلا استشارات، ثم إخفاؤها
+  const op = await other.newPage();
+  await op.goto(BASE + "/home");
+  // تظهر بعد تحميل الصفحة في المتصفح، لأنها تقرأ التخزين المحلي أولًا.
+  check("لوحة البداية تظهر لمن لم يبدأ استشارة", await op.locator(".first-steps").waitFor({ timeout: 10000 }).then(() => true, () => false));
+  await op.locator(".first-steps button").click();
+  await op.reload();
+  check("لوحة البداية تختفي بعد إخفائها", (await op.locator(".first-steps").count()) === 0);
+  // عدّاد الزيارات: متصفح عادي يُحصى (والمعرّف في الرابط يُستبدل)، وأدوات الاختبار لا تُحصى
+  const pv = await fetch(BASE + "/api/pv", { method: "POST", headers: { "content-type": "application/json", "user-agent": "Mozilla/5.0 (Windows NT 10.0) Chrome/140 Safari/537.36" }, body: JSON.stringify({ p: "/consult/" + id }) });
+  check("عدّاد الزيارات يقبل الطلب دون أي معرّف للزائر", pv.status === 204);
+  // صفحة الإحصاءات: لصاحب المشروع فقط
+  check("إحصاءات المنصة غير موجودة لغير صاحب المشروع (404)", (await ctx.request.get(BASE + "/admin")).status() === 404);
+  await op.goto(BASE + "/admin");
+  const adminText = await op.locator("main").innerText();
+  check("إحصاءات المنصة تظهر لصاحب المشروع بأعداد مجمّعة", /إحصاءات المنصة|Platform statistics/.test(adminText) && (await op.locator(".kpi").count()) === 6 && adminText.includes("/consult/:id"));
+  check("إحصاءات المنصة لا تعرض محتوى الاستشارات", !adminText.includes("تحليل الأسباب المحتملة") && !adminText.includes("ahmad@example.com"));
+  await axe(op, "إحصاءات المنصة");
   await other.close();
   const cookie = (await ctx.cookies()).find((c) => c.name === "hs_session");
   check("أمان: ملف ارتباط الجلسة HttpOnly و SameSite=Lax", !!cookie && cookie.httpOnly && cookie.sameSite === "Lax");

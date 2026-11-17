@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import "./fonts.css";
 import "./globals.css";
 import { AppProvider } from "@/components/app";
+import { PageView } from "@/components/PageView";
 import { currentUser, toPublic } from "@/lib/auth";
 import { dirOf } from "@/lib/i18n";
 import { getLang } from "@/lib/i18n-server";
@@ -45,7 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {lang === "ar" && <link rel="preload" href="/fonts/plex-arabic-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />}
       </head>
       <body>
-        <AppProvider lang={lang} user={user ? toPublic(user) : null} models={await listModels(!!user, lang)}>{children}</AppProvider>
+        <AppProvider lang={lang} user={user ? toPublic(user) : null} models={await listModels(!!user, lang)}>{children}<PageView /></AppProvider>
       </body>
     </html>
   );

@@ -238,6 +238,9 @@ Tell us which idea interests you, and what you hope to do, through the [contact 
 
 - Your name, your email address, and a hashed password; the password itself is not stored.
 - The text of your consultations and their answers, reviews, favourites, and preferences.
+- Your ratings of answers, and the reason if you choose one from the list.
+- A daily count of your calls to real AI models, to apply the daily limit.
+- How many times each page was opened each day, with no visitor identifier: no address and no cookie. Nothing is counted when your browser asks sites not to track it.
 - We collect no location data and use no tracking or advertising tools.
 
 ## Where it is stored
@@ -249,6 +252,7 @@ In the platform's database on its server. Each account's consultations are isola
 - When you choose a model run by a third party, the consultation's text and conversation history are sent to that model's provider and processed under its policies. Your explicit consent is requested before the first such message, and you can withdraw it from your profile.
 - The demo engine and the rule-based reviewer run on the platform's server and send nothing out.
 - Video thumbnails load directly from YouTube's servers when you open the library pages.
+- If you create a share link for a consultation, anyone with the link can read that consultation and its reviews, without your name or email, until you stop sharing it.
 
 ## Cookies and local storage
 
@@ -258,7 +262,8 @@ In the platform's database on its server. Each account's consultations are isola
 ## Your rights
 
 - Delete any single consultation, or delete your account and all its data permanently, from your profile.
-- Export any consultation as a text file from the top of the conversation.`,
+- Export any consultation as a text file, or print its report, from the top of the conversation.
+- Stop any share link at any time; it stops working at once.`,
     },
     ar: {
       title: "سياسة الخصوصية",
@@ -271,6 +276,9 @@ In the platform's database on its server. Each account's consultations are isola
 
 - الاسم والبريد الإلكتروني وكلمة مرور مجزّأة، ولا تُخزَّن كلمة المرور نفسها.
 - نصوص استشاراتك وإجاباتها والمراجعات والمفضلات والتفضيلات.
+- تقييمك للإجابات، وسبب التقييم إن اخترته من القائمة.
+- عدد استدعاءاتك اليومية لنماذج الذكاء الاصطناعي الحقيقية، لتطبيق الحد اليومي.
+- عدد مرات فتح كل صفحة في كل يوم، دون أي معرّف للزائر: لا عنوان ولا ملف ارتباط. ولا يُحتسب شيء إن طلب متصفحك من المواقع عدم تتبّعه.
 - لا نجمع بيانات موقع، ولا نستخدم أدوات تتبّع أو إعلانات.
 
 ## أين تُخزَّن
@@ -282,6 +290,7 @@ In the platform's database on its server. Each account's consultations are isola
 - عند اختيار نموذج تشغّله جهة خارجية يُرسَل نص الاستشارة وسجل محادثتها إلى مزوّد ذلك النموذج لمعالجته وفق سياساته. يُطلب إذنك الصريح قبل أول إرسال، ويمكنك سحبه من الملف الشخصي.
 - المحرك التجريبي والمراجع القاعدي يعملان على خادم المنصة ولا يرسلان شيئًا إلى الخارج.
 - الصور المصغّرة للفيديوهات تُحمَّل من خوادم يوتيوب مباشرة عند فتح صفحات المكتبة.
+- إن أنشأت رابط مشاركة لاستشارة، يستطيع كل من يملك الرابط قراءة تلك الاستشارة ومراجعاتها، دون اسمك أو بريدك، حتى توقف المشاركة.
 
 ## ملفات الارتباط والتخزين المحلي
 
@@ -291,7 +300,8 @@ In the platform's database on its server. Each account's consultations are isola
 ## حقوقك
 
 - حذف أي استشارة منفردة، أو حذف الحساب وكل بياناته نهائيًا من الملف الشخصي.
-- تصدير أي استشارة ملفًا نصيًا من أعلى المحادثة.`,
+- تصدير أي استشارة ملفًا نصيًا، أو طباعة تقريرها، من أعلى المحادثة.
+- إيقاف أي رابط مشاركة في أي وقت، فيتوقف عن العمل فورًا.`,
     },
   },
   terms: {

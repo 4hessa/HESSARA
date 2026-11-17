@@ -48,6 +48,9 @@ const P: Record<string, ReactNode> = {
   logout: <><path d="M10 4.500H6.500A1.5 1.5 0 0 0 5 6v12a1.5 1.5 0 0 0 1.5 1.500H10" /><path d="M14 8l4 4-4 4M18 12H9.5" /></>,
   help: <><circle cx="12" cy="12" r="8.5" /><path d="M9.7 9.500a2.4 2.4 0 1 1 3.6 2c-.8.5-1.3 1-1.3 2M12 16.500v.500" /></>,
   panel: <><rect x="3.5" y="4.5" width="17" height="15" rx="2" /><path d="M9.5 4.500v15" /></>,
+  print: <><path d="M7 9V4.500h10V9" /><rect x="4" y="9" width="16" height="7.500" rx="1.500" /><path d="M7.500 13.500h9v6h-9z" /></>,
+  share: <><circle cx="6.500" cy="12" r="2.200" /><circle cx="17.500" cy="6.500" r="2.200" /><circle cx="17.500" cy="17.500" r="2.200" /><path d="M8.500 11l7-3.400M8.500 13l7 3.400" /></>,
+  chart: <><path d="M4.500 19.500h15" /><path d="M7.500 16v-5M12 16V7M16.500 16v-8" /></>,
 };
 
 export type IconName = keyof typeof P;
