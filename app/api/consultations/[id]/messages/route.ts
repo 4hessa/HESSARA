@@ -1,0 +1,141 @@
+// إرسال رسالة وبثّ إجابة النموذج. البروتوكول: أسطر JSON
+// {t:"start"} ثم {t:"d",v} متكررة ثم {t:"done"} أو {t:"error"}.
+import { newId } from "@/lib/auth";
+import { systemPrompt } from "@/lib/consult";
+import { all, get, run, type ConsultRow, type MessageRow } from "@/lib/db";
+import { authed, fail, LIMITS, rateLimit, readJson, str } from "@/lib/http";
+import { recordCheck, resolveModel } from "@/lib/providers";
+import { ProviderError } from "@/lib/providers/types";
+import { langOf, makeT } from "@/lib/i18n";
+import { countUse, quotaExhausted, quotaFor, quotaMessage } from "@/lib/usage";
+
+export const maxDuration = 300; // ثوانٍ: أقصى مدة للدالة على الاستضافة عديمة الحالة
+
+type Ctx = { params: Promise<{ id: string }> };
+const MAX_HISTORY = 40;
+const MAX_CONCURRENT = 3; // بثّ متزامن لكل مستخدم
+const g = globalThis as typeof globalThis & { __hessaraStreams?: Map<string, number> };
+const inflight = (g.__hessaraStreams ??= new Map());
+const MAX_GENERATION_MS = 5 * 60_000; // سقف زمني حتى لا يحتجز مزوّد معلّق الاتصال إلى ما لا نهاية
+
+export const POST = authed<Ctx>(async (req, user, ctx) => {
+  const lang = langOf(req);
+  const t = makeT(lang);
+  const { id } = await ctx.params;
+  const c = await get<ConsultRow>("SELECT * FROM consultations WHERE id = ? AND user_id = ?", id, user.id);
+  if (!c) return fail(404, t("الاستشارة غير موجودة.", "Consultation not found."));
+  if (!rateLimit(`msg:${user.id}`, 30, 60_000)) return fail(429, t("طلبات كثيرة خلال دقيقة. انتظر قليلًا.", "Too many requests in a minute. Wait a little."));
+
+  if ((inflight.get(user.id) ?? 0) >= MAX_CONCURRENT) return fail(429, t("لديك إجابات قيد التوليد. انتظر اكتمالها أو أوقفها.", "You have answers being generated. Wait for them to finish, or stop them."));
+
+  const b = await readJson(req);
+  const retry = b?.retry === true;
+  const model = resolveModel(c.model_id);
+  if (!model) return fail(409, t("النموذج المختار لهذه الاستشارة لم يعد متاحًا. اختر نموذجًا آخر.", "The model chosen for this consultation is no longer available. Choose another model."));
+  if (model.def.adapter !== "demo" && !user.external_consent)
+    return Response.json({ error: t("يلزم موافقتك على إرسال نص الاستشارة إلى مزوّد خارجي.", "Your consent is needed to send the consultation text to an external provider."), code: "consent" }, { status: 412 });
+  // الحد اليومي للنماذج الحقيقية يُفحص قبل حفظ الرسالة، فلا تبقى رسالة بلا إجابة.
+  const realModel = model.def.adapter !== "demo";
+  const quota = realModel ? await quotaFor(user) : null;
+  if (quota && quotaExhausted(quota)) return Response.json({ error: quotaMessage(quota.limit, lang), code: "quota", quota }, { status: 429 });
+
+  const now = Date.now();
+  let userMsgId: string | null = null;
+  if (retry) {
+    const last = await get<MessageRow>("SELECT * FROM messages WHERE consultation_id = ? ORDER BY created_at DESC, id DESC LIMIT 1", c.id);
+    if (last?.role === "assistant") await run("DELETE FROM messages WHERE id = ?", last.id);
+  } else {
+    const text = str(b?.text, LIMITS.message);
+    if (!text) return fail(400, t(`اكتب رسالتك (حتى ${LIMITS.message} حرف).`, `Write your message (up to ${LIMITS.message} characters).`));
+    userMsgId = newId();
+    await run("INSERT INTO messages (id, consultation_id, role, content, created_at) VALUES (?,?,?,?,?)", userMsgId, c.id, "user", text, now);
+  }
+  await run("UPDATE consultations SET updated_at = ? WHERE id = ?", now, c.id);
+
+  const history = (await all<MessageRow>(
+    "SELECT * FROM (SELECT * FROM messages WHERE consultation_id = ? ORDER BY created_at DESC, id DESC LIMIT ?) AS recent ORDER BY created_at, id",
+    c.id, MAX_HISTORY,
+  )).filter((m) => m.content.trim());
+  while (history.length && history[0].role !== "user") history.shift();
+  if (!history.length || history[history.length - 1].role !== "user") return fail(400, t("لا توجد رسالة للإجابة عنها.", "There is no message to answer."));
+
+  const assistantId = newId();
+  const enc = new TextEncoder();
+  const abort = new AbortController();
+  const timeout = AbortSignal.timeout(MAX_GENERATION_MS);
+  inflight.set(user.id, (inflight.get(user.id) ?? 0) + 1);
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    const n = (inflight.get(user.id) ?? 1) - 1;
+    if (n <= 0) inflight.delete(user.id); else inflight.set(user.id, n);
+  };
+  req.signal.addEventListener("abort", () => abort.abort(), { once: true });
+
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      let text = "";
+      let closed = false;
+      const send = (o: unknown) => {
+        if (closed) return;
+        try { controller.enqueue(enc.encode(JSON.stringify(o) + "\n")); } catch { closed = true; }
+      };
+      let counted = false;
+      const save = async (status: string) => {
+        if (!text.trim()) return;
+        // استدعاء نموذج حقيقي أنتج نصًا كلّف رصيدًا، فيُحتسب من الحد اليومي ولو أُوقف قبل اكتماله.
+        if (realModel && !counted) { counted = true; await countUse(user.id).catch(() => {}); }
+        try { await persist(status); } catch { /* حُذفت الاستشارة أو الحساب أثناء البث: لا شيء يُحفظ */ }
+      };
+      const persist = async (status: string) => {
+        await run("INSERT INTO messages (id, consultation_id, role, content, model_id, engine, status, created_at) VALUES (?,?,?,?,?,?,?,?)",
+          assistantId, c.id, "assistant", text, c.model_id, model.def.adapter === "demo" ? "demo" : "llm", status, Date.now());
+        await run("INSERT INTO actions (id, user_id, consultation_id, kind, detail, created_at) VALUES (?,?,?,?,?,?)",
+          newId(), user.id, c.id, "model_call", JSON.stringify({ model: model.def.id, agent: c.agent_id, status }), Date.now());
+      };
+      send({ t: "start", id: assistantId, userMessageId: userMsgId, modelId: c.model_id });
+      try {
+        for await (const chunk of model.adapter.stream({
+          model: model.apiModel,
+          system: systemPrompt(c.agent_id, lang),
+          messages: history.map((m) => ({ role: m.role, content: m.content })),
+          signal: AbortSignal.any([abort.signal, timeout]),
+        })) {
+          text += chunk;
+          send({ t: "d", v: chunk });
+        }
+        if (abort.signal.aborted) await save("stopped");
+        else if (timeout.aborted) {
+          // بلوغ السقف الزمني ليس اكتمالًا: تُحفظ الإجابة ناقصة ويُبلَّغ المستخدم.
+          await save("stopped");
+          send({ t: "error", message: t("تجاوز التوليد المدة القصوى فأُوقف. الإجابة المحفوظة غير مكتملة.", "Generation exceeded the maximum time and was stopped. The saved answer is incomplete."), partial: !!text.trim(), id: assistantId });
+        } else if (!text.trim()) send({ t: "error", message: t("أعاد النموذج ردًا فارغًا. أعد المحاولة.", "The model returned an empty reply. Try again.") });
+        else {
+          await save("complete");
+          if (model.def.adapter !== "demo") await recordCheck(c.model_id, true);
+          send({ t: "done", id: assistantId, status: "complete", left: quota?.left != null ? Math.max(0, quota.left - 1) : null });
+        }
+      } catch (e) {
+        if (abort.signal.aborted) await save("stopped");
+        else {
+          const message = e instanceof ProviderError ? e.text(lang) : t("حدث خطأ غير متوقع أثناء توليد الإجابة.", "An unexpected error occurred while generating the answer.");
+          if (!(e instanceof ProviderError)) console.error("[consult] stream error", (e as Error).name);
+          // الامتناع وحد المعدل والبتر لا تعني أن الاتصال بالنموذج معطّل.
+          else if (e.kind !== "refused" && e.kind !== "rate_limit" && e.kind !== "truncated") await recordCheck(c.model_id, false, { ar: e.message, en: e.en });
+          await save("stopped");
+          send({ t: "error", message, partial: !!text.trim(), id: assistantId });
+        }
+      } finally {
+        release();
+        closed = true;
+        try { controller.close(); } catch { /* أُغلق مسبقًا */ }
+      }
+    },
+    cancel() { abort.abort(); release(); },
+  });
+
+  return new Response(stream, {
+    headers: { "content-type": "application/x-ndjson; charset=utf-8", "cache-control": "no-store", "x-accel-buffering": "no" },
+  });
+});
