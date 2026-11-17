@@ -119,6 +119,25 @@ const SCHEMA = `
       views INTEGER NOT NULL,
       PRIMARY KEY (day, path)
     );
+    CREATE INDEX IF NOT EXISTS idx_usage_day ON usage_daily(day);
+    CREATE TABLE IF NOT EXISTS error_counts (
+      day TEXT NOT NULL,
+      source TEXT NOT NULL,
+      route TEXT NOT NULL,
+      kind TEXT NOT NULL,
+      hits INTEGER NOT NULL,
+      last_at BIGINT NOT NULL,
+      sample TEXT NOT NULL,
+      PRIMARY KEY (day, source, route, kind)
+    );
+    CREATE TABLE IF NOT EXISTS sus_responses (
+      user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      answers TEXT,
+      score REAL,
+      lang TEXT NOT NULL,
+      dismissed INTEGER NOT NULL DEFAULT 0,
+      created_at BIGINT NOT NULL
+    );
 `;
 
 const toPg = (sql: string) => { let i = 0; return sql.replace(/\?/g, () => "$" + ++i); };

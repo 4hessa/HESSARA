@@ -88,6 +88,10 @@ try {
 
   await ctx.request.post(BASE + "/api/auth/signup", { data: { name: "هيا", email: "haya@example.com", password: "llm-path-test-1", accept: true } });
 
+  // ── تنبيه حالة النماذج: ظاهر قبل أي نجاح ──
+  await page.goto(BASE + "/home");
+  check("تنبيه حالة النماذج ظاهر قبل نجاح أي نموذج حقيقي", await page.getByTestId("model-notice").isVisible());
+
   // ── اختبار الاتصال من صفحة النماذج ──
   await page.goto(BASE + "/models");
   const opus = page.locator("article#claude-opus-5-5");
@@ -99,6 +103,9 @@ try {
   const checkCall = calls.at(-1);
   check("طلب الاختبار قصير ويحمل المفتاح", checkCall.body.max_tokens === 2000 && checkCall.headers.authorization === "Bearer test-key");
   await page.keyboard.press("Escape");
+
+  await page.goto(BASE + "/home");
+  check("تنبيه حالة النماذج يختفي تلقائيًا بعد أول نجاح", (await page.getByTestId("model-notice").count()) === 0);
 
   // ── استشارة: الافتراضي هو أول نموذج لغوي مهيّأ، ونافذة الموافقة تظهر قبل أول إرسال ──
   await page.goto(BASE + "/consult/new");

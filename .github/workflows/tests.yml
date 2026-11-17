@@ -1,0 +1,65 @@
+# يشغّل كل اختبارات المشروع على كل طلب دمج إلى الفرع الرئيسي وبعد كل دمج فيه، قبل أن يصل أي تغيير إلى الزوار.
+# لمنع الدمج حين يفشل: من إعدادات المستودع، Rules (أو Branches)، قاعدة للفرع main تشترط نجاح الفحص "tests".
+name: tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # المتصفح نفسه المستخدم في بيئة التطوير؛ لا يُحفظ في package.json
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: End-to-end tests (SQLite)
+        run: npm run e2e
+
+      - name: End-to-end tests (Postgres through PGlite)
+        run: npm run e2e
+        env:
+          E2E_DB: pglite
+
+      - name: Language-model path against a mock provider
+        run: npm run e2e:llm
+
+      - name: Keep the screenshots when a test fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: test-output/
+          retention-days: 7

@@ -12,7 +12,8 @@ import { intlLocale, makeT } from "@/lib/i18n";
 import { getLang } from "@/lib/i18n-server";
 import { listModels } from "@/lib/providers";
 import { modeById } from "@/lib/review/types";
-import { dailyLimit, isAdmin, usageDay } from "@/lib/usage";
+import { SUS_ITEMS, susSummary } from "@/lib/sus";
+import { dailyLimit, isAdmin, platformDailyLimit, usageDay } from "@/lib/usage";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = makeT(await getLang());
@@ -73,14 +74,23 @@ export default async function AdminPage() {
   const topPaths = await all<{ path: string; v: unknown }>("SELECT path, SUM(views) AS v FROM page_views WHERE day >= ? GROUP BY path ORDER BY SUM(views) DESC LIMIT 12", month30);
   const perDay = await all<{ day: string; v: unknown }>("SELECT day, SUM(views) AS v FROM page_views WHERE day >= ? GROUP BY day ORDER BY day", days14);
   const models = await listModels(true, lang);
+  const platform = platformDailyLimit();
+  const errors7 = n((await get<{ c: unknown }>("SELECT COALESCE(SUM(hits), 0) AS c FROM error_counts WHERE day >= ?", usageDay(now - 6 * DAY)))?.c);
+  const errors = await all<{ day: string; source: string; route: string; kind: string; hits: unknown; last_at: unknown; sample: string }>(
+    "SELECT day, source, route, kind, hits, last_at, sample FROM error_counts WHERE day >= ? ORDER BY day DESC, hits DESC LIMIT 40", days14);
+  const sus = await susSummary();
+  const dec = (v: number | null, digits = 1) => (v === null ? "—" : new Intl.NumberFormat(intlLocale(lang), { maximumFractionDigits: digits }).format(v));
 
-  const tiles = [
+  const tiles: { label: string; value: number | string; note: string }[] = [
     { label: t("المستخدمون", "Users"), value: users, note: t(`${num(users7)} جديد خلال ٧ أيام`, `${num(users7)} new in 7 days`) },
     { label: t("الاستشارات", "Consultations"), value: consults, note: t(`${num(consults7)} خلال ٧ أيام`, `${num(consults7)} in 7 days`) },
     { label: t("الإجابات", "Answers"), value: answers, note: t("من كل النماذج والمحرك التجريبي", "From every model and the demo engine") },
     { label: t("المراجعات النقدية", "Critical reviews"), value: reviewsTotal, note: t("في المختبر والاستشارات", "In the lab and in consultations") },
     { label: t("روابط مشاركة نشطة", "Active share links"), value: shares, note: t("استشارات شاركها أصحابها", "Consultations shared by their owners") },
     { label: t("الزيارات", "Page views"), value: views30, note: t("آخر ٣٠ يومًا، دون الآلات", "Last 30 days, without bots") },
+    { label: t("استدعاءات النماذج اليوم", "Model calls today"), value: n(today?.calls), note: t(`من سقف المنصة اليومي: ${num(platform)}`, `Of the platform's daily cap: ${num(platform)}`) },
+    { label: t("الأخطاء", "Errors"), value: errors7, note: t("آخر ٧ أيام، من الخادم والمتصفح", "Last 7 days, server and browser") },
+    { label: t("سهولة الاستخدام", "Ease of use"), value: dec(sus.mean), note: t(`متوسط مقياس SUS من 100، ${num(sus.n)} إجابة`, `Mean SUS score out of 100, ${num(sus.n)} responses`) },
   ];
 
   return (
@@ -91,18 +101,44 @@ export default async function AdminPage() {
           {tiles.map((k) => (
             <div key={k.label} className="kpi">
               <span className="kpi__label">{k.label}</span>
-              <span className="kpi__value">{num(k.value)}</span>
+              <span className="kpi__value">{typeof k.value === "number" ? num(k.value) : k.value}</span>
               <span className="kpi__note">{k.note}</span>
             </div>
           ))}
         </section>
 
         <section className="stack-sm">
-          <h2 className="t-h4">{t("الحد اليومي للنماذج الحقيقية اليوم", "Today's daily limit on real models")}</h2>
+          <h2 className="t-h4">{t("حدود النماذج الحقيقية اليوم", "Today's limits on real models")}</h2>
           <p className="t-small">
-            {t(`الحد لكل مستخدم: ${num(limit)} استدعاء. استخدمه اليوم ${num(n(today?.users))} مستخدم بمجموع ${num(n(today?.calls))} استدعاء، وبلغه ${num(n(today?.capped))}.`,
-              `Limit per user: ${num(limit)} calls. Today ${num(n(today?.users))} users made ${num(n(today?.calls))} calls in total, and ${num(n(today?.capped))} reached the limit.`)}
+            {t(`الحد لكل مستخدم: ${num(limit)} استدعاء، وسقف المنصة كلها: ${num(platform)}. استخدم النماذج اليوم ${num(n(today?.users))} مستخدم بمجموع ${num(n(today?.calls))} استدعاء، وبلغ حدّه منهم ${num(n(today?.capped))}.`,
+              `Limit per user: ${num(limit)} calls; cap for the whole platform: ${num(platform)}. Today ${num(n(today?.users))} users made ${num(n(today?.calls))} calls in total, and ${num(n(today?.capped))} of them reached their limit.`)}
+            {" "}{t("يُغيَّران بالمتغيرين HESSARA_DAILY_LIMIT و HESSARA_PLATFORM_DAILY_LIMIT.", "Change them with HESSARA_DAILY_LIMIT and HESSARA_PLATFORM_DAILY_LIMIT.")}
           </p>
+        </section>
+
+        <section className="stack-sm" aria-labelledby="sus-h">
+          <h2 id="sus-h" className="t-h4">{t("استبيان سهولة الاستخدام (SUS)", "Usability questionnaire (SUS)")}</h2>
+          <p className="t-small">
+            {sus.n
+              ? t(`${num(sus.n)} إجابة. المتوسط ${dec(sus.mean)} من 100، والوسيط ${dec(sus.median)}، وأدنى درجة ${dec(sus.min)} وأعلاها ${dec(sus.max)}.`,
+                  `${num(sus.n)} responses. Mean ${dec(sus.mean)} out of 100, median ${dec(sus.median)}, lowest ${dec(sus.min)}, highest ${dec(sus.max)}.`)
+              : t("لا إجابات بعد. تظهر الدعوة في لوحة كل مستخدم أجرى استشارتين على الأقل.", "No responses yet. The invitation appears on the dashboard of every user with at least two consultations.")}
+            {" "}{t("الدرجة للمقارنة وليست نسبة مئوية، والعدد الصغير لا يكفي لحكم عام. الترجمة العربية للعبارات ترجمة المنصة وليست نسخة محكّمة منشورة.",
+              "The score is for comparison and is not a percentage, and a small number of responses does not support a general conclusion. The Arabic wording is the platform's own translation, not a published validated version.")}
+          </p>
+          {sus.n > 0 && (
+            <>
+              <div className="table-wrap">
+                <table className="stat-table">
+                  <thead><tr><th>{t("العبارة", "Statement")}</th><th>{t("متوسط الإجابة (1–5)", "Mean answer (1–5)")}</th></tr></thead>
+                  <tbody>
+                    {SUS_ITEMS.map((it, i) => <tr key={i}><td>{num(i + 1)}. {it[lang]}</td><td>{dec(sus.items[i], 2)}</td></tr>)}
+                  </tbody>
+                </table>
+              </div>
+              <div><a className="btn btn-secondary btn-sm" href="/api/admin/sus" download>{t("نزّل الإجابات (ملف جدولي دون أسماء)", "Download the responses (spreadsheet file, no names)")}</a></div>
+            </>
+          )}
         </section>
 
         <section className="stack-sm">
@@ -188,6 +224,30 @@ export default async function AdminPage() {
           </div>
         </section>
 
+        <section className="stack-sm" aria-labelledby="err-h">
+          <h2 id="err-h" className="t-h4">{t("الأخطاء (١٤ يومًا)", "Errors (14 days)")}</h2>
+          <p className="t-small">{t("أخطاء غير متوقعة في الخادم أو في متصفحات الزوار، مجمّعة حسب اليوم والصفحة والنوع. الرسالة منقّاة: لا تحوي بريدًا ولا أرقامًا طويلة ولا أي نص كتبه مستخدم. تُحذف بعد ٣٠ يومًا.",
+            "Unexpected errors on the server or in visitors' browsers, grouped by day, page and type. Messages are cleaned: no emails, long numbers or text written by a user. Deleted after 30 days.")}</p>
+          <div className="table-wrap">
+            <table className="stat-table">
+              <thead><tr><th>{t("اليوم", "Day")}</th><th>{t("المصدر", "Source")}</th><th>{t("المسار", "Route")}</th><th>{t("النوع", "Type")}</th><th>{t("المرات", "Count")}</th><th>{t("آخر رسالة", "Last message")}</th></tr></thead>
+              <tbody>
+                {errors.length === 0 && <tr><td colSpan={6}>{t("لا أخطاء مسجلة.", "No errors recorded.")}</td></tr>}
+                {errors.map((e, i) => (
+                  <tr key={i}>
+                    <td><span className="ltr">{e.day}</span></td>
+                    <td>{e.source === "client" ? t("المتصفح", "Browser") : t("الخادم", "Server")}</td>
+                    <td><span className="ltr"><code>{e.route}</code></span></td>
+                    <td><span className="ltr"><code>{e.kind}</code></span></td>
+                    <td>{num(n(e.hits))}</td>
+                    <td className="t-small"><span className="ltr">{e.sample || "—"}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <div className="grid-2">
           <section className="stack-sm">
             <h2 className="t-h4">{t("أكثر الصفحات زيارة (٣٠ يومًا)", "Most viewed pages (30 days)")}</h2>
@@ -195,7 +255,7 @@ export default async function AdminPage() {
               <thead><tr><th>{t("الصفحة", "Page")}</th><th>{t("الزيارات", "Views")}</th></tr></thead>
               <tbody>
                 {topPaths.length === 0 && <tr><td>{t("لا زيارات مسجلة بعد.", "No views recorded yet.")}</td></tr>}
-                {topPaths.map((p) => <tr key={p.path}><td className="ltr"><code>{p.path}</code></td><td>{num(n(p.v))}</td></tr>)}
+                {topPaths.map((p) => <tr key={p.path}><td><span className="ltr"><code>{p.path}</code></span></td><td>{num(n(p.v))}</td></tr>)}
               </tbody>
             </table>
           </section>
@@ -205,7 +265,7 @@ export default async function AdminPage() {
               <thead><tr><th>{t("اليوم", "Day")}</th><th>{t("الزيارات", "Views")}</th></tr></thead>
               <tbody>
                 {perDay.length === 0 && <tr><td>{t("لا زيارات مسجلة بعد.", "No views recorded yet.")}</td></tr>}
-                {perDay.map((d) => <tr key={d.day}><td className="ltr">{d.day}</td><td>{num(n(d.v))}</td></tr>)}
+                {perDay.map((d) => <tr key={d.day}><td><span className="ltr">{d.day}</span></td><td>{num(n(d.v))}</td></tr>)}
               </tbody>
             </table>
           </section>

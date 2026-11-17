@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { LandingPreview } from "@/components/LandingPreview";
+import { ModelNotice } from "@/components/ModelNotice";
 import { Cta, SectionHead, Steps, Tiles } from "@/components/site/Blocks";
 import { Mock } from "@/components/site/Mock";
 import { MarketingPage } from "@/components/site/Page";
@@ -85,6 +86,7 @@ export default async function Home() {
             <a className="btn" href="/consult/new">{c.b1}</a>
             <a className="btn btn--ghost" href="#try">{c.b2}</a>
           </div>
+          <ModelNotice className="model-notice--hero" />
         </>
       }
     >

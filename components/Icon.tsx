@@ -51,6 +51,7 @@ const P: Record<string, ReactNode> = {
   print: <><path d="M7 9V4.500h10V9" /><rect x="4" y="9" width="16" height="7.500" rx="1.500" /><path d="M7.500 13.500h9v6h-9z" /></>,
   share: <><circle cx="6.500" cy="12" r="2.200" /><circle cx="17.500" cy="6.500" r="2.200" /><circle cx="17.500" cy="17.500" r="2.200" /><path d="M8.500 11l7-3.400M8.500 13l7 3.400" /></>,
   chart: <><path d="M4.500 19.500h15" /><path d="M7.500 16v-5M12 16V7M16.500 16v-8" /></>,
+  download: <><path d="M12 4.5v10M7.5 10.5L12 15l4.5-4.5" /><path d="M4.5 16.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-2.5" /></>,
 };
 
 export type IconName = keyof typeof P;
