@@ -6,11 +6,15 @@ import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
-const { chromium } = require("playwright");
+const { chromium, firefox, webkit } = require("playwright");
+// E2E_BROWSER=webkit|firefox يشغّل الاختبار نفسه على محرك Safari أو Firefox (الافتراضي Chromium).
+const ENGINE = process.env.E2E_BROWSER || "chromium";
+const ENGINES = { chromium, firefox, webkit };
+if (!ENGINES[ENGINE]) throw new Error(`E2E_BROWSER غير معروف: ${ENGINE}`);
 
 const PORT = 4317;
 const BASE = `http://localhost:${PORT}`;
-const OUT = path.resolve("test-output");
+const OUT = path.resolve("test-output", ENGINE === "chromium" ? "" : ENGINE);
 fs.mkdirSync(OUT, { recursive: true });
 const dbPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "hessara-")), "e2e.db");
 // E2E_DB=pglite يشغّل الاختبار نفسه على مسار Postgres (محرك PGlite داخل العملية).
@@ -44,7 +48,8 @@ const shot = (page, name, full = false) => page.screenshot({ path: path.join(OUT
 let browser;
 try {
   await waitUp();
-  browser = await chromium.launch();
+  browser = await ENGINES[ENGINE].launch();
+  console.log(`المحرك: ${ENGINE}`);
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 860 }, locale: "ar", colorScheme: "light" });
   const page = await ctx.newPage();
   const errors = [];
