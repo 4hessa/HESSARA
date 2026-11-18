@@ -11,10 +11,18 @@
 @font-face { font-family: 'Roboto Condensed'; font-style: normal; font-display: swap; font-weight: 100 900; src: url(/fonts/roboto-condensed-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
 
 /* الحرف العربي يُرسم أصغر بصريًا من اللاتيني بالمقاس نفسه؛ size-adjust يوازن الكتلتين في السطر الواحد. */
-@font-face { font-family: 'Markazi Text'; font-style: normal; font-display: swap; font-weight: 400 700; size-adjust: 118%; src: url(/fonts/markazi-arabic.woff2) format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
+@font-face { font-family: 'Markazi Text'; font-style: normal; font-display: swap; font-weight: 400 700; size-adjust: 118%; src: url(/fonts/markazi-arabic.woff2) format('woff2'); unicode-range: U+0020,U+00A0,U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
 
 @font-face { font-family: 'IBM Plex Sans Arabic'; font-style: normal; font-display: swap; font-weight: 400; size-adjust: 104%; src: url(/fonts/plex-arabic-400.woff2) format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
 @font-face { font-family: 'IBM Plex Sans Arabic'; font-style: normal; font-display: swap; font-weight: 500 600; size-adjust: 104%; src: url(/fonts/plex-arabic-600.woff2) format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
 @font-face { font-family: 'IBM Plex Sans Arabic'; font-style: normal; font-display: swap; font-weight: 700 900; size-adjust: 104%; src: url(/fonts/plex-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
 
 @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-display: swap; font-weight: 400; src: url(/fonts/plex-mono-400.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
+/* في الصفحات العربية تأتي المسافات وعلامات الترقيم في العناوين من Markazi نفسه (ملف صغير مقطوع من حروفه اللاتينية)،
+   فلا يُحمَّل Newsreader كاملًا (130 ك.ب) إلا إن ظهر نص لاتيني في عنوان. انظر --serif في globals.css. */
+@font-face { font-family: 'Markazi Text'; font-style: normal; font-display: swap; font-weight: 400 700; size-adjust: 118%; src: url(/fonts/markazi-punct.woff2) format('woff2'); unicode-range: U+0021,U+0022,U+0023,U+0024,U+0025,U+0026,U+0027,U+0028,U+0029,U+002A,U+002B,U+002C,U+002D,U+002E,U+002F,U+003A,U+003B,U+003C,U+003D,U+003E,U+003F,U+0040,U+005B,U+005C,U+005D,U+005E,U+005F,U+0060,U+007B,U+007C,U+007D,U+007E,U+00AB,U+00BB,U+2013,U+2014,U+2018,U+2019,U+201A,U+201C,U+201D,U+201E,U+2026; }
+
+/* الشعار والعناصر الزخرفية (أرقام الخطوات، رموز المزوّدين، عنوان النموذج التوضيحي): ملف صغير من Newsreader نفسه
+   بالحروف والأرقام المستعملة فيها فقط، بمحوريه وتباعد حروفه. أي حرف خارجه يأتي من Newsreader الكامل. */
+@font-face { font-family: 'HESSARA Marks'; font-style: normal; font-display: swap; font-weight: 200 800; src: url(/fonts/newsreader-marks.woff2) format('woff2'); }

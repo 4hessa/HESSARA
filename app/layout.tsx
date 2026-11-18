@@ -41,9 +41,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} dir={dirOf(lang)} data-theme={theme} suppressHydrationWarning>
       <head>
-        <link rel="preload" href="/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {lang === "en" && <link rel="preload" href="/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />}
+        {lang === "ar" && <link rel="preload" href="/fonts/newsreader-marks.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />}
         <link rel="preload" href="/fonts/roboto-condensed-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {lang === "ar" && <link rel="preload" href="/fonts/markazi-arabic.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />}
+        {lang === "ar" && <link rel="preload" href="/fonts/markazi-punct.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />}
         {lang === "ar" && <link rel="preload" href="/fonts/plex-arabic-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />}
       </head>
       <body>
