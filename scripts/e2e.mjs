@@ -42,6 +42,12 @@ const waitUp = async () => { for (let i = 0; i < 60; i++) { try { if ((await fet
 
 async function axe(page, label) {
   await page.addScriptTag({ content: axeSource });
+  // التباين يُقاس على الصفحة بعد استقرارها: تُنتظر الحركات المنتهية (كظهور تنبيه عائم) قبل الفحص، بحد ثانيتين.
+  // دونه قد يقيس الفحص تنبيهًا في منتصف ظهوره فيراه أقل تباينًا مما هو عليه (حدث مرة على WebKit).
+  await page.evaluate(() => Promise.race([
+    Promise.all(document.getAnimations().filter((a) => Number.isFinite(a.effect?.getComputedTiming().endTime)).map((a) => a.finished.catch(() => {}))),
+    new Promise((r) => setTimeout(r, 2000)),
+  ]));
   const r = await page.evaluate(async () => await window.axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"] } }));
   const v = r.violations.map((x) => `${x.id}(${x.nodes.length}): ${x.nodes[0].target.join(" ")}`);
   check(`axe ${label}`, v.length === 0, v.join(" | "));
