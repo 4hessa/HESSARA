@@ -6,11 +6,15 @@ import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
-const { chromium } = require("playwright");
+const { chromium, firefox, webkit } = require("playwright");
+// E2E_BROWSER=webkit|firefox يشغّل الاختبار نفسه على محرك Safari أو Firefox (الافتراضي Chromium).
+const ENGINE = process.env.E2E_BROWSER || "chromium";
+const ENGINES = { chromium, firefox, webkit };
+if (!ENGINES[ENGINE]) throw new Error(`E2E_BROWSER غير معروف: ${ENGINE}`);
 
 const PORT = 4317;
 const BASE = `http://localhost:${PORT}`;
-const OUT = path.resolve("test-output");
+const OUT = path.resolve("test-output", ENGINE === "chromium" ? "" : ENGINE);
 fs.mkdirSync(OUT, { recursive: true });
 const dbPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "hessara-")), "e2e.db");
 // E2E_DB=pglite يشغّل الاختبار نفسه على مسار Postgres (محرك PGlite داخل العملية).
@@ -18,10 +22,16 @@ const dbEnv = process.env.E2E_DB === "pglite" ? { HESSARA_PGLITE: "1" } : { HESS
 const axeSource = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 const results = [];
+// رسائل في وحدة تحكم المتصفح لا تدل على خلل في الموقع:
+// - 401/404/412: طلبات يتعمّد الاختبار أن تُرفض.
+// - Safari لا يعرف المفتاح interactive-widget في وسم viewport فيتجاهله (المفتاح يفيد Chrome على أندرويد).
+// - طلبات بيانات الصفحات (?_rsc=) التي تُلغى حين ينتقل الاختبار سريعًا إلى صفحة أخرى: Safari يسمّي الإلغاء
+//   «access control checks»، و Firefox يجعل Next.js يعلن أنه سينتقل انتقالًا عاديًا بدلها.
+const benign = (e) => /401|404|412|Failed to load resource|Viewport argument key "interactive-widget"|[?&]_rsc=\S+ due to access control checks|Failed to fetch RSC payload for \S+ Falling back to browser navigation/.test(e);
 const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`); };
 
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)], {
-  env: { ...process.env, ...dbEnv, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: "15", HESSARA_ADMIN_EMAILS: "sara@example.com", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
+  env: { ...process.env, ...dbEnv, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: ENGINE === "chromium" ? "15" : "45", HESSARA_ADMIN_EMAILS: "sara@example.com", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 let serverLog = "";
@@ -44,12 +54,24 @@ const shot = (page, name, full = false) => page.screenshot({ path: path.join(OUT
 let browser;
 try {
   await waitUp();
-  browser = await chromium.launch();
+  browser = await ENGINES[ENGINE].launch();
+  console.log(`المحرك: ${ENGINE}`);
+  {
+    // في Firefox و WebKit قد يقطع تحديثُ الصفحة لنفسها (router.refresh) انتقالًا يطلبه الاختبار؛ يُعاد مرة واحدة.
+    const probe = await browser.newPage();
+    const proto = Object.getPrototypeOf(probe);
+    const goto = proto.goto;
+    proto.goto = async function (url, opts) {
+      try { return await goto.call(this, url, opts); }
+      catch (e) { if (/NS_BINDING_ABORTED|interrupted by another navigation|frame was detached/i.test(String(e?.message))) return goto.call(this, url, opts); throw e; }
+    };
+    await probe.close();
+  }
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 860 }, locale: "ar", colorScheme: "light" });
   const page = await ctx.newPage();
   const errors = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+  page.on("pageerror", (e) => errors.push(`${e.name}: ${e.message} [${new URL(page.url()).pathname}] ${(e.stack ?? "").split("\n").slice(0, 4).join(" < ")}`));
+  page.on("console", (m) => { if (m.type() === "error") errors.push(`${m.text()} [${new URL(page.url()).pathname}]`); });
 
   // ── ١. الزائر: الصفحة الرئيسية بتصميم الموقع المرجعي ──
   await page.goto(BASE + "/");
@@ -135,6 +157,12 @@ try {
   // إيقاف التوليد + إعادة التوليد
   await page.locator("#ws-input").fill("خطة مشروع تخرج من ثمانية أسابيع: ما المراحل والمتطلبات والمخاطر وكيف أقسّم العمل على الفريق خلال المدة المحددة مع معايير قبول واضحة لكل مرحلة؟ " .repeat(2));
   await page.keyboard.press("Enter");
+  if (ENGINE !== "chromium") {
+    await page.getByRole("button", { name: "أوقف التوليد" }).waitFor();
+    const box = () => page.evaluate(() => { const r = document.querySelector(".ws-compose")?.getBoundingClientRect(); const se = document.scrollingElement; return { top: Math.round(r?.top ?? -1), scroll: se.scrollHeight - innerHeight }; });
+    const a = await box(); await page.waitForTimeout(250); const b = await box();
+    console.log(`تشخيص ${ENGINE}: موضع حقل الكتابة أثناء البث ${a.top} ثم ${b.top}، وزيادة طول الصفحة عن الشاشة ${a.scroll} ثم ${b.scroll}`);
+  }
   await page.getByRole("button", { name: "أوقف التوليد" }).click();
   await page.locator(".composer button[type=submit]").waitFor();
   check("إيقاف التوليد يعيد زر الإرسال", true);
@@ -177,6 +205,28 @@ try {
   check("إيقاف المشاركة يعطّل الرابط فورًا (404)", (await anonCtx.request.get(shareUrl)).status() === 404);
   await anonCtx.close();
   await page.keyboard.press("Escape");
+
+  // ── ٦ج. الأوقات بتوقيت المستخدم (الخادم يعمل بالتوقيت العالمي) ──
+  {
+    const riyadh = await browser.newContext({ locale: "ar", timezoneId: "Asia/Riyadh", storageState: await ctx.storageState() });
+    const rp = await riyadh.newPage();
+    const rErrors = [];
+    rp.on("console", (m) => { if (m.type() === "error") rErrors.push(`${m.text()} [${new URL(rp.url()).pathname}]`); });
+    rp.on("pageerror", (e) => rErrors.push(`${e.name}: ${e.message} [${new URL(rp.url()).pathname}] ${(e.stack ?? "").split("\n").slice(0, 4).join(" < ")}`));
+    await rp.goto(BASE + "/home");
+    const first = rp.locator("main time").first();
+    const iso = await first.getAttribute("datetime");
+    const expected = new Intl.DateTimeFormat("ar-u-nu-latn", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Riyadh" }).format(new Date(iso));
+    await rp.waitForFunction((exp) => document.querySelector("main time")?.textContent === exp, expected, { timeout: 5000 }).catch(() => {});
+    check("الأوقات تُعرض بتوقيت المستخدم (الرياض) لا بتوقيت الخادم", (await first.innerText()) === expected, `${await first.innerText()} / ${expected}`);
+    check("ملف ارتباط المنطقة الزمنية يُحفظ", (await riyadh.cookies()).some((c) => c.name === "hs_tz" && c.value === "Asia/Riyadh"));
+    const html = await (await riyadh.request.get(BASE + "/home")).text();
+    check("الخادم يعرض الوقت بتوقيت المستخدم من الزيارة التالية", html.includes(expected), expected);
+    for (const p of [consultUrl.replace(BASE, ""), "/lab", "/models", "/agents"]) await rp.goto(BASE + p);
+    const rReal = rErrors.filter((e) => !benign(e));
+    check("لا أخطاء ترطيب ولا أخطاء JavaScript بتوقيت غير التوقيت العالمي", rReal.length === 0, rReal.slice(0, 2).join(" | "));
+    await riyadh.close();
+  }
 
   // ── ٧. تذكير راحة العين ──
   await page.goto(BASE + "/home?eyetest=2");
@@ -446,7 +496,7 @@ try {
   await page.getByRole("button", { name: "احذف نهائيًا" }).click();
   await page.getByText("محاولات كثيرة").waitFor(); // الحد من الفحص السابق ما زال ساريًا: الحذف محجوب حتى بكلمة المرور الصحيحة
   check("أمان: حد الحذف يسري حتى مع كلمة المرور الصحيحة أثناء النافذة", true);
-  const fresh = await browser.newContext();
+  const fresh = await browser.newContext({ locale: "ar" });
   await fresh.request.post(BASE + "/api/auth/signup", { data: { name: "ليلى", email: "layla@example.com", password: "delete-me-123", accept: true } });
   const fp = await fresh.newPage();
   await fp.goto(BASE + "/profile");
@@ -458,7 +508,7 @@ try {
   const relog = await fetch(BASE + "/api/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "layla@example.com", password: "delete-me-123" }) });
   check("حذف الحساب يزيل البيانات (تعذر الدخول بعده)", relog.status === 401);
 
-  const realErrors = errors.filter((e) => !/401|404|412|Failed to load resource/.test(e));
+  const realErrors = errors.filter((e) => !benign(e));
   check("لا أخطاء JavaScript في المتصفح", realErrors.length === 0, realErrors.slice(0, 3).join(" | "));
 } catch (e) {
   check("تنفيذ السكربت", false, String(e.stack || e).slice(0, 600));

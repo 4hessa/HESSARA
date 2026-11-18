@@ -12,8 +12,9 @@ updates:
       minor-and-patch:
         update-types: [minor, patch]
     ignore:
-      # تعريفات Node.js تتبع إصدار Node الذي يعمل عليه المشروع (22، انظر engines في package.json)،
-      # فلا يُقترح إصدار رئيسي أحدث منه. تُحدَّث هذه القاعدة عند رفع إصدار Node.
+      # تعريفات Node.js تتبع أدنى إصدار يدعمه المشروع (22، انظر engines في package.json)، حتى لا تستخدم
+      # الشيفرة ما لا يوجد فيه. الموقع المنشور يعمل على Node 26 والاختبارات تعمل على الإصدارين.
+      # تُحدَّث هذه القاعدة عند رفع أدنى إصدار مدعوم.
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
     commit-message:

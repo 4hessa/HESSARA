@@ -8,7 +8,8 @@ import type { ConsultRow, MessageRow } from "@/lib/db";
 import { AdvisorPicker } from "./AdvisorPicker";
 import { ModelNotice } from "./ModelNotice";
 import { api, useApp } from "./app";
-import { fmtDate, VendorMark } from "./bits";
+import { VendorMark } from "./bits";
+import { LocalTime } from "./LocalTime";
 import { Dialog } from "./Dialog";
 import { Icon } from "./Icon";
 import { Markdown } from "./Markdown";
@@ -55,7 +56,7 @@ export function HistoryList({ items, currentId, savedOnly }: { items: ConsultRow
         {list.map((c) => (
           <Link key={c.id} href={`/consult/${c.id}`} className="ws-item" aria-current={c.id === currentId ? "page" : undefined}>
             <span className="ws-item-title">{c.saved ? "★ " : ""}{c.title}</span>
-            <span className="t-caption">{fmtDate(c.updated_at, lang)}</span>
+            <span className="t-caption"><LocalTime ts={c.updated_at} /></span>
           </Link>
         ))}
       </nav>

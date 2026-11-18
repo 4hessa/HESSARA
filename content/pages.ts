@@ -258,7 +258,7 @@ In the platform's database on its server. Each account's consultations are isola
 
 ## Cookies and local storage
 
-- A session cookie that JavaScript cannot read, a cookie for your theme, and a cookie for your language.
+- A session cookie that JavaScript cannot read, a cookie for your theme, a cookie for your language, and a cookie with your time zone so that times are shown in your local time.
 - The browser's local storage holds the break-reminder timer, whether you have dismissed the getting-started card, and a temporary draft of your consultation while you sign in.
 
 ## Your rights
@@ -299,7 +299,7 @@ In the platform's database on its server. Each account's consultations are isola
 
 ## ملفات الارتباط والتخزين المحلي
 
-- ملف ارتباط للجلسة لا يقرؤه JavaScript، وآخر لتفضيل المظهر، وثالث للغة الواجهة.
+- ملف ارتباط للجلسة لا يقرؤه JavaScript، وآخر لتفضيل المظهر، وثالث للغة الواجهة، ورابع بمنطقتك الزمنية لعرض الأوقات بتوقيتك.
 - يُستخدم التخزين المحلي في المتصفح لمؤقت تذكير الاستراحة، ولتذكّر إخفائك لوحة البداية، ولحفظ مسودة استشارتك مؤقتًا أثناء تسجيل الدخول.
 
 ## حقوقك

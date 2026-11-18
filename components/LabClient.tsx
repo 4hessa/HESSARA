@@ -1,10 +1,11 @@
 "use client";
 // مختبر النقد: المدخل ← المعايير ← النتائج، ثم مقارنة نسخة منقّحة بالأصل.
+import { intlLocale } from "@/lib/i18n";
 import { useState } from "react";
 import type { DiffPart } from "@/lib/review/diff";
 import { modesFor, type ReviewResult } from "@/lib/review/types";
 import { api, useApp } from "./app";
-import { fmtDate } from "./bits";
+import { LocalTime } from "./LocalTime";
 import { Icon } from "./Icon";
 import { ReviewView } from "./Review";
 
@@ -56,7 +57,7 @@ export function LabClient({ initial, past, hasLlm }: { initial: Past | null; pas
             <label className="label" htmlFor="lab-text">{t("النص المراد مراجعته", "The text to review")}</label>
             <textarea id="lab-text" className="textarea" dir="auto" style={{ minHeight: "20rem" }} maxLength={20000} value={text} onChange={(e) => setText(e.target.value)}
               placeholder={t("الصق إجابة نموذج، أو خطة، أو شفرة، أو مقترحًا تقنيًا…", "Paste a model's answer, a plan, code, or a technical proposal…")} aria-describedby="lab-text-hint" />
-            <span id="lab-text-hint" className="hint">{text.length.toLocaleString(lang === "ar" ? "ar" : "en")} / {t("٢٠٬٠٠٠ حرف. لا تلصق أسرارًا أو بيانات شخصية.", "20,000 characters. Do not paste secrets or personal data.")}</span>
+            <span id="lab-text-hint" className="hint">{text.length.toLocaleString(intlLocale(lang))} / {t("٢٠٬٠٠٠ حرف. لا تلصق أسرارًا أو بيانات شخصية.", "20,000 characters. Do not paste secrets or personal data.")}</span>
           </div>
         </section>
 
@@ -119,7 +120,7 @@ export function LabClient({ initial, past, hasLlm }: { initial: Past | null; pas
           <h2 id="lab-past" className="t-h3">{t("مراجعاتك السابقة", "Your earlier reviews")}</h2>
           <ul>{past.map((p) => (
             <li key={p.id}><a className="ws-item" href={`/lab?review=${p.id}`}><span className="ws-item-title">{p.input.slice(0, 90)}</span>
-              <span className="t-caption">{REVIEW_MODES.find((x) => x.id === p.mode)?.name} · {p.engine === "llm" ? t("نموذج لغوي", "Language model") : t("مراجع قاعدي", "Rule-based reviewer")} · {fmtDate(p.created_at, lang)}</span></a></li>
+              <span className="t-caption">{REVIEW_MODES.find((x) => x.id === p.mode)?.name} · {p.engine === "llm" ? t("نموذج لغوي", "Language model") : t("مراجع قاعدي", "Rule-based reviewer")} · <LocalTime ts={p.created_at} /></span></a></li>
           ))}</ul>
         </section>
       )}

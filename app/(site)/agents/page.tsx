@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { FavButton } from "@/components/Fav";
 import { Icon } from "@/components/Icon";
+import { LocalTime } from "@/components/LocalTime";
 import { PrefAgentButton } from "@/components/PrefAgent";
 import { AppPage } from "@/components/site/Page";
 import { currentUser } from "@/lib/auth";
 import { agentsFor } from "@/lib/catalog/agents";
 import { localizeModel, modelById } from "@/lib/catalog/models";
 import { all } from "@/lib/db";
-import { intlLocale, makeT, type Lang } from "@/lib/i18n";
+import { makeT, type Lang } from "@/lib/i18n";
 import { getLang } from "@/lib/i18n-server";
 import { pageMeta } from "@/lib/meta";
 import { modeById } from "@/lib/review/types";
@@ -45,7 +46,6 @@ export default async function AgentsPage() {
   const AGENTS = agentsFor(lang);
   const favs = user ? (await all<{ ref: string }>("SELECT ref FROM favorites WHERE user_id = ? AND kind = 'agent'", user.id)).map((f) => f.ref) : [];
   const log = user ? await all<{ kind: string; detail: string; created_at: number }>("SELECT kind, detail, created_at FROM actions WHERE user_id = ? ORDER BY created_at DESC LIMIT 8", user.id) : [];
-  const fmt = new Intl.DateTimeFormat(intlLocale(lang), { dateStyle: "medium", timeStyle: "short" });
   return (
     <AppPage
       art={{ name: "consulting", kind: "fade", y: "-10.1rem", fade: { "--art-h": "26rem", "--f1": "35%", "--f2": "65%", "--f3": "100%" } }}
@@ -88,7 +88,7 @@ export default async function AgentsPage() {
           <h2 id="log" className="t-h3">{t("سجل الإجراءات المنفَّذة فعلًا", "Log of actions actually taken")}</h2>
           <p className="t-small muted">{t("يُسجَّل هنا كل استدعاء نموذج أو مراجعة جرت باسم حسابك. لا إجراءات خارجية في هذه النسخة.", "Every model call or review made under your account is recorded here. There are no external actions in this version.")}</p>
           {log.length === 0 ? <p className="t-small muted">{t("لا إجراءات بعد.", "No actions yet.")}</p> : (
-            <ul className="t-small stack-sm">{log.map((l, i) => <li key={i} className="row-between"><span>{describe(l.kind, l.detail, lang)}</span><span className="t-caption">{fmt.format(l.created_at)}</span></li>)}</ul>
+            <ul className="t-small stack-sm">{log.map((l, i) => <li key={i} className="row-between"><span>{describe(l.kind, l.detail, lang)}</span><span className="t-caption"><LocalTime ts={l.created_at} style="medium" /></span></li>)}</ul>
           )}
         </section>
       )}

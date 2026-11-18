@@ -1,5 +1,8 @@
 # يشغّل كل اختبارات المشروع على كل طلب دمج إلى الفرع الرئيسي وبعد كل دمج فيه، قبل أن يصل أي تغيير إلى الزوار.
-# لمنع الدمج حين يفشل: من إعدادات المستودع، Rules (أو Branches)، قاعدة للفرع main تشترط نجاح الفحص "tests".
+# - tests: الأنواع والوحدات والبناء والاختبار الشامل (SQLite و PostgreSQL) ومسار النماذج اللغوية، على Node 22
+#   (أدنى إصدار مدعوم في engines) وعلى Node 26 (إصدار الموقع المنشور على Vercel).
+# - browsers: الاختبار الشامل نفسه على محرك Safari (WebKit) ومحرك Firefox.
+# لمنع الدمج حين يفشل: من إعدادات المستودع، Rules (أو Branches)، قاعدة للفرع main تشترط نجاح هذه الفحوص.
 name: tests
 
 on:
@@ -18,14 +21,19 @@ concurrency:
 
 jobs:
   tests:
+    name: tests (node ${{ matrix.node }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 26]
     steps:
       - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: ${{ matrix.node }}
           cache: npm
 
       - run: npm ci
@@ -60,6 +68,45 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: test-output
+          name: test-output-node${{ matrix.node }}
+          path: test-output/
+          retention-days: 7
+
+  browsers:
+    name: browsers (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [webkit, firefox]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright and ${{ matrix.browser }}
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Build
+        run: npm run build
+
+      - name: End-to-end tests on ${{ matrix.browser }}
+        run: npm run e2e
+        env:
+          E2E_BROWSER: ${{ matrix.browser }}
+
+      - name: Keep the screenshots when a test fails
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-output-${{ matrix.browser }}
           path: test-output/
           retention-days: 7

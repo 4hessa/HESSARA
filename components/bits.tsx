@@ -1,5 +1,5 @@
 // عناصر عرض صغيرة مشتركة (تعمل على الخادم والعميل).
-import { intlLocale, type Lang } from "@/lib/i18n";
+import type { Lang } from "@/lib/i18n";
 import type { ModelView } from "@/lib/providers";
 
 // رمز نصي محايد للجهة المطوّرة. ليس شعارًا رسميًا ولا يحاكي أي علامة تجارية.
@@ -47,5 +47,4 @@ export function StatusBadge({ model, lang = "ar" }: { model: ModelView; lang?: L
   return <span className={`badge ${s.cls}`}>{s[lang]}</span>;
 }
 
-export const fmtDate = (ts: number, lang: Lang = "ar") =>
-  new Intl.DateTimeFormat(intlLocale(lang), { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }).format(ts);
+// الأوقات تُعرض بمكوّن LocalTime بتوقيت المستخدم (lib/time.ts).

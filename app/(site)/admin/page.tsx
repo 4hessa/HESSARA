@@ -2,7 +2,7 @@
 // لا تعرض محتوى أي استشارة ولا هوية أي مستخدم. لغيره تظهر الصفحة كأنها غير موجودة.
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { fmtDate } from "@/components/bits";
+import { LocalTime } from "@/components/LocalTime";
 import { AppPage } from "@/components/site/Page";
 import { agentById } from "@/lib/catalog/agents";
 import { localizeModel, modelById } from "@/lib/catalog/models";
@@ -215,7 +215,7 @@ export default async function AdminPage() {
                   <tr key={m.id}>
                     <td><bdi>{m.name}</bdi></td>
                     <td>{m.engine === "demo" ? t("تجريبي — يعمل دون مفاتيح", "Demo — runs without keys") : STATUS[m.status]?.[lang] ?? m.status}</td>
-                    <td>{m.checkedAt ? fmtDate(m.checkedAt, lang) : "—"}</td>
+                    <td>{m.checkedAt ? <LocalTime ts={m.checkedAt} /> : "—"}</td>
                     <td className="t-small">{m.checkError ?? "—"}</td>
                   </tr>
                 ))}
