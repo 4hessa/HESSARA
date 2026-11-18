@@ -87,6 +87,30 @@ test("سقف المنصة: مجموع استدعاءات كل المستخدمي
   assert.equal(U.platformDailyLimit(), 100, "السقف الافتراضي");
 });
 
+test("بريد صاحب المشروع: قراءة متسامحة مع ما يدخل عند اللصق، وسطر تشخيص بلا عناوين", () => {
+  // علامتا اتجاه، وعلامات تنصيص، وفاصلة عربية، وصيغة <mailto:…>، ومنقوطة، ونقطة في الآخر، وسطر جديد
+  const raw = "‏\"Owner@Example.com\"‎، <mailto:Second@Example.org>; third@example.net.\n";
+  assert.deepEqual(U.adminEmails(raw), ["owner@example.com", "second@example.org", "third@example.net"]);
+  assert.deepEqual(U.adminEmails("Hessa <hessa@example.com>"), ["hessa@example.com"], "صيغة «الاسم <البريد>»");
+  assert.deepEqual(U.adminEmails(undefined), []);
+  process.env.HESSARA_ADMIN_EMAILS = raw;
+  try {
+    assert.equal(U.isAdmin("owner@example.com"), true);
+    assert.equal(U.isAdmin(" SECOND@example.org "), true);
+    assert.equal(U.isAdmin("other@example.com"), false);
+    assert.equal(U.isAdmin(""), false);
+    assert.equal(U.isAdmin(null), false);
+  } finally { delete process.env.HESSARA_ADMIN_EMAILS; }
+
+  const d = (email, value) => JSON.parse(U.adminDeniedDiagnostic(email, value));
+  assert.deepEqual(d("a@example.com", undefined), { event: "admin_denied", variable: "missing", addresses: 0, hiddenChars: false, sameDomain: false, nearest: null });
+  assert.equal(d("a@example.com", "  ").variable, "empty");
+  assert.equal(d("a@example.com", "not-an-email").addresses, 0, "قيمة بلا @ لا تُعدّ عنوانًا");
+  assert.deepEqual(d("owner@example.com", "‏owmer@example.com"), { event: "admin_denied", variable: "set", addresses: 1, hiddenChars: true, sameDomain: true, nearest: 1 }, "خطأ حرف واحد");
+  assert.equal(d("someone@other.org", "owner@example.com").nearest, "more", "عنوان مختلف تمامًا");
+  assert.doesNotMatch(U.adminDeniedDiagnostic("owner@example.com", "owner@example.org, x@y.z"), /@|example|owner/, "لا يظهر عنوان ولا جزء منه");
+});
+
 test("عدّاد الزيارات: المعرّفات في الروابط تُستبدل، ومسارات الواجهة البرمجية والإدارة لا تُحصى", () => {
   assert.equal(normalizeViewPath("/"), "/");
   assert.equal(normalizeViewPath("/insights/?x=1#y"), "/insights");

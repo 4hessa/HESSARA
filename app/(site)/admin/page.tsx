@@ -13,7 +13,7 @@ import { getLang } from "@/lib/i18n-server";
 import { listModels } from "@/lib/providers";
 import { modeById } from "@/lib/review/types";
 import { SUS_ITEMS, susSummary } from "@/lib/sus";
-import { dailyLimit, isAdmin, platformDailyLimit, usageDay } from "@/lib/usage";
+import { adminDeniedDiagnostic, dailyLimit, isAdmin, platformDailyLimit, usageDay } from "@/lib/usage";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = makeT(await getLang());
@@ -38,7 +38,11 @@ const STATUS: Record<string, { ar: string; en: string }> = {
 
 export default async function AdminPage() {
   const user = await requireUser("/admin");
-  if (!isAdmin(user.email)) notFound();
+  if (!isAdmin(user.email)) {
+    // أعداد وعلامات فقط، دون أي عنوان؛ تظهر في سجلات Vercel لمعرفة سبب الرفض.
+    console.warn(adminDeniedDiagnostic(user.email));
+    notFound();
+  }
   const lang = await getLang();
   const t = makeT(lang);
   const num = (v: number) => new Intl.NumberFormat(intlLocale(lang)).format(v);
