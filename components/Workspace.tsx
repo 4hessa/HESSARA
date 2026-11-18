@@ -163,7 +163,8 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
       }
       if (!finished && !failed) failed = t("انقطع الاتصال قبل اكتمال الإجابة.", "The connection dropped before the answer was complete.");
     } catch (e) {
-      if ((e as Error).name !== "AbortError") {
+      // بعد ضغط «أوقف التوليد» يُعد أي خطأ في القراءة إيقافًا لا عطلًا: Firefox قد يسمّي الإلغاء «Error in input stream».
+      if ((e as Error).name !== "AbortError" && !ctl.signal.aborted) {
         failed = (e as Error).message || t("تعذر الاتصال بالخادم.", "Could not reach the server.");
         // لم تصل الرسالة: نعيد النص إلى حقل الكتابة حتى لا يضيع.
         if (!assistantId && !retry) { setMsgs((m) => m.filter((x) => x.id !== tempId)); setDraft(text ?? ""); }
