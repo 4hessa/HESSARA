@@ -468,7 +468,7 @@ try {
   await page.getByRole("button", { name: "احذف نهائيًا" }).click();
   await page.getByText("محاولات كثيرة").waitFor(); // الحد من الفحص السابق ما زال ساريًا: الحذف محجوب حتى بكلمة المرور الصحيحة
   check("أمان: حد الحذف يسري حتى مع كلمة المرور الصحيحة أثناء النافذة", true);
-  const fresh = await browser.newContext();
+  const fresh = await browser.newContext({ locale: "ar" });
   await fresh.request.post(BASE + "/api/auth/signup", { data: { name: "ليلى", email: "layla@example.com", password: "delete-me-123", accept: true } });
   const fp = await fresh.newPage();
   await fp.goto(BASE + "/profile");
