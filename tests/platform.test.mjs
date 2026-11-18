@@ -92,6 +92,7 @@ test("بريد صاحب المشروع: قراءة متسامحة مع ما يد
   const raw = "‏\"Owner@Example.com\"‎، <mailto:Second@Example.org>; third@example.net.\n";
   assert.deepEqual(U.adminEmails(raw), ["owner@example.com", "second@example.org", "third@example.net"]);
   assert.deepEqual(U.adminEmails("Hessa <hessa@example.com>"), ["hessa@example.com"], "صيغة «الاسم <البريد>»");
+  assert.deepEqual(U.adminEmails("o'brien@example.com, \"x@example.com\"."), ["o'brien@example.com", "x@example.com"], "الفاصلة العليا داخل البريد تبقى، وما على الطرفين يُحذف");
   assert.deepEqual(U.adminEmails(undefined), []);
   process.env.HESSARA_ADMIN_EMAILS = raw;
   try {

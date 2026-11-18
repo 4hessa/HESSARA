@@ -23,12 +23,14 @@ export const platformDailyLimit = () => envLimit("HESSARA_PLATFORM_DAILY_LIMIT",
 // النص العربي، أو علامات تنصيص، أو صيغة «الاسم <البريد>»، أو بادئة mailto:، أو نقطة في الآخر، أو فاصلة عربية
 // أو منقوطة أو سطرًا جديدًا بين عنوانين. القراءة تتجاوز ذلك كله، ولا يبقى إلا ما فيه @.
 const HIDDEN = /\p{Cf}/gu;
+// علامات التنصيص والأقواس تُحذف من طرفي العنوان فقط، لأن الفاصلة العليا جائزة داخل البريد (o'brien@…).
+const EDGES = /^["'`<>«»“”‘’()[\]]+|["'`<>«»“”‘’()[\].]+$/g;
 const normEmail = (s: string) => s.replace(HIDDEN, "").trim().toLowerCase();
 
 /** عناوين صاحب المشروع كما يقرؤها الموقع من HESSARA_ADMIN_EMAILS. */
 export function adminEmails(raw = process.env.HESSARA_ADMIN_EMAILS): string[] {
   return (raw ?? "").replace(HIDDEN, "").split(/[\s,;،؛]+/u)
-    .map((s) => s.replace(/["'`<>«»“”‘’()[\]]/g, "").replace(/^mailto:/i, "").replace(/\.+$/, "").toLowerCase())
+    .map((s) => s.replace(EDGES, "").replace(/^mailto:/i, "").replace(EDGES, "").toLowerCase())
     .filter((s) => s.includes("@"));
 }
 
