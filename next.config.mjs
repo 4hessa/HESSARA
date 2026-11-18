@@ -27,7 +27,12 @@ const nextConfig = {
   outputFileTracingRoot: root,
   // عنوان خريطة الموقع في الموقع المرجعي (Astro) كان sitemap-index.xml.
   async redirects() {
-    return [{ source: "/sitemap-index.xml", destination: "/sitemap.xml", permanent: true }];
+    return [
+      { source: "/sitemap-index.xml", destination: "/sitemap.xml", permanent: true },
+      // صفحتا «الوظائف» و«البرامج» حُذفتا؛ الروابط القديمة إليهما تقود إلى «من نحن».
+      { source: "/careers", destination: "/about", permanent: true },
+      { source: "/programs", destination: "/about", permanent: true },
+    ];
   },
   async headers() {
     return [

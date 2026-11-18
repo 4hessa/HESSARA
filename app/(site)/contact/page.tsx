@@ -9,7 +9,7 @@ const CONTACT_EMAIL = "";
 
 const C = {
   en: {
-    meta: "Contact", desc: "Get in touch with HESSARA about consultations, language models, programs, or the project itself.",
+    meta: "Contact", desc: "Get in touch with HESSARA about consultations, language models, or the project itself.",
     h1: "Start the Conversation", sub: "Tell us what you are trying to decide",
     copy: "Whether you want to run a consultation, ask about the language models, or discuss the project, we would like to hear from you.",
     email: "Email",
@@ -17,7 +17,7 @@ const C = {
     tiles: [
       { icon: "knight", title: "Advisory Sessions", text: "Bring a question to one of six specialised agents.", href: "/consulting" },
       { icon: "gem", title: "Language Models", text: "See which models are configured and how status works.", href: "/models" },
-      { icon: "map", title: "Programs & Careers", text: "What exists today, and what is only an idea.", href: "/programs" },
+      { icon: "map", title: "About the Project", text: "What HESSARA is, what it offers, and what it believes.", href: "/about" },
     ],
     before: "Before you write", short: "A short note is enough. It helps if you include:",
     li: ["the question or decision you are working on", "your organisation and role, if relevant", "any timing that matters"],
@@ -26,7 +26,7 @@ const C = {
     cta: "Prefer to explore first?", c1: "Browse Resources", c2: "Read Insights",
   },
   ar: {
-    meta: "تواصل معنا", desc: "تواصل مع هسّارة بشأن الاستشارات أو النماذج اللغوية أو البرامج أو المشروع نفسه.",
+    meta: "تواصل معنا", desc: "تواصل مع هسّارة بشأن الاستشارات أو النماذج اللغوية أو المشروع نفسه.",
     h1: "ابدأ الحديث", sub: "أخبرنا بما تحاول أن تقرره",
     copy: "سواء أردت إجراء استشارة، أو السؤال عن النماذج اللغوية، أو مناقشة المشروع، يسعدنا أن نسمع منك.",
     email: "راسلنا على",
@@ -34,7 +34,7 @@ const C = {
     tiles: [
       { icon: "knight", title: "جلسات استشارية", text: "اعرض سؤالك على أحد ستة وكلاء متخصصين.", href: "/consulting" },
       { icon: "gem", title: "النماذج اللغوية", text: "اعرف النماذج المهيّأة وكيف تُحسب حالتها.", href: "/models" },
-      { icon: "map", title: "البرامج والوظائف", text: "ما الموجود اليوم، وما هو مجرد فكرة.", href: "/programs" },
+      { icon: "map", title: "عن المشروع", text: "ما هسّارة، وما تقدّمه، وما تؤمن به.", href: "/about" },
     ],
     before: "قبل أن تكتب", short: "تكفي رسالة قصيرة، ويفيد أن تذكر فيها:",
     li: ["السؤال أو القرار الذي تعمل عليه", "جهتك ودورك إن كان ذلك مهمًا", "أي توقيت يهم"],

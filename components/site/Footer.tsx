@@ -10,8 +10,8 @@ type Col = { title: [string, string]; links: [string, string, string][] };
 const COLS: Col[] = [
   { title: ["المنصة", "Platform"], links: [["المنصة", "Platform", "/platform"], ["النماذج اللغوية", "Language Models", "/models"], ["الاستشارات الذكية", "AI Consulting", "/consulting"], ["مختبر النقد", "Critique Lab", "/lab"]] },
   { title: ["الموارد", "Resources"], links: [["رؤى", "Insights", "/insights"], ["المكتبة", "Library", "/resources"], ["البدء", "Getting Started", "/resources/getting-started"], ["الأمان", "Security", "/resources/security"], ["مكتبة الفيديو", "Video Library", "/media"]] },
-  { title: ["عن هسّارة", "Company"], links: [["من نحن", "About Us", "/about"], ["تواصل معنا", "Contact Us", "/contact"], ["الوظائف", "Careers", "/careers"], ["المساعدة", "Help", "/help"]] },
-  { title: ["البرامج", "Programs"], links: [["البرامج", "Programs", "/programs"], ["شروط الاستخدام", "Terms & Usability", "/terms"], ["سياسة الخصوصية", "Privacy Policy", "/privacy"]] },
+  { title: ["عن هسّارة", "Company"], links: [["من نحن", "About Us", "/about"], ["تواصل معنا", "Contact Us", "/contact"], ["المساعدة", "Help", "/help"]] },
+  { title: ["السياسات", "Policies"], links: [["شروط الاستخدام", "Terms & Usability", "/terms"], ["سياسة الخصوصية", "Privacy Policy", "/privacy"]] },
 ];
 
 // حساب المشروع على منصة X. الشعار بشكله الرسمي (مملوء) لا بخط الأيقونات، وبلون النص.
