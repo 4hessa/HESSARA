@@ -22,6 +22,12 @@ const dbEnv = process.env.E2E_DB === "pglite" ? { HESSARA_PGLITE: "1" } : { HESS
 const axeSource = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 const results = [];
+// رسائل في وحدة تحكم المتصفح لا تدل على خلل في الموقع:
+// - 401/404/412: طلبات يتعمّد الاختبار أن تُرفض.
+// - Safari لا يعرف المفتاح interactive-widget في وسم viewport فيتجاهله (المفتاح يفيد Chrome على أندرويد).
+// - طلبات بيانات الصفحات (?_rsc=) التي تُلغى حين ينتقل الاختبار سريعًا إلى صفحة أخرى: Safari يسمّي الإلغاء
+//   «access control checks»، و Firefox يجعل Next.js يعلن أنه سينتقل انتقالًا عاديًا بدلها.
+const benign = (e) => /401|404|412|Failed to load resource|Viewport argument key "interactive-widget"|\?_rsc=\S+ due to access control checks|Failed to fetch RSC payload for \S+ Falling back to browser navigation/.test(e);
 const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`); };
 
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)], {
@@ -217,7 +223,8 @@ try {
     const html = await (await riyadh.request.get(BASE + "/home")).text();
     check("الخادم يعرض الوقت بتوقيت المستخدم من الزيارة التالية", html.includes(expected), expected);
     for (const p of [consultUrl.replace(BASE, ""), "/lab", "/models", "/agents"]) await rp.goto(BASE + p);
-    check("لا أخطاء ترطيب ولا أخطاء JavaScript بتوقيت غير التوقيت العالمي", rErrors.length === 0, rErrors.slice(0, 2).join(" | "));
+    const rReal = rErrors.filter((e) => !benign(e));
+    check("لا أخطاء ترطيب ولا أخطاء JavaScript بتوقيت غير التوقيت العالمي", rReal.length === 0, rReal.slice(0, 2).join(" | "));
     await riyadh.close();
   }
 
@@ -501,8 +508,7 @@ try {
   const relog = await fetch(BASE + "/api/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "layla@example.com", password: "delete-me-123" }) });
   check("حذف الحساب يزيل البيانات (تعذر الدخول بعده)", relog.status === 401);
 
-  // Safari لا يعرف المفتاح interactive-widget في وسم viewport فيتجاهله ويكتب تحذيرًا؛ المفتاح يفيد Chrome على أندرويد.
-  const realErrors = errors.filter((e) => !/401|404|412|Failed to load resource|Viewport argument key "interactive-widget"/.test(e));
+  const realErrors = errors.filter((e) => !benign(e));
   check("لا أخطاء JavaScript في المتصفح", realErrors.length === 0, realErrors.slice(0, 3).join(" | "));
 } catch (e) {
   check("تنفيذ السكربت", false, String(e.stack || e).slice(0, 600));
