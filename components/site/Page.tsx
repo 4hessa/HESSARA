@@ -28,7 +28,7 @@ export function AppPage({ title, eyebrow, sub, copy, actions, art, top, narrow, 
   return (
     <>
       {art && <div className="art-band"><Art {...art} /></div>}
-      <section className={`app-hero${art ? " app-hero--art" : ""}`} style={top ? ({ "--app-top": top } as CSSProperties) : undefined}>
+      <section className={`app-hero${art ? ` app-hero--art app-hero--${art.name}` : ""}`} style={top ? ({ "--app-top": top } as CSSProperties) : undefined}>
         <div className="app-hero__inner">
           {eyebrow && <p className="eyebrow">{eyebrow}</p>}
           <h1>{title}</h1>
