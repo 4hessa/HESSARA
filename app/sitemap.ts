@@ -7,7 +7,7 @@ import { SITE } from "@/lib/site";
 const PATHS = [
   "/", "/platform", "/models", "/consulting", "/insights", "/resources",
   ...INSIGHTS.map((e) => `/insights/${e.slug}`), ...RESOURCES.map((e) => `/resources/${e.slug}`),
-  "/agents", "/media", "/about", "/careers", "/programs", "/contact", "/help", "/privacy", "/terms",
+  "/agents", "/media", "/about", "/contact", "/help", "/privacy", "/terms",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

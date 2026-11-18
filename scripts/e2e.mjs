@@ -91,13 +91,18 @@ try {
   await noOverflow(page, "الرئيسية/حاسب");
 
   // الصفحات التعريفية والمقالات بالعربية
-  for (const [p, n] of [["/platform", "platform"], ["/models", "models"], ["/consulting", "consulting"], ["/insights", "insights"], ["/insights/multi-agent-deliberation", "insight-article"], ["/resources", "resources"], ["/resources/security", "resource-doc"], ["/about", "about"], ["/careers", "careers"], ["/programs", "programs"], ["/contact", "contact"], ["/privacy", "privacy"], ["/terms", "terms"], ["/help", "help"]]) {
+  for (const [p, n] of [["/platform", "platform"], ["/models", "models"], ["/consulting", "consulting"], ["/insights", "insights"], ["/insights/multi-agent-deliberation", "insight-article"], ["/resources", "resources"], ["/resources/security", "resource-doc"], ["/about", "about"], ["/contact", "contact"], ["/privacy", "privacy"], ["/terms", "terms"], ["/help", "help"]]) {
     const r = await page.goto(BASE + p);
     check(`صفحة ${n} تعمل (200)`, r?.status() === 200);
     await noOverflow(page, `${n}/حاسب`);
     if (["platform", "consulting", "insight-article", "resources", "privacy"].includes(n)) await axe(page, `${n} (عربي)`);
     if (n === "consulting") await shot(page, "01b-consulting-ar", true);
   }
+  for (const old of ["/careers", "/programs"]) {
+    const r = await fetch(BASE + old, { redirect: "manual" });
+    check(`الصفحة المحذوفة ${old} تحوّل دائمًا إلى «من نحن»`, r.status === 308 && r.headers.get("location") === "/about", `${r.status} ${r.headers.get("location")}`);
+  }
+  check("التذييل بلا روابط إلى الصفحتين المحذوفتين", (await page.locator('footer a[href="/careers"], footer a[href="/programs"]').count()) === 0);
   const nf = await page.goto(BASE + "/no-such-page");
   check("صفحة غير موجودة تعرض 404 بتصميم الموقع", nf?.status() === 404 && (await page.locator("h1").innerText()).includes("لا يقود"));
 
