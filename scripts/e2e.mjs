@@ -27,7 +27,8 @@ const results = [];
 // - Safari لا يعرف المفتاح interactive-widget في وسم viewport فيتجاهله (المفتاح يفيد Chrome على أندرويد).
 // - طلبات بيانات الصفحات (?_rsc=) التي تُلغى حين ينتقل الاختبار سريعًا إلى صفحة أخرى: Safari يسمّي الإلغاء
 //   «access control checks»، و Firefox يجعل Next.js يعلن أنه سينتقل انتقالًا عاديًا بدلها.
-const benign = (e) => /401|404|412|Failed to load resource|Viewport argument key "interactive-widget"|[?&]_rsc=\S+ due to access control checks|Failed to fetch RSC payload for \S+ Falling back to browser navigation/.test(e);
+// - Firefox: «Error in input stream» بلا مكدّس حين يقطع الانتقالُ قراءةَ بيانات صفحة (يظهر نادرًا ويتوقف على التوقيت).
+const benign = (e) => /401|404|412|Failed to load resource|Viewport argument key "interactive-widget"|[?&]_rsc=\S+ due to access control checks|Failed to fetch RSC payload for \S+ Falling back to browser navigation|^TypeError: Error in input stream \[[^\]]*\] TypeError: Error in input stream <? *$/.test(e);
 const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`); };
 
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)], {
@@ -166,6 +167,8 @@ try {
   await page.getByRole("button", { name: "أوقف التوليد" }).click();
   await page.locator(".composer button[type=submit]").waitFor();
   check("إيقاف التوليد يعيد زر الإرسال", true);
+  await page.waitForTimeout(300);
+  check("إيقاف التوليد لا يعرض رسالة خطأ", (await page.locator(".ws-thread .notice-danger").count()) === 0);
 
   // ── ٦. العودة: اللوحة ──
   await page.goto(BASE + "/home");

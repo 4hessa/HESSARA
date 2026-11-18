@@ -34,6 +34,8 @@ export function ErrorReporter() {
       const r = e.reason as { name?: unknown; message?: unknown } | null;
       const name = typeof r?.name === "string" ? r.name : typeof e.reason;
       if (name === "AbortError") return;
+      // Firefox: قراءة بيانات صفحة قطعها الانتقال إلى صفحة أخرى. لا خلل في الموقع ولا ما يمكن إصلاحه.
+      if (typeof r?.message === "string" && r.message === "Error in input stream") return;
       reportClientError(`unhandledrejection:${name}`, typeof r?.message === "string" ? r.message : String(e.reason ?? ""));
     };
     window.addEventListener("error", onError);

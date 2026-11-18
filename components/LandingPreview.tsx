@@ -45,7 +45,7 @@ export function LandingPreview() {
         let i: number;
         while ((i = buf.indexOf("\n")) >= 0) { const l = buf.slice(0, i); buf = buf.slice(i + 1); if (l) { const ev = JSON.parse(l); if (ev.t === "d") { acc += ev.v; setAnswer(acc); } } }
       }
-    } catch (e) { if ((e as Error).name !== "AbortError") setError((e as Error).message); }
+    } catch (e) { if ((e as Error).name !== "AbortError" && !c.signal.aborted) setError((e as Error).message); }
     setBusy(false);
   }
   async function runReview() {
