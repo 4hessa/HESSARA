@@ -1,6 +1,6 @@
 // تقرير الاستشارة: السؤال والإجابات بأسماء نماذجها، والمراجعات النقدية بأحكامها وملاحظاتها وحدودها.
 // مكوّن خادم يعرضه تقرير صاحب الاستشارة ورابط المشاركة للقراءة فقط، ومصمَّم للطباعة أيضًا.
-import { fmtDate } from "./bits";
+import { LocalTime } from "./LocalTime";
 import { Markdown } from "./Markdown";
 import { agentById } from "@/lib/catalog/agents";
 import { localizeModel, modelById } from "@/lib/catalog/models";
@@ -29,7 +29,7 @@ export function ConsultReport({ data, lang }: { data: ReportData; lang: Lang }) 
         <p className="eyebrow">{t("تقرير استشارة من هسّارة", "A HESSARA consultation report")}</p>
         <h2 className="report__title">{c.title}</h2>
         <dl className="report__meta">
-          <div><dt>{t("التاريخ:", "Date:")}</dt><dd>{fmtDate(c.created_at, lang)}</dd></div>
+          <div><dt>{t("التاريخ:", "Date:")}</dt><dd><LocalTime ts={c.created_at} /></dd></div>
           {usedModels.length > 0 && <div><dt>{t("النماذج:", "Models:")}</dt><dd><bdi>{usedModels.join(lang === "ar" ? "، " : ", ")}</bdi></dd></div>}
           {agent && <div><dt>{t("الوكيل:", "Agent:")}</dt><dd>{agent.name}</dd></div>}
           <div><dt>{t("الإجابات:", "Answers:")}</dt><dd>{answers.length}</dd></div>

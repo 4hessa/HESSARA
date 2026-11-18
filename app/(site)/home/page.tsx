@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { fmtDate, VendorMark } from "@/components/bits";
+import { VendorMark } from "@/components/bits";
+import { LocalTime } from "@/components/LocalTime";
 import { Icon } from "@/components/Icon";
 import { FirstSteps } from "@/components/FirstSteps";
 import { ModelNotice } from "@/components/ModelNotice";
@@ -72,14 +73,14 @@ export default async function Home() {
             {recent.length === 0 ? <p className="muted t-small">{t("لا استشارات بعد. اكتب مشكلتك في الحقل أعلاه لتبدأ.", "No consultations yet. Write your problem in the field above to begin.")}</p> : (
               <ul>{recent.map((c) => (
                 <li key={c.id}><Link href={`/consult/${c.id}`} className="ws-item"><span className="ws-item-title">{c.title}</span>
-                  <span className="t-caption"><bdi>{modelName(c.model_id)}</bdi>{c.agent_id ? ` · ${agentById(c.agent_id, lang)?.name}` : ""} · {fmtDate(c.updated_at, lang)}</span></Link></li>
+                  <span className="t-caption"><bdi>{modelName(c.model_id)}</bdi>{c.agent_id ? ` · ${agentById(c.agent_id, lang)?.name}` : ""} · <LocalTime ts={c.updated_at} /></span></Link></li>
               ))}</ul>
             )}
           </section>
           <section className="card" aria-labelledby="saved">
             <div className="row-between"><h2 id="saved" className="t-h3">{t("الاستشارات المحفوظة", "Saved consultations")}</h2><Link className="link t-small" href="/consult?saved=1">{t("الكل", "All")}</Link></div>
             {saved.length === 0 ? <p className="muted t-small">{t("احفظ استشارة بزر الإشارة المرجعية في أعلى المحادثة لتجدها هنا.", "Save a consultation with the bookmark button at the top of the conversation to find it here.")}</p> : (
-              <ul>{saved.map((c) => <li key={c.id}><Link href={`/consult/${c.id}`} className="ws-item"><span className="ws-item-title">{c.title}</span><span className="t-caption">{fmtDate(c.updated_at, lang)}</span></Link></li>)}</ul>
+              <ul>{saved.map((c) => <li key={c.id}><Link href={`/consult/${c.id}`} className="ws-item"><span className="ws-item-title">{c.title}</span><span className="t-caption"><LocalTime ts={c.updated_at} /></span></Link></li>)}</ul>
             )}
           </section>
           <section className="card" aria-labelledby="fav-agents">

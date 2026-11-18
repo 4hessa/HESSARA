@@ -44,4 +44,6 @@ export function langOf(req: Request): Lang {
 export const tOf = (req: Request): T => makeT(langOf(req));
 
 /** وسم Intl لكل لغة (العربية بأرقامها الافتراضية كما كانت المنصة تعرض التواريخ). */
-export const intlLocale = (lang: Lang) => (lang === "ar" ? "ar" : "en-GB");
+// الأرقام المحسوبة بالأرقام الغربية في كل البيئات: الخادم و Chromium يختارانها للعربية، و Firefox قد يختار
+// الأرقام الهندية، فيختلف النص بين الخادم والمتصفح. التثبيت يجعل العرض واحدًا في كل المتصفحات.
+export const intlLocale = (lang: Lang) => (lang === "ar" ? "ar-u-nu-latn" : "en-GB");

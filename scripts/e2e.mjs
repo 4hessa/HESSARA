@@ -65,7 +65,7 @@ try {
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+  page.on("console", (m) => { if (m.type() === "error") errors.push(`${m.text()} [${new URL(page.url()).pathname}]`); });
 
   // ── ١. الزائر: الصفحة الرئيسية بتصميم الموقع المرجعي ──
   await page.goto(BASE + "/");
@@ -199,6 +199,27 @@ try {
   check("إيقاف المشاركة يعطّل الرابط فورًا (404)", (await anonCtx.request.get(shareUrl)).status() === 404);
   await anonCtx.close();
   await page.keyboard.press("Escape");
+
+  // ── ٦ج. الأوقات بتوقيت المستخدم (الخادم يعمل بالتوقيت العالمي) ──
+  {
+    const riyadh = await browser.newContext({ locale: "ar", timezoneId: "Asia/Riyadh", storageState: await ctx.storageState() });
+    const rp = await riyadh.newPage();
+    const rErrors = [];
+    rp.on("console", (m) => { if (m.type() === "error") rErrors.push(`${m.text()} [${new URL(rp.url()).pathname}]`); });
+    rp.on("pageerror", (e) => rErrors.push(e.message));
+    await rp.goto(BASE + "/home");
+    const first = rp.locator("main time").first();
+    const iso = await first.getAttribute("datetime");
+    const expected = new Intl.DateTimeFormat("ar-u-nu-latn", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Riyadh" }).format(new Date(iso));
+    await rp.waitForFunction((exp) => document.querySelector("main time")?.textContent === exp, expected, { timeout: 5000 }).catch(() => {});
+    check("الأوقات تُعرض بتوقيت المستخدم (الرياض) لا بتوقيت الخادم", (await first.innerText()) === expected, `${await first.innerText()} / ${expected}`);
+    check("ملف ارتباط المنطقة الزمنية يُحفظ", (await riyadh.cookies()).some((c) => c.name === "hs_tz" && c.value === "Asia/Riyadh"));
+    const html = await (await riyadh.request.get(BASE + "/home")).text();
+    check("الخادم يعرض الوقت بتوقيت المستخدم من الزيارة التالية", html.includes(expected), expected);
+    for (const p of [consultUrl.replace(BASE, ""), "/lab", "/models", "/agents"]) await rp.goto(BASE + p);
+    check("لا أخطاء ترطيب ولا أخطاء JavaScript بتوقيت غير التوقيت العالمي", rErrors.length === 0, rErrors.slice(0, 2).join(" | "));
+    await riyadh.close();
+  }
 
   // ── ٧. تذكير راحة العين ──
   await page.goto(BASE + "/home?eyetest=2");
@@ -480,7 +501,8 @@ try {
   const relog = await fetch(BASE + "/api/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "layla@example.com", password: "delete-me-123" }) });
   check("حذف الحساب يزيل البيانات (تعذر الدخول بعده)", relog.status === 401);
 
-  const realErrors = errors.filter((e) => !/401|404|412|Failed to load resource/.test(e));
+  // Safari لا يعرف المفتاح interactive-widget في وسم viewport فيتجاهله ويكتب تحذيرًا؛ المفتاح يفيد Chrome على أندرويد.
+  const realErrors = errors.filter((e) => !/401|404|412|Failed to load resource|Viewport argument key "interactive-widget"/.test(e));
   check("لا أخطاء JavaScript في المتصفح", realErrors.length === 0, realErrors.slice(0, 3).join(" | "));
 } catch (e) {
   check("تنفيذ السكربت", false, String(e.stack || e).slice(0, 600));

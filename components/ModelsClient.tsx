@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ModelView } from "@/lib/providers";
 import { api, useApp } from "./app";
-import { fmtDate, StatusBadge, VendorMark } from "./bits";
+import { StatusBadge, VendorMark } from "./bits";
+import { LocalTime } from "./LocalTime";
 import { Dialog } from "./Dialog";
 import { FavButton } from "./Fav";
 import { Icon } from "./Icon";
@@ -84,7 +85,7 @@ export function ModelsClient({ favs }: { favs: string[] }) {
         {d && (
           <>
             <div className="dialog-body">
-              <div className="row"><StatusBadge model={d} lang={lang} />{d.checkedAt && <span className="t-caption">{t("آخر اختبار:", "Last test:")} {fmtDate(d.checkedAt, lang)}</span>}</div>
+              <div className="row"><StatusBadge model={d} lang={lang} />{d.checkedAt && <span className="t-caption">{t("آخر اختبار:", "Last test:")} <LocalTime ts={d.checkedAt} /></span>}</div>
               <p>{d.description}</p>
               {d.note && <p className="notice"><Icon name="info" /><span>{d.note}</span></p>}
               <dl className="stack-sm t-small">

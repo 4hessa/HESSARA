@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { PublicUser } from "@/lib/auth";
 import { makeT, type Lang, type T } from "@/lib/i18n";
+import { safeTimeZone, TZ_COOKIE } from "@/lib/time";
 import type { ModelView } from "@/lib/providers";
 import { Dialog } from "./Dialog";
 
@@ -27,6 +28,8 @@ export async function api<T = Record<string, unknown>>(path: string, init?: { me
 type Ctx = {
   lang: Lang;
   t: T;
+  /** منطقة المستخدم الزمنية لعرض الأوقات (lib/time.ts). */
+  tz: string;
   user: PublicUser | null;
   setUser: (u: PublicUser) => void;
   models: ModelView[];
@@ -43,8 +46,21 @@ export const useApp = () => {
 export const useT = () => useApp().t;
 export const useLang = () => useApp().lang;
 
-export function AppProvider({ lang, user: u0, models: m0, children }: { lang: Lang; user: PublicUser | null; models: ModelView[]; children: ReactNode }) {
+export function AppProvider({ lang, user: u0, models: m0, tz: tz0 = "UTC", children }: { lang: Lang; user: PublicUser | null; models: ModelView[]; tz?: string; children: ReactNode }) {
   const t = useMemo(() => makeT(lang), [lang]);
+  const [tz, setTz] = useState(tz0);
+  // منطقة المتصفح الفعلية: تُحفظ في ملف ارتباط ليُنسّق بها الخادم في الزيارات التالية، وتُطبَّق الآن فورًا.
+  useEffect(() => {
+    try {
+      const z = safeTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
+      if (z !== tz0) {
+        document.cookie = `${TZ_COOKIE}=${z}; path=/; max-age=31536000; samesite=lax`;
+        setTz(z);
+      }
+    } catch {
+      /* يبقى التوقيت العالمي */
+    }
+  }, [tz0]);
   const [user, setUser] = useState(u0);
   const [models, setModels] = useState(m0);
   const [toasts, setToasts] = useState<{ id: number; msg: string }[]>([]);
@@ -78,7 +94,7 @@ export function AppProvider({ lang, user: u0, models: m0, children }: { lang: La
     resolver.current = null;
   };
 
-  const value = useMemo(() => ({ lang, t, user, setUser, models, setModels, toast, ensureConsent }), [lang, t, user, models, toast, ensureConsent]);
+  const value = useMemo(() => ({ lang, t, tz, user, setUser, models, setModels, toast, ensureConsent }), [lang, t, tz, user, models, toast, ensureConsent]);
   return (
     <AppCtx.Provider value={value}>
       {children}

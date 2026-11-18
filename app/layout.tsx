@@ -7,7 +7,7 @@ import { ErrorReporter } from "@/components/ErrorReporter";
 import { PageView } from "@/components/PageView";
 import { currentUser, toPublic } from "@/lib/auth";
 import { dirOf } from "@/lib/i18n";
-import { getLang } from "@/lib/i18n-server";
+import { getLang, getTimeZone } from "@/lib/i18n-server";
 import { listModels } from "@/lib/providers";
 import { SITE } from "@/lib/site";
 
@@ -47,7 +47,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {lang === "ar" && <link rel="preload" href="/fonts/plex-arabic-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />}
       </head>
       <body>
-        <AppProvider lang={lang} user={user ? toPublic(user) : null} models={await listModels(!!user, lang)}>{children}<PageView /><ErrorReporter /></AppProvider>
+        <AppProvider lang={lang} tz={await getTimeZone()} user={user ? toPublic(user) : null} models={await listModels(!!user, lang)}>{children}<PageView /><ErrorReporter /></AppProvider>
       </body>
     </html>
   );
