@@ -27,7 +27,7 @@ const results = [];
 // - Safari لا يعرف المفتاح interactive-widget في وسم viewport فيتجاهله (المفتاح يفيد Chrome على أندرويد).
 // - طلبات بيانات الصفحات (?_rsc=) التي تُلغى حين ينتقل الاختبار سريعًا إلى صفحة أخرى: Safari يسمّي الإلغاء
 //   «access control checks»، و Firefox يجعل Next.js يعلن أنه سينتقل انتقالًا عاديًا بدلها.
-const benign = (e) => /401|404|412|Failed to load resource|Viewport argument key "interactive-widget"|\?_rsc=\S+ due to access control checks|Failed to fetch RSC payload for \S+ Falling back to browser navigation/.test(e);
+const benign = (e) => /401|404|412|Failed to load resource|Viewport argument key "interactive-widget"|[?&]_rsc=\S+ due to access control checks|Failed to fetch RSC payload for \S+ Falling back to browser navigation/.test(e);
 const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`); };
 
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)], {
@@ -70,7 +70,7 @@ try {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 860 }, locale: "ar", colorScheme: "light" });
   const page = await ctx.newPage();
   const errors = [];
-  page.on("pageerror", (e) => errors.push(e.message));
+  page.on("pageerror", (e) => errors.push(`${e.name}: ${e.message} [${new URL(page.url()).pathname}] ${(e.stack ?? "").split("\n").slice(0, 4).join(" < ")}`));
   page.on("console", (m) => { if (m.type() === "error") errors.push(`${m.text()} [${new URL(page.url()).pathname}]`); });
 
   // ── ١. الزائر: الصفحة الرئيسية بتصميم الموقع المرجعي ──
@@ -212,7 +212,7 @@ try {
     const rp = await riyadh.newPage();
     const rErrors = [];
     rp.on("console", (m) => { if (m.type() === "error") rErrors.push(`${m.text()} [${new URL(rp.url()).pathname}]`); });
-    rp.on("pageerror", (e) => rErrors.push(e.message));
+    rp.on("pageerror", (e) => rErrors.push(`${e.name}: ${e.message} [${new URL(rp.url()).pathname}] ${(e.stack ?? "").split("\n").slice(0, 4).join(" < ")}`));
     await rp.goto(BASE + "/home");
     const first = rp.locator("main time").first();
     const iso = await first.getAttribute("datetime");
