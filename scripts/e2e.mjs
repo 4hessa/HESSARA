@@ -25,7 +25,7 @@ const results = [];
 const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`); };
 
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)], {
-  env: { ...process.env, ...dbEnv, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: "15", HESSARA_ADMIN_EMAILS: "sara@example.com", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
+  env: { ...process.env, ...dbEnv, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: ENGINE === "chromium" ? "15" : "45", HESSARA_ADMIN_EMAILS: "sara@example.com", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 let serverLog = "";
@@ -50,6 +50,17 @@ try {
   await waitUp();
   browser = await ENGINES[ENGINE].launch();
   console.log(`المحرك: ${ENGINE}`);
+  {
+    // في Firefox و WebKit قد يقطع تحديثُ الصفحة لنفسها (router.refresh) انتقالًا يطلبه الاختبار؛ يُعاد مرة واحدة.
+    const probe = await browser.newPage();
+    const proto = Object.getPrototypeOf(probe);
+    const goto = proto.goto;
+    proto.goto = async function (url, opts) {
+      try { return await goto.call(this, url, opts); }
+      catch (e) { if (/NS_BINDING_ABORTED|interrupted by another navigation|frame was detached/i.test(String(e?.message))) return goto.call(this, url, opts); throw e; }
+    };
+    await probe.close();
+  }
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 860 }, locale: "ar", colorScheme: "light" });
   const page = await ctx.newPage();
   const errors = [];
@@ -140,6 +151,12 @@ try {
   // إيقاف التوليد + إعادة التوليد
   await page.locator("#ws-input").fill("خطة مشروع تخرج من ثمانية أسابيع: ما المراحل والمتطلبات والمخاطر وكيف أقسّم العمل على الفريق خلال المدة المحددة مع معايير قبول واضحة لكل مرحلة؟ " .repeat(2));
   await page.keyboard.press("Enter");
+  if (ENGINE !== "chromium") {
+    await page.getByRole("button", { name: "أوقف التوليد" }).waitFor();
+    const box = () => page.evaluate(() => { const r = document.querySelector(".ws-compose")?.getBoundingClientRect(); const se = document.scrollingElement; return { top: Math.round(r?.top ?? -1), scroll: se.scrollHeight - innerHeight }; });
+    const a = await box(); await page.waitForTimeout(250); const b = await box();
+    console.log(`تشخيص ${ENGINE}: موضع حقل الكتابة أثناء البث ${a.top} ثم ${b.top}، وزيادة طول الصفحة عن الشاشة ${a.scroll} ثم ${b.scroll}`);
+  }
   await page.getByRole("button", { name: "أوقف التوليد" }).click();
   await page.locator(".composer button[type=submit]").waitFor();
   check("إيقاف التوليد يعيد زر الإرسال", true);
