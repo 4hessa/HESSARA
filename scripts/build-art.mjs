@@ -7,12 +7,18 @@
 // - phone tiers (<name>-m<w>.avif|webp): a centre crop of MOBILE_FRACTION of the width, which
 //   is all a phone ever shows, since the art is drawn 90rem wide and centred (see .art in
 //   global.css). Phones then download roughly a third of the pixels for the same picture.
+//
+// A master whose subject is off-centre or wide can take its own phone crop:
+//   --mobile-fraction=0.55  share of the width kept (default MOBILE_FRACTION)
+//   --mobile-center=0.485   horizontal centre of the crop, as a share of the width (default 0.5)
+// Both are saved in data/art.json as mfrac and mcx, so a later rebuild keeps the same crop.
 import sharp from 'sharp';
 import { readdir, readFile, writeFile, mkdir, unlink } from 'node:fs/promises';
 import path from 'node:path';
 
 const args = process.argv.slice(2);
 const mobileOnly = args.includes('--mobile-only');
+const flag = (name) => { const a = args.find((x) => x.startsWith(`--${name}=`)); return a ? Number(a.split('=')[1]) : undefined; };
 const [src, ...only] = args.filter((a) => !a.startsWith('--'));
 if (!src) throw new Error('Pass the directory that holds the master PNGs.');
 const out = 'public/art';
@@ -52,8 +58,13 @@ for (const file of (await readdir(src)).filter((f) => f.endsWith('.png'))) {
     entry.widths = widths;
   }
 
-  const cw = Math.round(width * MOBILE_FRACTION);
-  const crop = { left: Math.round((width - cw) / 2), top: 0, width: cw, height };
+  const mfrac = flag('mobile-fraction') ?? entry.mfrac ?? MOBILE_FRACTION;
+  const mcx = flag('mobile-center') ?? entry.mcx ?? 0.5;
+  if (mfrac !== MOBILE_FRACTION) entry.mfrac = mfrac; else delete entry.mfrac;
+  if (mcx !== 0.5) entry.mcx = mcx; else delete entry.mcx;
+  const cw = Math.round(width * mfrac);
+  const left = Math.min(Math.max(Math.round(width * mcx - cw / 2), 0), width - cw);
+  const crop = { left, top: 0, width: cw, height };
   const mobile = MOBILE_WIDTHS.filter((w) => w <= cw);
   if (cw < MOBILE_WIDTHS.at(-1) && !mobile.includes(cw)) mobile.push(cw); // the crop's own size is the sharpest it gets
   for (const w of mobile) {

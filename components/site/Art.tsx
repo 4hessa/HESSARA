@@ -18,7 +18,7 @@ export function Art({ name, kind = "frame", x = "0rem", y = "0rem", s = 1, fade 
   const fallback = m.widths.includes(1920) ? 1920 : m.widths[0];
   const style = { "--art-x": x, "--art-y": y, "--art-s": s, ...fade } as React.CSSProperties;
   return (
-    <div className={`art art--${kind}${dark ? " art--dark" : ""}`} style={style} aria-hidden="true">
+    <div className={`art art--${kind} art--${name}${dark ? " art--dark" : ""}`} style={style} aria-hidden="true">
       <picture>
         {m.mobile && <source media={phone} type="image/avif" srcSet={mset("avif")} sizes={`${Math.round(540 * s)}px`} width={m.mw} height={m.h} />}
         {m.mobile && <source media={phone} type="image/webp" srcSet={mset("webp")} sizes={`${Math.round(540 * s)}px`} width={m.mw} height={m.h} />}

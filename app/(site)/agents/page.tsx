@@ -48,8 +48,8 @@ export default async function AgentsPage() {
   const log = user ? await all<{ kind: string; detail: string; created_at: number }>("SELECT kind, detail, created_at FROM actions WHERE user_id = ? ORDER BY created_at DESC LIMIT 8", user.id) : [];
   return (
     <AppPage
-      art={{ name: "consulting", kind: "fade", y: "-10.1rem", fade: { "--art-h": "26rem", "--f1": "35%", "--f2": "65%", "--f3": "100%" } }}
-      top="15rem"
+      art={{ name: "agents", kind: "fade", dark: true, y: "calc(var(--art-h) / 2 - var(--art-cy))" }}
+      top="37rem"
       eyebrow={t("المجلس الاستشاري", "Advisory Council")}
       title={t("الوكلاء المتخصصون", "Specialised Agents")}
       copy={t("الوكيل في هسّارة تركيب من: نموذج أساسي تختاره أنت، وتعليمات تخصصية، ونموذج إدخال يطلب ما يحتاجه مجاله، وبنية إجابة محددة، ونمط مراجعة افتراضي. في هذه النسخة لا يملك أي وكيل أدوات خارجية: يحلّل ويقترح ولا ينفّذ.",
