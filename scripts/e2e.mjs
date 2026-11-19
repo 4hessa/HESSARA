@@ -91,6 +91,11 @@ try {
     const [href, target, rel] = await Promise.all([x.getAttribute("href"), x.getAttribute("target"), x.getAttribute("rel")]);
     const box = await x.boundingBox();
     check("أيقونة X في التذييل تقود إلى الحساب في تبويب جديد", href === "https://x.com/4hessa" && target === "_blank" && /noopener/.test(rel ?? "") && box.width >= 24 && box.height >= 24, `${href} ${target} ${rel} ${box?.width}x${box?.height}`);
+    // البريد خلف أيقونة: لا عنوان نصًّا ولا رابط mailto في الصفحة (تركيب العنوان عند الضغط يختبره tests/content.test.mjs).
+    const mail = page.locator("footer").getByRole("button", { name: /راسلنا بالبريد الإلكتروني/ });
+    const mbox = await mail.boundingBox();
+    const html = await page.content();
+    check("أيقونة البريد في التذييل لا تكشف العنوان في الصفحة", mbox.width >= 24 && mbox.height >= 24 && !/[\w.+-]+@[\w-]+\.[\w.]+/.test(await page.locator("body").innerText()) && !html.includes("mailto:"), `${mbox?.width}x${mbox?.height}`);
   }
   await shot(page, "01-landing-light-desktop", true);
   await axe(page, "الصفحة الرئيسية (فاتح)");
