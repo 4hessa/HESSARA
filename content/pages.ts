@@ -1,5 +1,5 @@
 // صفحات تعريفية طويلة: من نحن، الخصوصية، الشروط.
-// «من نحن» مكيّفة من الموقع المرجعي لتطابق الواقع (مشروع تخرج، لا شركة). صفحتا «الوظائف» و«البرامج» حُذفتا، وتحوّلان إلى «من نحن».
+// «من نحن» تعرض هوية المشروع كما اعتمدها صاحبه في ١٩ نوفمبر ٢٠٢٦ (مشروع تخرج، لا شركة)، مع ما تقدّمه المنصة فعلًا اليوم. صفحتا «الوظائف» و«البرامج» حُذفتا، وتحوّلان إلى «من نحن».
 // الخصوصية والشروط مأخوذة من نسختي المنصة الدقيقتين، لا من القالبين العامّين في المرجع.
 import type { Doc } from "./types";
 
@@ -7,83 +7,147 @@ export const PAGES: Record<"about" | "privacy" | "terms", { ar: Doc; en: Doc }> 
   about: {
     en: {
       title: "About HESSARA",
-      sub: "Intelligence that guides. Insight that matters",
-      description: "HESSARA is an AI advisory platform built as a university graduation project: models from several providers, specialised agents, and a critique lab in one workspace.",
+      sub: "AI-powered technical consulting and knowledge",
+      description: "HESSARA is an academic AI-powered technical consulting platform, founded, owned and developed by Eng. Hessa Ahmed Alzahrani as a graduation project at the Smart University of Technical Sciences, College of Artificial Intelligence.",
+      note: "HESSARA is an experimental academic platform, still under development. The academic affiliation identifies where the project was developed; it does not imply that the university owns, officially endorses or operates the platform.",
       cta: "Want to see how HESSARA works?",
-      body: `HESSARA is an AI advisory platform, built as a graduation project in artificial intelligence. It connects people facing complex technical questions with AI models from several providers and with specialised agents, and it rests on a simple conviction: guidance is only useful if you can see where it came from and check it.
+      body: `HESSARA is an academic AI-powered technical consulting platform, founded, owned and developed by Eng. Hessa Ahmed Alzahrani as a graduation project at the Smart University of Technical Sciences, College of Artificial Intelligence, academic year 2027. It brings together specialised AI agents, language models, scientific resources and curated educational media to support technical problem-solving, analytical thinking and knowledge development.
 
-## What we do
+Consultation is the platform's central service. The articles, research resources and videos support it; HESSARA is not meant to be only a content library.
 
-We bring three things together in one workspace:
+## Project identity
 
-- **[Language models](/models)** from several providers, each shown with its real status
-- **[AI consulting](/consulting)** through six specialised agents, each with written instructions and a fixed answer structure
-- **[A critique lab](/lab)** that tests answers against stated criteria and keeps a record of each review
+| Item | Details |
+| --- | --- |
+| Project | HESSARA |
+| Founder, owner and developer | Eng. Hessa Ahmed Alzahrani |
+| Project type | Academic graduation project |
+| Category | AI-powered technical consulting and knowledge platform |
+| University | Smart University of Technical Sciences |
+| College | College of Artificial Intelligence |
+| Academic year | 2027 |
+| Status | Experimental platform, under development |
 
-## What we believe
+## Vision
 
-### Evidence before fluency
+To establish an accessible, intelligent and knowledge-driven platform that enhances technical decision-making through artificial intelligence, specialised consultation and reliable scientific resources.
 
-An answer that sounds right and cannot be checked is a liability. We would rather show a gap than fill it.
+## Mission
 
-### Disagreement is useful
+To provide an integrated AI-powered consulting environment that helps users understand technical challenges, evaluate alternative solutions, access specialised AI assistance, and strengthen their technical knowledge through credible academic and educational content.
 
-The strongest objection to a plan should be heard before the decision, not after. The critique lab exists to look for it.
+## What the platform offers today
 
-### People decide
+- **[AI consulting](/consulting)** through six [specialised agents](/agents), each with written instructions and a fixed answer structure.
+- **[Language models](/models)** from several providers, each shown with its real status. Connecting real models is still in progress; until one is confirmed working, answers come from a clearly labelled demo engine.
+- **[A critique lab](/lab)** that tests answers against stated criteria and keeps a record of each review.
+- **[Articles](/insights)** that cite their sources, and a [reading list](/resources/ai-labs-reading-list) of primary sources from AI labs.
+- **[HESSARA Media](/media):** curated educational videos, each credited to its channel and linked to the original.
 
-Models inform decisions. They do not make them. Every answer is offered to a person who remains responsible for the choice.
+## Who it is for
 
-### Limits stated plainly
+University students, academic researchers, software developers, AI engineers, technology professionals, independent learners, technical project teams, and anyone seeking technology-related consultation.
 
-We try to say what our tools cannot do as clearly as what they can. This version handles text only, its agents have no external tools, and its reviews do not verify facts.
+## Project objectives
 
-## How we work
+1. Develop an accessible AI-powered technical consulting platform.
+2. Integrate specialised AI agents for different technical disciplines.
+3. Provide personalised AI consulting experiences.
+4. Support technical problem-solving and analytical decision-making.
+5. Connect AI-generated consultation with reliable scientific references.
+6. Organise educational media and technical learning resources.
+7. Promote responsible and transparent use of artificial intelligence.
+8. Evaluate the effectiveness, usability and practical value of AI-assisted technical consultation.
 
-Every consultation follows the same path, described on the [home page](/): define the question, choose the model and agent suited to it, and review the answer before you act on it.
+## Core values
+
+- **Accuracy and reliability.** Technically sound information, transparent explanations, and access to credible sources.
+- **Transparency.** AI-generated responses, external scientific materials and independently verified information are kept clearly apart.
+- **Accessibility.** Technical knowledge and consultation that are easier to reach and to understand.
+- **Responsible AI.** Ethical use, careful handling of data, and awareness of what models cannot do. Models inform decisions; a person remains responsible for them.
+- **Continuous improvement.** Testing, evaluation, user feedback and ongoing development.
+- **Knowledge integration.** Consultation connected to scientific research, educational media and practical learning.
+
+## Responsible AI and transparency
+
+- HESSARA's AI-generated responses support technical exploration, learning, research and decision-making. They are not independently verified expert judgments.
+- Scientific articles, research publications and external educational media remain attributable to their original authors, publishers and creators.
+- This version handles text only, its agents have no external tools, and its reviews do not verify facts.
 
 ## Find out more
 
-- Read our [insights](/insights) on AI-assisted advisory
+- Read the [insights](/insights) on AI-assisted consultation
 - Browse the [resource library](/resources)
 - [Get in touch](/contact)`,
     },
     ar: {
       title: "عن هسّارة",
-      sub: "ذكاءٌ يُرشِد، وبصيرةٌ تصنع الفرق",
-      description: "هسّارة منصة استشارية بالذكاء الاصطناعي، بُنيت مشروعَ تخرج جامعي: نماذج من عدة مزوّدين، ووكلاء متخصصون، ومختبر نقد في مساحة عمل واحدة.",
+      sub: "الاستشارات التقنية والمعرفة بالذكاء الاصطناعي",
+      description: "هسّارة منصة أكاديمية للاستشارات التقنية بالذكاء الاصطناعي، ومشروع تخرج في كلية الذكاء الاصطناعي بجامعة Smart University of Technical Sciences. التأسيس والملكية والتطوير: م. حصة أحمد الزهراني.",
+      note: "هسّارة منصة أكاديمية تجريبية ما تزال قيد التطوير. والانتماء الأكاديمي يبيّن المكان الذي طُوّر فيه المشروع، ولا يعني أن الجامعة تملك المنصة أو تعتمدها رسميًا أو تشغّلها.",
       cta: "تريد أن ترى كيف تعمل هسّارة؟",
-      body: `هسّارة منصة استشارية بالذكاء الاصطناعي، بُنيت مشروعَ تخرج في تخصص الذكاء الاصطناعي. تصل من يواجه أسئلة تقنية معقدة بنماذج ذكاء اصطناعي من عدة مزوّدين وبوكلاء متخصصين، وتقوم على قناعة بسيطة: الإرشاد لا ينفع إلا إذا رأيت من أين جاء واستطعت التحقق منه.
+      body: `هسّارة منصة أكاديمية للاستشارات التقنية بالذكاء الاصطناعي، ومشروع تخرج في كلية الذكاء الاصطناعي بجامعة Smart University of Technical Sciences للعام الأكاديمي 2027. التأسيس والملكية والتطوير: م. حصة أحمد الزهراني. وتجمع المنصة وكلاء ذكاء اصطناعي متخصصين ونماذج لغوية ومصادر علمية ومواد تعليمية مختارة، لتدعم حل المشكلات التقنية والتفكير التحليلي وبناء المعرفة.
 
-## ما نفعله
+الاستشارة هي الخدمة الأساسية في المنصة، والمقالات والمصادر البحثية والفيديوهات تدعمها. فهسّارة ليست مكتبة محتوى فحسب.
 
-نجمع ثلاثة أشياء في مساحة عمل واحدة:
+## هوية المشروع
 
-- **[نماذج لغوية](/models)** من عدة مزوّدين، كلٌّ بحالته الفعلية
-- **[استشارات ذكية](/consulting)** عبر ستة وكلاء متخصصين، لكلٍّ منهم تعليمات مكتوبة وبنية إجابة ثابتة
-- **[مختبر للنقد](/lab)** يختبر الإجابات بمعايير معلنة ويحتفظ بسجل لكل مراجعة
+| البند | التفاصيل |
+| --- | --- |
+| المشروع | هسّارة (HESSARA) |
+| التأسيس والملكية والتطوير | م. حصة أحمد الزهراني |
+| نوع المشروع | مشروع تخرج أكاديمي |
+| التصنيف | منصة للاستشارات التقنية والمعرفة بالذكاء الاصطناعي |
+| الجامعة | Smart University of Technical Sciences |
+| الكلية | كلية الذكاء الاصطناعي |
+| العام الأكاديمي | 2027 |
+| الحالة | منصة تجريبية قيد التطوير |
 
-## ما نؤمن به
+## الرؤية
 
-### الدليل قبل الطلاقة
+منصة ذكية في متناول الجميع، قائمة على المعرفة، تحسّن اتخاذ القرار التقني بالذكاء الاصطناعي والاستشارة المتخصصة والمصادر العلمية الموثوقة.
 
-الإجابة التي تبدو صحيحة ولا يمكن التحقق منها عبء. نفضّل أن نُظهر الفجوة على أن نملأها.
+## الرسالة
 
-### الخلاف مفيد
+تقديم بيئة استشارية متكاملة بالذكاء الاصطناعي، تساعد المستخدم على فهم التحديات التقنية، وتقييم الحلول البديلة، والوصول إلى مساعدة ذكية متخصصة، وتعزيز معرفته التقنية بمحتوى أكاديمي وتعليمي موثوق.
 
-ينبغي أن يُسمع أقوى اعتراض على الخطة قبل القرار لا بعده، ومختبر النقد موجود ليبحث عنه.
+## ما تقدّمه المنصة اليوم
 
-### الإنسان يقرر
+- **[استشارات ذكية](/consulting)** عبر ستة [وكلاء متخصصين](/agents)، لكلٍّ منهم تعليمات مكتوبة وبنية إجابة ثابتة.
+- **[نماذج لغوية](/models)** من عدة مزوّدين، كلٌّ بحالته الفعلية. ربط النماذج الحقيقية ما يزال جاريًا، وإلى أن يُتأكد من عمل أحدها تأتي الإجابات من محرك تجريبي موسوم بوضوح.
+- **[مختبر للنقد](/lab)** يختبر الإجابات بمعايير معلنة ويحتفظ بسجل لكل مراجعة.
+- **[مقالات](/insights)** تذكر مصادرها، و[قائمة قراءة](/resources/ai-labs-reading-list) من مصادر أولية لمختبرات الذكاء الاصطناعي.
+- **[ميديا هسّارة](/media):** فيديوهات تعليمية مختارة، كلٌّ منها منسوب إلى قناته ومربوط بمصدره الأصلي.
 
-النماذج تُغني القرار ولا تتخذه. كل إجابة تُقدَّم لإنسان يبقى مسؤولًا عن الاختيار.
+## لمن هي
 
-### الحدود معلنة بوضوح
+طلاب الجامعات، والباحثون الأكاديميون، ومطوّرو البرمجيات، ومهندسو الذكاء الاصطناعي، والمهنيون في التقنية، والمتعلمون الذاتيون، وفرق المشاريع التقنية، وكل من يبحث عن استشارة في شأن تقني.
 
-نحاول أن نقول ما لا تستطيعه أدواتنا بوضوح ما نقوله عمّا تستطيعه: هذه النسخة تتعامل مع النص فقط، ووكلاؤها بلا أدوات خارجية، ومراجعاتها لا تتحقق من صحة المعلومات.
+## أهداف المشروع
 
-## كيف نعمل
+1. تطوير منصة استشارات تقنية بالذكاء الاصطناعي في متناول الجميع.
+2. دمج وكلاء ذكاء اصطناعي متخصصين في مجالات تقنية مختلفة.
+3. تقديم تجارب استشارية شخصية بالذكاء الاصطناعي.
+4. دعم حل المشكلات التقنية واتخاذ القرار التحليلي.
+5. ربط الاستشارة المولَّدة بالذكاء الاصطناعي بمراجع علمية موثوقة.
+6. تنظيم المواد التعليمية وموارد التعلم التقني.
+7. تعزيز الاستخدام المسؤول والشفاف للذكاء الاصطناعي.
+8. تقييم فاعلية الاستشارة التقنية بمساعدة الذكاء الاصطناعي، وسهولة استخدامها، وقيمتها العملية.
 
-تتبع كل استشارة المسار نفسه الموصوف في [الصفحة الرئيسية](/): حدّد السؤال، واختر النموذج والوكيل المناسبين له، وراجِع الإجابة قبل أن تعمل بها.
+## القيم الأساسية
+
+- **الدقة والموثوقية.** معلومات سليمة تقنيًا، وشرح شفاف، ووصول إلى مصادر موثوقة.
+- **الشفافية.** فصل واضح بين ما يولّده الذكاء الاصطناعي، والمواد العلمية الخارجية، والمعلومات المتحقق منها.
+- **سهولة الوصول.** معرفة تقنية واستشارة أسهل منالًا وأوضح فهمًا.
+- **الذكاء الاصطناعي المسؤول.** استخدام أخلاقي، وتعامل حريص مع البيانات، ووعي بما لا تستطيعه النماذج. النماذج تُغني القرار، ويبقى الإنسان مسؤولًا عنه.
+- **التحسين المستمر.** اختبار وتقييم وآراء المستخدمين وتطوير متواصل.
+- **تكامل المعرفة.** استشارة موصولة بالبحث العلمي والمواد التعليمية والتعلم العملي.
+
+## الذكاء الاصطناعي المسؤول والشفافية
+
+- إجابات هسّارة المولَّدة بالذكاء الاصطناعي تدعم الاستكشاف التقني والتعلم والبحث واتخاذ القرار، وليست أحكام خبراء متحققًا منها بشكل مستقل.
+- المقالات العلمية والمنشورات البحثية والمواد التعليمية الخارجية تبقى منسوبة إلى مؤلفيها وناشريها وصنّاعها الأصليين.
+- هذه النسخة تتعامل مع النص فقط، ووكلاؤها بلا أدوات خارجية، ومراجعاتها لا تتحقق من صحة المعلومات.
 
 ## اعرف المزيد
 

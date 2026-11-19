@@ -352,6 +352,13 @@ a.entry:hover { background: color-mix(in srgb, var(--solid) 90%, transparent); p
 .footer__base { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1.6rem; font-size: 0.72rem; flex-wrap: wrap; }
 .footer__base > div { display: flex; gap: 0.6rem; align-items: center; }
 .footer__note { margin-top: 0.9rem; font-size: 0.66rem; line-height: 1.4; color: var(--soft); }
+/* هوية المشروع: مالكه وجامعته وكليته وعامه الأكاديمي، بخط صغير تحت أعمدة الروابط. */
+.footer__identity { display: grid; gap: 0.4rem; margin-top: 1.6rem; padding-top: 1.1rem; border-top: 1px solid var(--line); font-size: 0.74rem; line-height: 1.5; }
+.footer__brand { font-family: var(--serif); font-size: 0.98rem; line-height: 1.3; }
+.footer__facts { display: flex; flex-wrap: wrap; gap: 0.25rem 1.4rem; }
+.footer__facts dt { display: inline; color: var(--soft); }
+.footer__facts dt::after { content: ": "; }
+.footer__facts dd { display: inline; margin: 0; }
 .footer__x { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); transition: background-color 0.15s var(--ease); }
 .footer__x:hover { background: var(--panel); }
 .footer__x:focus-visible { border-radius: 50%; }

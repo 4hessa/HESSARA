@@ -210,7 +210,8 @@ try {
   const anonCtx = await browser.newContext({ locale: "ar" });
   const ap = await anonCtx.newPage();
   const sharedResp = await ap.goto(shareUrl);
-  const shared = await ap.locator("main").innerText();
+  // يُستبعد تذييل الموقع: فيه اسم صاحب المنصة عمدًا (ومنه «أحمد»)، والفحص هنا عن هوية صاحب الاستشارة.
+  const shared = await ap.locator("main").evaluate((m) => { const c = m.cloneNode(true); c.querySelectorAll(".footer").forEach((f) => f.remove()); return c.textContent ?? ""; });
   check("رابط المشاركة يُقرأ دون حساب ولا يكشف هوية صاحبه", sharedResp.status() === 200 && shared.includes("تحليل الأسباب المحتملة") && !shared.includes("ahmad@example.com") && !shared.includes("أحمد"));
   check("رابط المشاركة لا تفهرسه محركات البحث", ((await ap.locator('meta[name="robots"]').getAttribute("content")) || "").includes("noindex"));
   await axe(ap, "رابط المشاركة");
