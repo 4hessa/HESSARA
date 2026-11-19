@@ -63,8 +63,8 @@ const C = {
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getLang();
   const m = lang === "ar"
-    ? pageMeta(lang, "ذكاء يرشد، وبصيرة تصنع الفرق", "منصة استشارية تجمع نماذج ذكاء اصطناعي من عدة مزوّدين ووكلاء متخصصين ومختبرًا للنقد والتقييم في مساحة عمل واحدة.", "/")
-    : pageMeta(lang, "Intelligence That Guides. Insight That Matters", "An AI advisory platform that brings models from several providers, specialised agents, and a critique lab into one workspace.", "/");
+    ? pageMeta(lang, "ذكاء يرشد، وبصيرة تصنع الفرق", "منصة أكاديمية للاستشارات التقنية بالذكاء الاصطناعي، تجمع وكلاء متخصصين ونماذج لغوية ومصادر علمية موثّقة. مشروع تخرج في كلية الذكاء الاصطناعي.", "/")
+    : pageMeta(lang, "Intelligence That Guides. Insight That Matters", "An academic AI-powered technical consulting platform that brings together specialised agents, language models and cited scientific resources. A graduation project at a College of Artificial Intelligence.", "/");
   // عنوان الصفحة الرئيسية كاملًا دون قالب «— هسّارة» المضاف لبقية الصفحات.
   return { ...m, title: { absolute: lang === "ar" ? "هسّارة — ذكاء يرشد، وبصيرة تصنع الفرق" : "HESSARA — Intelligence That Guides. Insight That Matters" } };
 }
