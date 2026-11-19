@@ -526,6 +526,7 @@ If you believe you have found a security issue, please use the [contact page](/c
 - Every answer is labelled with the model that wrote it.
 - A demo engine answers when no real model is confirmed working, and each of its answers says so.
 - A daily limit for each user, and one shared daily cap for the whole platform, keep the cost of real model calls bounded.
+- Optional voice input: a recording of up to two minutes is turned into text by a speech-to-text service (Whisper on Groq), and the user reviews the text before sending. The recording is not stored, and it has its own consent and daily limits.
 
 ## Agents
 
@@ -593,6 +594,7 @@ Each of the six agents is a written playbook on top of a general model, not a se
 - كل إجابة موسومة باسم النموذج الذي كتبها.
 - يجيب محرك تجريبي حين لا يوجد نموذج حقيقي مؤكَّد العمل، وكل إجابة منه تقول ذلك.
 - حد يومي لكل مستخدم، وسقف يومي واحد للمنصة كلها، يُبقيان كلفة استدعاء النماذج الحقيقية محدودة.
+- إدخال صوتي اختياري: تسجيل حتى دقيقتين تحوّله خدمة لتحويل الكلام إلى نص (Whisper لدى Groq)، ويراجع المستخدم النص قبل الإرسال. لا يُحفظ التسجيل، وله موافقة وحدود يومية خاصة به.
 
 ## الوكلاء
 

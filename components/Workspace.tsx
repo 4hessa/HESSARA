@@ -12,6 +12,7 @@ import { VendorMark } from "./bits";
 import { LocalTime } from "./LocalTime";
 import { Dialog } from "./Dialog";
 import { Icon } from "./Icon";
+import { VoiceInput } from "./VoiceInput";
 import { Markdown } from "./Markdown";
 import { pendingKey } from "./QuickConsult";
 import { ReviewRunner } from "./Review";
@@ -327,6 +328,7 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
                 {t("تحقق من الإجابات قبل الاعتماد عليها.", "Check answers before relying on them.")}
                 {model?.engine === "llm" && left !== null && quota?.limit != null && <> {t(`تبقّى لك اليوم ${left} من ${quota.limit} استدعاء للنماذج الحقيقية.`, `${left} of ${quota.limit} real-model calls left today.`)}</>}
               </span>
+              {!busy && <VoiceInput onText={(s) => { setDraft((x) => (x.trim() ? `${x.trimEnd()} ${s}` : s)); taRef.current?.focus(); }} />}
               {busy
                 ? <button type="button" className="btn btn-secondary btn-sm" onClick={() => abortRef.current?.abort()}><Icon name="stop" size={18} /> {t("أوقف التوليد", "Stop generating")}</button>
                 : <button type="submit" className="btn btn-primary btn-sm" disabled={!draft.trim()}><Icon name="send" size={18} /> {t("أرسل", "Send")}</button>}

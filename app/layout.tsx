@@ -10,6 +10,7 @@ import { dirOf } from "@/lib/i18n";
 import { getLang, getTimeZone } from "@/lib/i18n-server";
 import { listModels } from "@/lib/providers";
 import { SITE } from "@/lib/site";
+import { sttPublic } from "@/lib/transcribe";
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -49,7 +50,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {lang === "ar" && <link rel="preload" href="/fonts/plex-arabic-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />}
       </head>
       <body>
-        <AppProvider lang={lang} tz={await getTimeZone()} user={user ? toPublic(user) : null} models={await listModels(!!user, lang)}>{children}<PageView /><ErrorReporter /></AppProvider>
+        <AppProvider lang={lang} tz={await getTimeZone()} user={user ? toPublic(user) : null} models={await listModels(!!user, lang)} stt={sttPublic()}>{children}<PageView /><ErrorReporter /></AppProvider>
       </body>
     </html>
   );

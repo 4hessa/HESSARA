@@ -1,5 +1,5 @@
 "use client";
-// سياق التطبيق في المتصفح: المستخدم، النماذج، الإشعارات العابرة، وموافقة الإرسال الخارجي.
+// سياق التطبيق في المتصفح: المستخدم، النماذج، الإشعارات العابرة، وموافقة الإرسال الخارجي (للنص وللصوت).
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { PublicUser } from "@/lib/auth";
 import { makeT, type Lang, type T } from "@/lib/i18n";
@@ -35,7 +35,10 @@ type Ctx = {
   models: ModelView[];
   setModels: (m: ModelView[]) => void;
   toast: (msg: string) => void;
-  ensureConsent: () => Promise<boolean>;
+  /** «voice» يطلب موافقة صريحة على إرسال التسجيل الصوتي، ولو سبقت الموافقة على إرسال النص. */
+  ensureConsent: (kind?: "text" | "voice") => Promise<boolean>;
+  /** الإدخال الصوتي مهيّأ على الخادم، واسم الخادم الذي يُرسل إليه التسجيل؛ null إن لم يكن مهيّأً. */
+  stt: { host: string } | null;
 };
 const AppCtx = createContext<Ctx | null>(null);
 export const useApp = () => {
@@ -46,7 +49,13 @@ export const useApp = () => {
 export const useT = () => useApp().t;
 export const useLang = () => useApp().lang;
 
-export function AppProvider({ lang, user: u0, models: m0, tz: tz0 = "UTC", children }: { lang: Lang; user: PublicUser | null; models: ModelView[]; tz?: string; children: ReactNode }) {
+// تذكُّر الموافقة على تنبيه الصوت في هذا المتصفح؛ موافقة الإرسال الخارجي نفسها تُحفظ في الحساب.
+const VOICE_ACK = "hs_voice_ack";
+const voiceAcked = () => {
+  try { return localStorage.getItem(VOICE_ACK) === "1"; } catch { return false; }
+};
+
+export function AppProvider({ lang, user: u0, models: m0, tz: tz0 = "UTC", stt = null, children }: { lang: Lang; user: PublicUser | null; models: ModelView[]; tz?: string; stt?: { host: string } | null; children: ReactNode }) {
   const t = useMemo(() => makeT(lang), [lang]);
   const [tz, setTz] = useState(tz0);
   // منطقة المتصفح الفعلية: تُحفظ في ملف ارتباط ليُنسّق بها الخادم في الزيارات التالية، وتُطبَّق الآن فورًا.
@@ -65,6 +74,7 @@ export function AppProvider({ lang, user: u0, models: m0, tz: tz0 = "UTC", child
   const [models, setModels] = useState(m0);
   const [toasts, setToasts] = useState<{ id: number; msg: string }[]>([]);
   const [consentOpen, setConsentOpen] = useState(false);
+  const [consentKind, setConsentKind] = useState<"text" | "voice">("text");
   const resolver = useRef<((v: boolean) => void) | null>(null);
   const seq = useRef(0);
 
@@ -77,41 +87,60 @@ export function AppProvider({ lang, user: u0, models: m0, tz: tz0 = "UTC", child
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 4500);
   }, []);
 
-  const ensureConsent = useCallback(() => {
-    if (user?.externalConsent) return Promise.resolve(true);
+  const ensureConsent = useCallback((kind: "text" | "voice" = "text") => {
+    if (user?.externalConsent && (kind === "text" || voiceAcked())) return Promise.resolve(true);
+    setConsentKind(kind);
     setConsentOpen(true);
     return new Promise<boolean>((resolve) => { resolver.current = resolve; });
   }, [user]);
 
   const answer = async (yes: boolean) => {
-    if (yes) {
+    if (yes && !user?.externalConsent) {
       const r = await api<{ user: PublicUser }>("/api/me", { method: "PATCH", body: { externalConsent: true } });
       if (r.ok) setUser(r.data.user);
       else { toast(r.data.error ?? t("تعذر حفظ الموافقة.", "Could not save your consent.")); yes = false; }
+    }
+    if (yes && consentKind === "voice") {
+      try { localStorage.setItem(VOICE_ACK, "1"); } catch { /* يُسأل مرة أخرى في الزيارة التالية */ }
     }
     setConsentOpen(false);
     resolver.current?.(yes);
     resolver.current = null;
   };
 
-  const value = useMemo(() => ({ lang, t, tz, user, setUser, models, setModels, toast, ensureConsent }), [lang, t, tz, user, models, toast, ensureConsent]);
+  const value = useMemo(() => ({ lang, t, tz, user, setUser, models, setModels, toast, ensureConsent, stt }), [lang, t, tz, user, models, toast, ensureConsent, stt]);
+  const voice = consentKind === "voice";
   return (
     <AppCtx.Provider value={value}>
       {children}
       <div className="toast-region" role="status" aria-live="polite">
         {toasts.map((t) => <div key={t.id} className="toast">{t.msg}</div>)}
       </div>
-      <Dialog open={consentOpen} onClose={() => answer(false)} title={t("إرسال النص إلى مزوّد خارجي", "Sending your text to an external provider")}>
+      <Dialog open={consentOpen} onClose={() => answer(false)}
+        title={voice ? t("تحويل صوتك إلى نص بخدمة خارجية", "Turning your voice into text with an external service") : t("إرسال النص إلى مزوّد خارجي", "Sending your text to an external provider")}>
         <div className="dialog-body">
-          <p>{t("النموذج الذي اخترته تشغّله جهة خارجية. لإتمام الطلب سيُرسَل نص استشارتك وسجل هذه المحادثة إلى مزوّد النموذج لمعالجته وفق سياساته.", "The model you chose is run by a third party. To complete the request, the text of your consultation and this conversation's history will be sent to the model's provider and processed under its policies.")}</p>
-          <ul className="list-check">
-            <li><span aria-hidden="true">•</span><span>{t("لا تُرسَل بيانات حسابك (الاسم والبريد).", "Your account details (name and email) are not sent.")}</span></li>
-            <li><span aria-hidden="true">•</span><span>{t("لا تلصق أسرارًا أو بيانات شخصية حساسة في الاستشارة.", "Do not paste secrets or sensitive personal data into a consultation.")}</span></li>
-            <li><span aria-hidden="true">•</span><span>{t("يمكنك سحب الموافقة في أي وقت من الملف الشخصي.", "You can withdraw consent at any time from your profile.")}</span></li>
-          </ul>
+          {voice ? (
+            <>
+              <p>{t(`سيُرسَل تسجيلك الصوتي إلى خدمة خارجية لتحويل الكلام إلى نص (${stt?.host ?? ""})، ثم يظهر النص في الحقل لتراجعه وتعدّله قبل الإرسال. لا تحفظ المنصة التسجيل.`, `Your recording will be sent to an external speech-to-text service (${stt?.host ?? ""}), and the text will appear in the field for you to review and edit before sending. The platform does not keep the recording.`)}</p>
+              <ul className="list-check">
+                <li><span aria-hidden="true">•</span><span>{t("التسجيل الواحد حتى دقيقتين، ويتوقف تلقائيًا عندها.", "Each recording lasts up to two minutes and stops by itself.")}</span></li>
+                <li><span aria-hidden="true">•</span><span>{t("لا تذكر أسرارًا أو بيانات شخصية حساسة في التسجيل.", "Do not say secrets or sensitive personal data in a recording.")}</span></li>
+                <li><span aria-hidden="true">•</span><span>{t("يمكنك سحب الموافقة على الإرسال الخارجي في أي وقت من الملف الشخصي.", "You can withdraw consent to external sending at any time from your profile.")}</span></li>
+              </ul>
+            </>
+          ) : (
+            <>
+              <p>{t("النموذج الذي اخترته تشغّله جهة خارجية. لإتمام الطلب سيُرسَل نص استشارتك وسجل هذه المحادثة إلى مزوّد النموذج لمعالجته وفق سياساته.", "The model you chose is run by a third party. To complete the request, the text of your consultation and this conversation's history will be sent to the model's provider and processed under its policies.")}</p>
+              <ul className="list-check">
+                <li><span aria-hidden="true">•</span><span>{t("لا تُرسَل بيانات حسابك (الاسم والبريد).", "Your account details (name and email) are not sent.")}</span></li>
+                <li><span aria-hidden="true">•</span><span>{t("لا تلصق أسرارًا أو بيانات شخصية حساسة في الاستشارة.", "Do not paste secrets or sensitive personal data into a consultation.")}</span></li>
+                <li><span aria-hidden="true">•</span><span>{t("يمكنك سحب الموافقة في أي وقت من الملف الشخصي.", "You can withdraw consent at any time from your profile.")}</span></li>
+              </ul>
+            </>
+          )}
         </div>
         <div className="dialog-foot">
-          <button className="btn btn-primary" onClick={() => answer(true)}>{t("أوافق وأتابع", "I agree, continue")}</button>
+          <button className="btn btn-primary" onClick={() => answer(true)}>{voice ? t("أوافق وأسجّل", "I agree, record") : t("أوافق وأتابع", "I agree, continue")}</button>
           <button className="btn btn-secondary" onClick={() => answer(false)}>{t("إلغاء", "Cancel")}</button>
         </div>
       </Dialog>
