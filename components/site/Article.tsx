@@ -17,9 +17,10 @@ function inline(text: string, key: string): ReactNode[] {
     else if (m[4]) {
       const label = inline(tok.slice(1, tok.indexOf("](")), k);
       const href = m[5];
+      // dir="auto" يعزل اتجاه نص الرابط عمّا حوله، فلا تنقلب أقواس عنوان إنجليزي داخل فقرة عربية.
       out.push(/^https?:/.test(href)
-        ? <a key={k} href={href} target="_blank" rel="noopener noreferrer">{label}</a>
-        : <Link key={k} href={href}>{label}</Link>);
+        ? <a key={k} href={href} target="_blank" rel="noopener noreferrer" dir="auto">{label}</a>
+        : <Link key={k} href={href} dir="auto">{label}</Link>);
     }
     last = m.index + tok.length;
   }
