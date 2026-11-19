@@ -170,7 +170,7 @@ Signed-in users can run a connection test from a model's details. A test sends o
 | Complex analysis, programming, multi-step tasks | Claude Opus 5.5 |
 | Everyday consultations, balancing speed and capability | Claude Sonnet 5.5 |
 | Quick questions and classification | Claude Haiku 5.5 |
-| A model from another provider | GPT, Gemini, DeepSeek, Qwen, or Llama, if the operator has configured it |
+| A model from another provider | GPT, GPT-OSS, Gemini, DeepSeek, Qwen, or Llama, if the operator has configured it |
 | No cost per request, with the data kept on the server | The local model, if one is running |
 
 These starting points come from each provider's own description, not from tests run by HESSARA. The note on [general and domain-tuned models](/insights/general-vs-domain-models) gives a broader framework.
@@ -230,7 +230,7 @@ Models are enabled by environment variables on the server, such as \`ANTHROPIC_A
 | تحليلًا معقدًا أو برمجة أو مهام متعددة الخطوات | Claude Opus 5.5 |
 | استشارات يومية بتوازن بين السرعة والقدرة | Claude Sonnet 5.5 |
 | أسئلة سريعة وتصنيفًا | Claude Haiku 5.5 |
-| نموذجًا من مزوّد آخر | GPT أو Gemini أو DeepSeek أو Qwen أو Llama، إن هيّأه مشغّل المنصة |
+| نموذجًا من مزوّد آخر | GPT أو GPT-OSS أو Gemini أو DeepSeek أو Qwen أو Llama، إن هيّأه مشغّل المنصة |
 | بلا تكلفة لكل طلب، مع بقاء البيانات على الخادم | النموذج المحلي، إن كان يعمل |
 
 هذه نقاط بداية مأخوذة من وصف كل مزوّد لنموذجه، لا من اختبارات أجرتها هسّارة. وتقدّم مذكرة [النموذج العام والنموذج المضبوط لمجال](/insights/general-vs-domain-models) إطارًا أوسع.

@@ -215,3 +215,22 @@ test("مستضيف متوافق مع OpenAI: كتلة التفكير في أول
     for (const k of ["QWEN_API_KEY", "QWEN_MODEL", "QWEN_BASE_URL"]) delete process.env[k];
   }
 });
+
+test("GPT-OSS نموذج مستقل: غير مهيّأ دون متغيراته ولو كانت البوابة متاحة، ويعمل بمستضيف متوافق مع OpenAI", async () => {
+  process.env.AI_GATEWAY_API_KEY = "gw-key";
+  try {
+    assert.equal(P.resolveModel("gpt-oss"), null, "لا معرّف له في البوابة");
+    assert.deepEqual(P.missingConfig(modelById("gpt-oss")), ["GPTOSS_API_KEY", "GPTOSS_MODEL", "GPTOSS_BASE_URL"]);
+    process.env.GPTOSS_API_KEY = "k";
+    process.env.GPTOSS_MODEL = "openai/gpt-oss-x";
+    process.env.GPTOSS_BASE_URL = process.env.AI_GATEWAY_BASE_URL;
+    const m = P.resolveModel("gpt-oss");
+    assert.equal(m.route, "direct");
+    handlers.push(sse(["مرحبًا"]));
+    assert.equal(await ask(m), "مرحبًا");
+    assert.equal(requests.at(-1).body.model, "openai/gpt-oss-x");
+    assert.equal(P.resolveModel("gpt").route, "gateway", "نموذج GPT التجاري لا يتأثر");
+  } finally {
+    for (const k of ["AI_GATEWAY_API_KEY", "GPTOSS_API_KEY", "GPTOSS_MODEL", "GPTOSS_BASE_URL"]) delete process.env[k];
+  }
+});
