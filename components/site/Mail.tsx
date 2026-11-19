@@ -18,14 +18,14 @@ export function Envelope() {
   );
 }
 
-/** «icon» دائرة صغيرة في التذييل بجوار حساب X، و«button» زر بنص في صفحة التواصل. */
-export function MailButton({ variant = "icon" }: { variant?: "icon" | "button" }) {
+/** «icon» دائرة صغيرة في التذييل بجوار حساب X، و«button» زر بنص في صفحة التواصل (ثانوي الشكل مع ghost). */
+export function MailButton({ variant = "icon", ghost = false }: { variant?: "icon" | "button"; ghost?: boolean }) {
   const { t } = useApp();
   const subject = t("رسالة من موقع هسّارة", "Message from the HESSARA website");
   const label = t("راسلنا بالبريد الإلكتروني (يفتح برنامج البريد لديك)", "Email us (opens your email app)");
   if (variant === "button") {
     return (
-      <button type="button" className="btn btn-mail" onClick={() => openMail(subject)} aria-label={label}>
+      <button type="button" className={`btn${ghost ? " btn--ghost" : ""} btn-mail`} onClick={() => openMail(subject)} aria-label={label}>
         <Envelope /> {t("راسلنا", "Email us")}
       </button>
     );

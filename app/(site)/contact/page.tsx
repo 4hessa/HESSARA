@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Cta, SectionHead, Tiles } from "@/components/site/Blocks";
+import { ContactForm } from "@/components/site/ContactForm";
 import { MailButton } from "@/components/site/Mail";
 import { MarketingPage } from "@/components/site/Page";
 import { getLang } from "@/lib/i18n-server";
 import { pageMeta } from "@/lib/meta";
 
 // بريد التواصل خلف زر لا يُظهر العنوان نصًّا (components/site/Mail.tsx)، بطلب صاحب المشروع في ١٩ نوفمبر ٢٠٢٦.
+// ونموذج مراسلة داخل الصفحة لمن لا يملك برنامج بريد مهيّأ: تُحفظ الرسالة ويقرؤها صاحب المشروع في /admin/messages.
 
 const C = {
   en: {
@@ -18,7 +20,7 @@ const C = {
       { icon: "gem", title: "Language Models", text: "See which models are configured and how status works.", href: "/models" },
       { icon: "map", title: "About the Project", text: "What HESSARA is, what it offers, and what it believes.", href: "/about" },
     ],
-    before: "Before you write", short: "A short note is enough. It helps if you include:",
+    write: "Write to Us", short: "A short note is enough. It helps if you include:",
     li: ["the question or decision you are working on", "your organisation and role, if relevant", "any timing that matters"],
     noconf: "Please do not send confidential documents in a first message.",
     cta: "Prefer to explore first?", c1: "Browse Resources", c2: "Read Insights",
@@ -33,7 +35,7 @@ const C = {
       { icon: "gem", title: "النماذج اللغوية", text: "اعرف النماذج المهيّأة وكيف تُحسب حالتها.", href: "/models" },
       { icon: "map", title: "عن المشروع", text: "ما هسّارة، وما تقدّمه، وما تؤمن به.", href: "/about" },
     ],
-    before: "قبل أن تكتب", short: "تكفي رسالة قصيرة، ويفيد أن تذكر فيها:",
+    write: "اكتب رسالتك", short: "تكفي رسالة قصيرة، ويفيد أن تذكر فيها:",
     li: ["السؤال أو القرار الذي تعمل عليه", "جهتك ودورك إن كان ذلك مهمًا", "أي توقيت يهم"],
     noconf: "نرجو ألا ترسل وثائق سرية في الرسالة الأولى.",
     cta: "تفضّل الاستكشاف أولًا؟", c1: "تصفّح الموارد", c2: "اقرأ الرؤى",
@@ -56,19 +58,20 @@ export default async function ContactPage() {
           <h1>{c.h1}</h1>
           <p className="hero__sub">{c.sub}</p>
           <div className="hero__copy"><p>{c.copy}</p></div>
-          <div className="btn-row"><MailButton variant="button" /></div>
+          <div className="btn-row"><a className="btn" href="#message">{c.write}</a><MailButton variant="button" ghost /></div>
         </>
       }
     >
-      <section className="section">
-        <SectionHead eyebrow={c.e1} title={c.t1} />
-        <Tiles items={c.tiles} />
-      </section>
-      <section className="section article" style={{ paddingTop: 0 }}>
-        <h2 style={{ marginTop: 0 }}>{c.before}</h2>
+      <section className="section article" id="message">
+        <h2 id="message-title" style={{ marginTop: 0 }}>{c.write}</h2>
         <p style={{ fontFamily: "var(--sans)", fontSize: "1rem" }}>{c.short}</p>
         <ul>{c.li.map((l) => <li key={l}>{l}</li>)}</ul>
         <p>{c.noconf}</p>
+        <ContactForm />
+      </section>
+      <section className="section">
+        <SectionHead eyebrow={c.e1} title={c.t1} />
+        <Tiles items={c.tiles} />
       </section>
       <Cta title={c.cta} actions={[{ label: c.c1, href: "/resources" }, { label: c.c2, href: "/insights", ghost: true }]} />
     </MarketingPage>

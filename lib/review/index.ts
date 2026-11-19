@@ -1,4 +1,4 @@
-import { firstLlm } from "../providers/index.ts";
+import { firstLlm, syncChecks } from "../providers/index.ts";
 import { ProviderError } from "../providers/types.ts";
 import { heuristicReview } from "./heuristic.ts";
 import { jevAvailable, jevResult, jevVerdicts } from "./jev.ts";
@@ -34,6 +34,7 @@ export async function runReview(opts: {
         : `The Jev evaluation model could not judge (${reason(e, "en", "an unexpected error")}).`);
     }
   }
+  if (opts.engine !== "heuristic") await syncChecks();
   const candidate = opts.engine === "heuristic" ? null : firstLlm(opts.preferredModel);
   const llm = gatewayRefused && candidate?.route === "gateway" ? null : candidate;
   if (llm) {

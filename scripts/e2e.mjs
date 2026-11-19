@@ -102,7 +102,7 @@ try {
   await noOverflow(page, "الرئيسية/حاسب");
 
   // الصفحات التعريفية والمقالات بالعربية
-  for (const [p, n] of [["/agents", "agents-visitor"], ["/models", "models"], ["/insights", "insights"], ["/insights/multi-agent-deliberation", "insight-article"], ["/resources", "resources"], ["/resources/security", "resource-doc"], ["/resources/how-hessara-is-built", "how-built"], ["/about", "about"], ["/contact", "contact"], ["/privacy", "privacy"], ["/terms", "terms"], ["/help", "help"]]) {
+  for (const [p, n] of [["/agents", "agents-visitor"], ["/models", "models"], ["/insights", "insights"], ["/insights/multi-agent-deliberation", "insight-article"], ["/resources", "resources"], ["/resources/security", "resource-doc"], ["/resources/how-hessara-is-built", "how-built"], ["/resources/arabic-ai-sources", "arabic-sources"], ["/about", "about"], ["/contact", "contact"], ["/privacy", "privacy"], ["/terms", "terms"], ["/help", "help"]]) {
     const r = await page.goto(BASE + p);
     check(`صفحة ${n} تعمل (200)`, r?.status() === 200);
     await noOverflow(page, `${n}/حاسب`);
@@ -458,6 +458,24 @@ try {
   await vp.addScriptTag({ content: "setTimeout(() => { const e = new Error('probe leak@example.com 987654'); e.name = 'E2EProbe'; throw e; });" });
   check("خطأ في متصفح الزائر يُرسل إلى سجل الأخطاء", (await reported).status() === 204);
   await visitor.close();
+  // نموذج «تواصل معنا»: زائر دون حساب يرسل رسالة تُحفظ لصاحب المشروع
+  const guest = await browser.newContext({ locale: "ar" });
+  const gp = await guest.newPage();
+  await gp.goto(BASE + "/contact");
+  await axe(gp, "صفحة التواصل مع نموذج المراسلة");
+  await gp.locator("#c-name").fill("ريم");
+  await gp.locator("#c-email").fill("reem@example.com");
+  await gp.locator("#c-body").fill("أود السؤال عن موعد مناقشة مشروع التخرج.");
+  await gp.getByRole("button", { name: "أرسل الرسالة" }).click();
+  check("نموذج التواصل: زائر دون حساب يرسل رسالة ويرى تأكيد وصولها", await gp.locator('[role="status"]', { hasText: "وصلت رسالتك" }).waitFor({ timeout: 10000 }).then(() => true, () => false));
+  await guest.close();
+  const contactPost = (body, headers = {}) => fetch(BASE + "/api/contact", { method: "POST", headers: { "content-type": "application/json", cookie: "hs_lang=ar", ...headers }, body: JSON.stringify(body) });
+  const badMail = await contactPost({ email: "reem", body: "رسالة طويلة بما يكفي للفحص" });
+  check("نموذج التواصل: بريد غير صالح يُرفض برسالة عربية واضحة", badMail.status === 400 && (await badMail.json()).error.includes("بريدًا"));
+  const bot = await contactPost({ email: "bot@example.com", body: "رسالة آلية مزعجة جدًا", website: "http://spam.example" });
+  check("نموذج التواصل: البرنامج الآلي يتلقى ردًّا عاديًا", bot.ok);
+  const foreign = await contactPost({ email: "x@example.com", body: "رسالة من موقع آخر" }, { origin: "https://evil.example" });
+  check("نموذج التواصل: الطلب من أصل آخر مرفوض (403)", foreign.status === 403);
   // صفحة الإحصاءات: لصاحب المشروع فقط
   check("إحصاءات المنصة غير موجودة لغير صاحب المشروع (404)", (await ctx.request.get(BASE + "/admin")).status() === 404);
   await op.goto(BASE + "/admin");
@@ -472,6 +490,19 @@ try {
   check("تنزيل إجابات الاستبيان مرفوض لغير صاحب المشروع (404)", (await ctx.request.get(BASE + "/api/admin/sus")).status() === 404);
   await shot(op, "16-admin", true);
   await axe(op, "إحصاءات المنصة");
+  check("الإحصاءات: رابط رسائل التواصل بعددها", /رسائل التواصل \([1١]،/.test(adminText));
+  check("رسائل التواصل غير موجودة لغير صاحب المشروع (404)", (await ctx.request.get(BASE + "/admin/messages")).status() === 404);
+  check("حذف رسالة تواصل مرفوض لغير صاحب المشروع (404)", (await ctx.request.delete(BASE + "/api/admin/contact/x")).status() === 404);
+  await op.goto(BASE + "/admin/messages");
+  const inboxText = await op.locator("main").innerText();
+  check("رسائل التواصل تظهر لصاحب المشروع بالاسم والبريد والنص، دون رسالة البرنامج الآلي",
+    inboxText.includes("ريم") && inboxText.includes("reem@example.com") && inboxText.includes("موعد مناقشة مشروع التخرج") && !inboxText.includes("bot@example.com"));
+  await axe(op, "رسائل التواصل");
+  op.once("dialog", (d) => d.accept());
+  await op.locator(".inbox li").first().getByRole("button", { name: /حذف/ }).click();
+  check("رسائل التواصل: صاحب المشروع يحذف رسالة", await op.locator(".inbox").waitFor({ state: "detached", timeout: 10000 }).then(() => true, () => false));
+  await op.reload();
+  check("رسائل التواصل: الحذف دائم بعد إعادة التحميل", (await op.locator(".inbox").count()) === 0);
   await other.close();
   const cookie = (await ctx.cookies()).find((c) => c.name === "hs_session");
   check("أمان: ملف ارتباط الجلسة HttpOnly و SameSite=Lax", !!cookie && cookie.httpOnly && cookie.sameSite === "Lax");

@@ -1,6 +1,6 @@
 // توجيه النماذج: يحوّل معرّف الفهرس إلى موائم + معرّف المزوّد، ويحسب الحالة الفعلية.
-// طريق الوصول إلى كل نموذج: بوابة Vercel للذكاء الاصطناعي إن كانت متاحة وللنموذج معرّف فيها،
-// وإلا مفتاح المزوّد المباشر. نتيجة آخر اختبار اتصال تُحفظ في قاعدة البيانات، فلا تضيع بين نسخ الخادم.
+// طريق الوصول إلى كل نموذج: مفتاح المزوّد المباشر إن اكتملت إعداداته، وإلا بوابة Vercel للذكاء الاصطناعي
+// إن كانت متاحة وللنموذج معرّف فيها. نتيجة آخر اختبار اتصال تُحفظ في قاعدة البيانات، فلا تضيع بين نسخ الخادم.
 import type { Lang } from "../i18n.ts";
 import { all, run } from "../db.ts";
 import { localizeModel, MODELS, modelById, type ModelDef, type ModelStatus } from "../catalog/models.ts";
@@ -24,11 +24,16 @@ function directMissing(def: ModelDef): string[] {
   return miss;
 }
 
-/** البوابة أولًا حين تكون متاحة (HESSARA_ROUTE=direct يعطّلها)، ثم المفتاح المباشر؛ null إن لم يتوفر أي طريق. */
+/**
+ * المفتاح المباشر أولًا متى اكتملت إعداداته: من يضبط مفتاح مزوّد يريد استخدامه، ومنه المستويات المجانية لدى
+ * بعض المزوّدين، ولا يصح أن تحجبه البوابة. وإلا فالبوابة حين تكون متاحة (HESSARA_ROUTE=direct يعطّلها)؛
+ * و null إن لم يتوفر أي طريق. كل نموذج غير تجريبي يتطلب متغيرًا واحدًا على الأقل، فلا يكتمل طريقه المباشر دون ضبط صريح.
+ */
 export function routeOf(def: ModelDef): Route | null {
   if (def.adapter === "demo") return "demo";
+  if (!directMissing(def).length) return "direct";
   if (def.gateway && gatewayEnabled()) return "gateway";
-  return directMissing(def).length ? null : "direct";
+  return null;
 }
 
 export function missingConfig(def: ModelDef): string[] {
@@ -156,16 +161,21 @@ export async function listModels(detailed = false, lang: Lang = "ar"): Promise<M
 }
 export const isUsable = (id: string) => resolveModel(id) !== null;
 
-/** أول نموذج لغوي حقيقي مهيّأ؛ يُستخدم لمحرك المراجعة. */
+/** ترتيب الثقة بنموذج على طريقه الحالي: نجح آخر اختبار (0)، لم يُختبر (1)، فشل (2). */
+function trustRank(def: ModelDef): number {
+  const c = checks.get(def.id);
+  if (!c || c.ref !== refOf(def)) return 1;
+  return c.ok ? 0 : 2;
+}
+
+/**
+ * نموذج لغوي حقيقي مهيّأ لمحرك المراجعة: المفضَّل ما لم يفشل آخر اختبار له، وإلا ما نجح اختباره، ثم ما لم يُختبر،
+ * ثم ما فشل، بترتيب الفهرس داخل كل درجة. فإن عمل نموذج مجاني وتعطّل غيره، اختير العامل.
+ * نتائج الاختبار من ذاكرة النسخة؛ استدعِ syncChecks قبله ليقرأ ما سجّلته النسخ الأخرى.
+ */
 export function firstLlm(preferred?: string | null): ResolvedModel | null {
-  if (preferred) {
-    const r = resolveModel(preferred);
-    if (r && r.def.adapter !== "demo") return r;
-  }
-  for (const m of MODELS) {
-    if (m.adapter === "demo") continue;
-    const r = resolveModel(m.id);
-    if (r) return r;
-  }
-  return null;
+  const pref = preferred ? modelById(preferred) : undefined;
+  if (pref && pref.adapter !== "demo" && routeOf(pref) && trustRank(pref) < 2) return resolveModel(pref.id);
+  const candidates = MODELS.filter((m) => m.adapter !== "demo" && routeOf(m)).sort((a, b) => trustRank(a) - trustRank(b));
+  return candidates.length ? resolveModel(candidates[0].id) : null;
 }

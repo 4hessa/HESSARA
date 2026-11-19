@@ -1,11 +1,13 @@
 // إحصاءات المنصة لصاحب المشروع (بريده في HESSARA_ADMIN_EMAILS). أعداد مجمّعة فقط:
 // لا تعرض محتوى أي استشارة ولا هوية أي مستخدم. لغيره تظهر الصفحة كأنها غير موجودة.
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LocalTime } from "@/components/LocalTime";
 import { AppPage } from "@/components/site/Page";
 import { agentById } from "@/lib/catalog/agents";
 import { localizeModel, modelById } from "@/lib/catalog/models";
+import { countContact } from "@/lib/contact";
 import { all, get } from "@/lib/db";
 import { requireUser } from "@/lib/guard";
 import { intlLocale, makeT } from "@/lib/i18n";
@@ -85,6 +87,7 @@ export default async function AdminPage() {
   const sus = await susSummary();
   const dec = (v: number | null, digits = 1) => (v === null ? "—" : new Intl.NumberFormat(intlLocale(lang), { maximumFractionDigits: digits }).format(v));
 
+  const [messages, messages7] = await Promise.all([countContact(), countContact(week)]);
   const tiles: { label: string; value: number | string; note: string }[] = [
     { label: t("المستخدمون", "Users"), value: users, note: t(`${num(users7)} جديد خلال ٧ أيام`, `${num(users7)} new in 7 days`) },
     { label: t("الاستشارات", "Consultations"), value: consults, note: t(`${num(consults7)} خلال ٧ أيام`, `${num(consults7)} in 7 days`) },
@@ -99,7 +102,8 @@ export default async function AdminPage() {
 
   return (
     <AppPage eyebrow={t("لصاحب المشروع", "For the project owner")} title={t("إحصاءات المنصة", "Platform statistics")}
-      copy={t("أعداد مجمّعة فقط: لا تعرض هذه الصفحة محتوى أي استشارة ولا هوية أي مستخدم.", "Aggregate counts only: this page shows neither the content of any consultation nor the identity of any user.")}>
+      copy={t("أعداد مجمّعة فقط: لا تعرض هذه الصفحة محتوى أي استشارة ولا هوية أي مستخدم.", "Aggregate counts only: this page shows neither the content of any consultation nor the identity of any user.")}
+      actions={<Link className="btn btn-ghost btn-sm" href="/admin/messages">{t(`رسائل التواصل (${num(messages)}، منها ${num(messages7)} خلال ٧ أيام)`, `Contact messages (${num(messages)}, ${num(messages7)} in 7 days)`)}</Link>}>
       <div className="stack-lg">
         <section className="kpi-row" aria-label={t("أرقام رئيسية", "Key figures")}>
           {tiles.map((k) => (

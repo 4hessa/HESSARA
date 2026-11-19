@@ -43,6 +43,17 @@ test("الروابط الخارجية في المقالات وقائمة الق�
   assert.ok(ext("en").length >= 25);
 });
 
+test("المصادر العربية: الروابط نفسها في اللغتين، وكلها من مواقع الجهات الرسمية المذكورة", () => {
+  const doc = RESOURCES.find((e) => e.slug === "arabic-ai-sources");
+  assert.ok(doc, "الوثيقة موجودة");
+  const ext = (lang) => links(doc[lang].body).filter((h) => h.startsWith("https://"));
+  assert.deepEqual(ext("ar"), ext("en"), "الروابط نفسها وبالترتيب نفسه في اللغتين");
+  assert.ok(ext("ar").length >= 14);
+  const official = new Set(["sdaia.gov.sa", "www.un.org", "unesdoc.unesco.org", "www.unescwa.org"]);
+  for (const href of ext("ar")) assert.ok(official.has(new URL(href).host), href);
+  assert.equal(new Set(ext("ar")).size, ext("ar").length, "لا رابط مكرر");
+});
+
 test("زر البريد يركّب رسالة إلى عنوان صحيح الشكل، والموضوع مرمَّز", () => {
   const href = mailHref("رسالة من موقع هسّارة & سؤال");
   assert.match(href, /^mailto:[a-z0-9.]+@[a-z0-9-]+\.[a-z]{2,}\?subject=/);
