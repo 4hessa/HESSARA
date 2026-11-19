@@ -20,8 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
       ? { default: "هسّارة — ذكاء يرشد، وبصيرة تصنع الفرق", template: "%s — هسّارة" }
       : { default: "HESSARA — Intelligence That Guides. Insight That Matters", template: "%s — HESSARA" },
     description: ar
-      ? "منصة استشارية تجمع نماذج ذكاء اصطناعي من عدة مزوّدين ووكلاء متخصصين ومختبرًا للنقد والتقييم في مساحة عمل واحدة."
-      : "An AI advisory platform that brings models from several providers, specialised agents, and a critique lab into one workspace.",
+      ? "منصة أكاديمية للاستشارات التقنية بالذكاء الاصطناعي، تجمع وكلاء متخصصين ونماذج لغوية ومصادر علمية موثّقة. مشروع تخرج في كلية الذكاء الاصطناعي."
+      : "An academic AI-powered technical consulting platform that brings together specialised agents, language models and cited scientific resources. A graduation project at a College of Artificial Intelligence.",
     openGraph: { siteName: "HESSARA", type: "website", images: [{ url: "/og.jpg", width: 1200, height: 630 }] },
     twitter: { card: "summary_large_image" },
   };
