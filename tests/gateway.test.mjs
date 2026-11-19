@@ -1,5 +1,5 @@
 // طريق بوابة Vercel للذكاء الاصطناعي، مقابل خادم محاكٍ محلي يعيد صيغة chat/completions المتوافقة مع OpenAI.
-// يثبت: اختيار الطريق (البوابة أولًا ثم المفتاح المباشر)، شكل الطلب ومصادقته، تحويل أخطاء البوابة إلى رسائل واضحة،
+// يثبت: اختيار الطريق (المفتاح المباشر المكتمل أولًا ثم البوابة)، شكل الطلب ومصادقته، تحويل أخطاء البوابة إلى رسائل واضحة،
 // وحفظ نتيجة آخر اختبار في قاعدة البيانات حتى تقرأها نسخة خادم أخرى.
 // لا يثبت أن البوابة الحقيقية تقبل الطلب أو أن في الحساب رصيدًا: ذلك يحتاج اختبارًا حيًّا بعد النشر.
 import test from "node:test";
@@ -87,19 +87,42 @@ test("على Vercel دون مفتاح: يُستخدم رمز OIDC الخاص ب�
   }
 });
 
-test("البوابة أولًا، ويعيد HESSARA_ROUTE=direct المفاتيح المباشرة", () => {
+test("المفتاح المباشر المكتمل أولًا ولو كانت البوابة متاحة، والبوابة لما سواه، و HESSARA_ROUTE=direct يعطّلها", () => {
   process.env.AI_GATEWAY_API_KEY = "gw-key";
-  process.env.OPENAI_API_KEY = "sk-direct";
-  process.env.OPENAI_MODEL = "gpt-direct";
   try {
-    assert.equal(P.resolveModel("gpt").route, "gateway");
-    process.env.HESSARA_ROUTE = "direct";
+    assert.equal(P.resolveModel("gpt").route, "gateway", "دون مفتاح مباشر يمر عبر البوابة");
+    process.env.OPENAI_API_KEY = "sk-direct";
+    assert.equal(P.resolveModel("gpt").route, "gateway", "مفتاح دون معرّف الإصدار لا يكتمل به الطريق المباشر");
+    process.env.OPENAI_MODEL = "gpt-direct";
     const m = P.resolveModel("gpt");
     assert.equal(m.route, "direct");
     assert.equal(m.apiModel, "gpt-direct");
-    assert.equal(P.resolveModel("gemini"), null, "دون مفتاح Gemini المباشر لا طريق له");
+    assert.equal(P.resolveModel("gemini").route, "gateway", "النماذج الأخرى تبقى على البوابة");
+    process.env.HESSARA_ROUTE = "direct";
+    assert.equal(P.resolveModel("gemini"), null, "دون البوابة ودون مفتاح Gemini المباشر لا طريق له");
+    assert.equal(P.resolveModel("gpt").route, "direct");
   } finally {
     for (const k of ["AI_GATEWAY_API_KEY", "OPENAI_API_KEY", "OPENAI_MODEL", "HESSARA_ROUTE"]) delete process.env[k];
+  }
+});
+
+test("على Vercel: مستضيف متوافق مع OpenAI بمستوى مجاني يخدم Qwen مباشرة، ولا تحجبه البوابة", async () => {
+  process.env.VERCEL = "1";
+  process.env.QWEN_API_KEY = "free-key";
+  process.env.QWEN_MODEL = "qwen/some-model";
+  process.env.QWEN_BASE_URL = process.env.AI_GATEWAY_BASE_URL.replace("/v1", "/openai/v1");
+  try {
+    const m = P.resolveModel("qwen");
+    assert.equal(m.route, "direct");
+    handlers.push(sse(["جاهز"]));
+    assert.equal(await ask(m), "جاهز");
+    const r = requests.at(-1);
+    assert.equal(r.url, "/openai/v1/chat/completions", "الطلب يذهب إلى عنوان المستضيف لا إلى البوابة");
+    assert.equal(r.headers.authorization, "Bearer free-key");
+    assert.equal(r.body.model, "qwen/some-model");
+    assert.equal(requestToken.run("oidc", () => P.resolveModel("llama")).route, "gateway", "Llama دون مفتاح يبقى على البوابة");
+  } finally {
+    for (const k of ["VERCEL", "QWEN_API_KEY", "QWEN_MODEL", "QWEN_BASE_URL"]) delete process.env[k];
   }
 });
 
@@ -160,5 +183,23 @@ test("نتيجة الاختبار تُحفظ في القاعدة وتقرؤها 
     assert.equal(listed.find((m) => m.id === "qwen").route, "direct");
   } finally {
     for (const k of ["AI_GATEWAY_API_KEY", "HESSARA_ROUTE", "QWEN_API_KEY", "QWEN_MODEL", "QWEN_BASE_URL"]) delete process.env[k];
+  }
+});
+
+test("محرك المراجعة يقدّم ما نجح اختباره، ويتجاوز المفضَّل الذي فشل آخر اختبار له", async () => {
+  process.env.AI_GATEWAY_API_KEY = "gw-key";
+  try {
+    globalThis.__hessaraChecks.clear();
+    assert.equal(P.firstLlm().def.id, "claude-opus-5-5", "دون نتائج يُختار الأول في الفهرس");
+    await P.recordCheck("claude-opus-5-5", false, "x");
+    assert.equal(P.firstLlm().def.id, "claude-sonnet-5-5", "ما لم يُختبر يتقدّم على ما فشل");
+    await P.recordCheck("gemini", true);
+    assert.equal(P.firstLlm().def.id, "gemini", "ما نجح اختباره يتقدّم على الجميع");
+    assert.equal(P.firstLlm("claude-opus-5-5").def.id, "gemini", "المفضَّل الفاشل يُتجاوز");
+    assert.equal(P.firstLlm("deepseek").def.id, "deepseek", "المفضَّل الذي لم يُختبر يُحترم");
+    assert.equal(P.firstLlm("hessara-demo").def.id, "gemini", "المحرك التجريبي لا يراجع بنموذج لغوي");
+  } finally {
+    delete process.env.AI_GATEWAY_API_KEY;
+    globalThis.__hessaraChecks.clear();
   }
 });

@@ -11,7 +11,7 @@ import { LangToggle } from "./Nav";
 type Col = { title: [string, string]; links: [string, string, string][] };
 const COLS: Col[] = [
   { title: ["المنصة", "Platform"], links: [["الوكلاء", "Agents", "/agents"], ["النماذج", "Models", "/models"], ["مختبر النقد", "Critique Lab", "/lab"], ["ميديا هسّارة", "Media", "/media"]] },
-  { title: ["الموارد", "Resources"], links: [["رؤى", "Insights", "/insights"], ["المكتبة", "Library", "/resources"], ["البدء", "Getting Started", "/resources/getting-started"], ["قراءات مختارة", "Selected Reading", "/resources/ai-labs-reading-list"], ["كيف بُنيت هسّارة", "How HESSARA Is Built", "/resources/how-hessara-is-built"], ["الأمان", "Security", "/resources/security"]] },
+  { title: ["الموارد", "Resources"], links: [["رؤى", "Insights", "/insights"], ["المكتبة", "Library", "/resources"], ["البدء", "Getting Started", "/resources/getting-started"], ["قراءات مختارة", "Selected Reading", "/resources/ai-labs-reading-list"], ["مصادر عربية", "Arabic Sources", "/resources/arabic-ai-sources"], ["كيف بُنيت هسّارة", "How HESSARA Is Built", "/resources/how-hessara-is-built"], ["الأمان", "Security", "/resources/security"]] },
   { title: ["عن هسّارة", "Company"], links: [["من نحن", "About Us", "/about"], ["تواصل معنا", "Contact Us", "/contact"], ["المساعدة", "Help", "/help"]] },
   { title: ["السياسات", "Policies"], links: [["شروط الاستخدام", "Terms & Usability", "/terms"], ["سياسة الخصوصية", "Privacy Policy", "/privacy"]] },
 ];

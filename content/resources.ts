@@ -1,6 +1,6 @@
 // قسم «الموارد»: أُعيدت كتابة الوثائق الأربع الأولى لتصف المنصة كما هي فعلًا. النسخ المرجعية كانت تصف
 // نماذج وأدوارًا ومداولة جماعية وإسنادًا بالوثائق غير موجودة في هسّارة. الخامسة نظرة تقنية في بناء المنصة،
-// والسادسة قائمة قراءة من مصادر أولية.
+// والسادسة قائمة قراءة من مصادر أولية، والسابعة مصادر عربية من جهات رسمية ودولية.
 import type { Entry } from "./types";
 
 export const RESOURCES: Entry[] = [
@@ -517,7 +517,7 @@ If you believe you have found a security issue, please use the [contact page](/c
 | Web application | Next.js (App Router) and React, rendered on the server |
 | Hosting | Vercel |
 | Database | PostgreSQL (Neon) in production; SQLite on a local machine |
-| Model access | The Vercel AI Gateway by default, or each provider's own API |
+| Model access | The provider's own key when it is set, otherwise the Vercel AI Gateway |
 | Languages | Arabic from right to left and English from left to right, on the same pages |
 
 ## The model layer
@@ -542,13 +542,14 @@ Each of the six agents is a written playbook on top of a general model, not a se
 - Stored: name, email, a password hash, consultations, answers, reviews, favourites and preferences.
 - Passwords are hashed with scrypt, and session tokens are random and stored hashed.
 - Each user can download all their data, or delete the account together with its consultations.
+- Contact-form messages (an optional name, the email and the message) are kept apart from accounts, read only by the project owner, and deleted after a year.
 - Visit counts keep no visitor identifier, and the statistics page shows aggregate numbers only. Details are in [Security, privacy, and data handling](/resources/security).
 
 ## Security
 
 - Session cookies are HttpOnly and SameSite=Lax, and requests that change data are refused when they come from another origin.
 - Every page is sent with a Content-Security-Policy and with nosniff and frame headers.
-- Sign-in, sign-up and account deletion are rate-limited, with the counters shared in the database.
+- Sign-in, sign-up, account deletion and the contact form are rate-limited, with the counters shared in the database.
 - Read-only share links use random tokens, and the owner can revoke them at any time.
 
 ## Testing
@@ -583,7 +584,7 @@ Each of the six agents is a written playbook on top of a general model, not a se
 | تطبيق الويب | Next.js (موجّه التطبيق) و React، مع العرض من الخادم |
 | الاستضافة | Vercel |
 | قاعدة البيانات | PostgreSQL (Neon) في الإنتاج، و SQLite على الجهاز المحلي |
-| الوصول إلى النماذج | بوابة Vercel للذكاء الاصطناعي افتراضيًا، أو الواجهة البرمجية لكل مزوّد مباشرة |
+| الوصول إلى النماذج | مفتاح المزوّد مباشرة متى ضُبط، وإلا بوابة Vercel للذكاء الاصطناعي |
 | اللغتان | العربية من اليمين والإنجليزية من اليسار، في الصفحات نفسها |
 
 ## طبقة النماذج
@@ -608,13 +609,14 @@ Each of the six agents is a written playbook on top of a general model, not a se
 - ما يُخزَّن: الاسم والبريد وكلمة مرور مجزّأة، والاستشارات والإجابات والمراجعات والمفضلات والتفضيلات.
 - كلمات المرور مجزّأة بـ scrypt، ورموز الجلسات عشوائية وتُخزَّن مجزّأة.
 - يستطيع كل مستخدم تنزيل بياناته كلها، أو حذف حسابه مع استشاراته.
+- رسائل نموذج «تواصل معنا» (الاسم اختياريًا، والبريد، والنص) منفصلة عن الحسابات، يقرؤها صاحب المشروع وحده، وتُحذف بعد سنة.
 - عدّاد الزيارات لا يحفظ أي معرّف للزائر، وصفحة الإحصاءات تعرض أعدادًا مجمّعة فقط. التفاصيل في [الأمان والخصوصية والتعامل مع البيانات](/resources/security).
 
 ## الأمان
 
 - ملفات ارتباط الجلسة HttpOnly و SameSite=Lax، والطلبات التي تغيّر البيانات تُرفض إن جاءت من أصل آخر.
 - تُرسل كل صفحة بسياسة أمان المحتوى (Content-Security-Policy) وبترويستي nosniff ومنع التأطير.
-- الدخول والتسجيل وحذف الحساب محدودة المحاولات، وعدّاداتها مشتركة في قاعدة البيانات.
+- الدخول والتسجيل وحذف الحساب ونموذج التواصل محدودة المحاولات، وعدّاداتها مشتركة في قاعدة البيانات.
 - روابط المشاركة للقراءة فقط برموز عشوائية، ويستطيع صاحب الاستشارة إيقافها متى شاء.
 
 ## الاختبار
@@ -705,6 +707,7 @@ Each of the six agents is a written playbook on top of a general model, not a se
 
 ## Related
 
+- [Trusted Arabic sources on AI](/resources/arabic-ai-sources): Arabic publications from official and international bodies.
 - [Insights](/insights): four method notes that cite their sources.
 - [Security, privacy, and data handling](/resources/security)`,
     },
@@ -774,8 +777,100 @@ Each of the six agents is a written playbook on top of a general model, not a se
 
 ## ذو صلة
 
+- [مصادر عربية موثوقة في الذكاء الاصطناعي](/resources/arabic-ai-sources): إصدارات عربية من جهات رسمية ودولية.
 - [رؤى](/insights): أربع مذكرات منهجية تذكر مصادرها.
 - [الأمان والخصوصية والتعامل مع البيانات](/resources/security)`,
+    },
+  },
+  {
+    slug: "arabic-ai-sources",
+    en: {
+      kicker: "Reading list",
+      title: "Trusted Arabic sources on AI",
+      sub: "Arabic publications from SDAIA, the United Nations, UNESCO and ESCWA",
+      description: "Arabic documents on AI ethics and governance, generative AI, adoption and terminology from official and international bodies, each linked to its original source.",
+      note: "External links to the publishers' sites, mostly PDF files in Arabic. Each link and its title were found in search results limited to the publisher's own site on 19 November 2026; files can move, and newer editions can appear after that date. HESSARA has no affiliation with these organisations.",
+      body: `Most primary sources on AI are in English. This list gathers documents written in Arabic, or published officially in Arabic, by bodies that answer for what they publish: the Saudi Data and AI Authority (SDAIA), the United Nations, UNESCO, and the UN Economic and Social Commission for Western Asia (ESCWA). Most are PDF files in Arabic.
+
+## Ethics and governance
+
+- [AI Ethics Principles](https://sdaia.gov.sa/ar/SDAIA/about/Documents/ai-principles.pdf), SDAIA. The seven principles SDAIA uses as its reference for organisations in Saudi Arabia: fairness, privacy and security, humanity, social and environmental benefits, reliability and safety, transparency and explainability, and accountability and responsibility.
+- [UNESCO Recommendation on the Ethics of Artificial Intelligence](https://unesdoc.unesco.org/ark:/48223/pf0000380455), UNESCO (2021). The first global standard on AI ethics, adopted by UNESCO's member states in November 2021. The Arabic text is available from the document's page by choosing the language.
+- [Governing AI for Humanity](https://www.un.org/sites/un2.un.org/files/governing_ai_for_humanity_final_report_ar.pdf), United Nations (2024). Final report of the Secretary-General's High-level Advisory Body on AI, with seven recommendations to close gaps in international AI governance, among them an independent international scientific panel and a global policy dialogue.
+- [AI biases: a reference guide](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/AR-AI-BIAS.pdf), SDAIA (first edition, 2026). A reference guide to the kinds of bias found in AI systems.
+- [Deepfake principles](https://sdaia.gov.sa/ar/SDAIA/eParticipation/consulting/SDAIADeepfakesGuidelinesAr.pdf), SDAIA (2024). Proposed principles for using deepfake technology, published for public consultation.
+
+## Generative AI
+
+- [Generative AI principles for the public](https://sdaia.gov.sa/ar/SDAIA/about/Files/GenerativeAIPublicAR.pdf), SDAIA (2025). Written for the general public: the risks of generative AI tools and how to reduce them, including disclosing their use and keeping human oversight of their output.
+- [Generative AI series (1)](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/Generative-AI.pdf), SDAIA (2023). Good practice in developing models, risks such as biased output, and the factors in choosing how to adopt generative AI, such as cost, security, privacy and output quality.
+- [Generative AI: promising prospects for a better future](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/GenerativeAI.pdf), SDAIA (2025). An overview of generative AI and what it makes possible.
+- [Generative AI in education](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/GenAIE.pdf), SDAIA (2023). Recommendations for educational institutions: define the purpose of using it in a course, require students to declare its use in assignments, and check its output rather than relying on it.
+- [Foresight on the governance of artificial general intelligence](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/Foresight.pdf), SDAIA. The current state of, and outlook for, governing artificial general intelligence.
+
+## Adoption and standards
+
+- [AI Adoption Framework](https://sdaia.gov.sa/ar/SDAIA/about/Files/AIAdoptionFramework.pdf), SDAIA (2025). Guidance for government and private organisations on adopting AI.
+- [Global AI standards: efforts and challenges](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/%D8%A7%D9%84%D9%85%D8%B9%D8%A7%D9%8A%D9%8A%D8%B1%20%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%D9%8A%D8%A9%20%D9%84%D9%84%D8%B0%D9%83%D8%A7%D8%A1%20%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A.pdf), SDAIA (2023). International efforts to set standards for AI, and the challenges they face.
+- [AI ethics: AI for executives series (3)](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/SDAIAPublications07.pdf), SDAIA (second edition). A short guide for decision-makers that summarises the principles of AI ethics.
+
+## The Arab region
+
+- [Is the Arab region missing the Fourth Industrial Revolution?](https://www.unescwa.org/sites/default/files/pubs/pdf/arab-region-missing-fourth-industrial-revoloution-arabic.pdf), ESCWA. How AI and other Fourth Industrial Revolution technologies affect jobs and skills in the Arab region.
+
+## Terminology
+
+- [Data and AI: an Arabic–English glossary](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/SDAIAPublications15.pdf), SDAIA with the King Salman Global Academy for Arabic Language (second edition, 2024). Standard Arabic terms for data and AI with their English equivalents; the second edition adds terms for generative AI.
+- [SDAIA publications](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/Pages/SDAIAPublications.aspx). The full index of SDAIA's publications, including newer editions of the documents above.
+
+## Related
+
+- [Selected reading from AI labs](/resources/ai-labs-reading-list): primary sources, mostly in English.
+- [How HESSARA is built](/resources/how-hessara-is-built)`,
+    },
+    ar: {
+      kicker: "قائمة قراءة",
+      title: "مصادر عربية موثوقة في الذكاء الاصطناعي",
+      sub: "إصدارات عربية من سدايا والأمم المتحدة واليونسكو والإسكوا",
+      description: "وثائق عربية في أخلاقيات الذكاء الاصطناعي وحوكمته، والذكاء الاصطناعي التوليدي، والتبنّي، والمصطلحات، من جهات رسمية ودولية، وكلٌّ منها مربوط بمصدره الأصلي.",
+      note: "روابط خارجية إلى مواقع الجهات المصدِرة، وأغلبها ملفات PDF بالعربية. وُجد كل رابط وعنوانه في نتائج بحث مقصورة على موقع الجهة نفسها في 19 نوفمبر 2026، وقد تنتقل الملفات أو تصدر طبعات أحدث بعد ذلك. لا تربط هسّارة بهذه الجهات أي صلة.",
+      body: `أغلب المصادر الأولية في الذكاء الاصطناعي بالإنجليزية. تجمع هذه القائمة وثائق كُتبت بالعربية أو نُشرت بها رسميًا، من جهات تُحاسَب على ما تنشر: الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا)، والأمم المتحدة، واليونسكو، ولجنة الأمم المتحدة الاقتصادية والاجتماعية لغربي آسيا (الإسكوا). أغلبها ملفات PDF.
+
+## الأخلاقيات والحوكمة
+
+- [مبادئ أخلاقيات الذكاء الاصطناعي](https://sdaia.gov.sa/ar/SDAIA/about/Documents/ai-principles.pdf)، سدايا. المبادئ السبعة التي تعتمدها الهيئة مرجعًا للجهات في المملكة: النزاهة والإنصاف، والخصوصية والأمن، والإنسانية، والمنافع الاجتماعية والبيئية، والموثوقية والسلامة، والشفافية والقابلية للتفسير، والمساءلة والمسؤولية.
+- [توصية اليونسكو بشأن أخلاقيات الذكاء الاصطناعي](https://unesdoc.unesco.org/ark:/48223/pf0000380455)، اليونسكو (2021). أول معيار عالمي لأخلاقيات الذكاء الاصطناعي، اعتمدته الدول الأعضاء في نوفمبر 2021. النص العربي متاح من صفحة الوثيقة باختيار اللغة.
+- [حوكمة الذكاء الاصطناعي من أجل الإنسانية](https://www.un.org/sites/un2.un.org/files/governing_ai_for_humanity_final_report_ar.pdf)، الأمم المتحدة (2024). التقرير النهائي للهيئة الاستشارية الرفيعة المستوى المعنية بالذكاء الاصطناعي، وفيه سبع توصيات لسد ثغرات الحوكمة الدولية، منها فريق علمي دولي مستقل وحوار عالمي للسياسات.
+- [تحيزات الذكاء الاصطناعي: دليل مرجعي](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/AR-AI-BIAS.pdf)، سدايا (النسخة الأولى، 2026). دليل مرجعي لأنواع التحيز في أنظمة الذكاء الاصطناعي.
+- [مبادئ التزييف العميق](https://sdaia.gov.sa/ar/SDAIA/eParticipation/consulting/SDAIADeepfakesGuidelinesAr.pdf)، سدايا (2024). مبادئ مقترحة لاستخدام تقنيات التزييف العميق، طُرحت للاستشارة العامة.
+
+## الذكاء الاصطناعي التوليدي
+
+- [مبادئ الذكاء الاصطناعي التوليدي للعموم](https://sdaia.gov.sa/ar/SDAIA/about/Files/GenerativeAIPublicAR.pdf)، سدايا (2025). موجّهة للجمهور: مخاطر أدوات الذكاء الاصطناعي التوليدي وطرق تخفيفها، ومنها الإفصاح عن استخدامها والإشراف البشري على مخرجاتها.
+- [سلسلة الذكاء الاصطناعي التوليدي (1)](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/Generative-AI.pdf)، سدايا (2023). أفضل الممارسات في تطوير النماذج، ومخاطر مثل تحيز المخرجات، وعوامل اختيار طريقة التبني كالتكلفة والأمن والخصوصية وجودة المخرجات.
+- [الذكاء الاصطناعي التوليدي: آفاق واعدة لمستقبل أفضل](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/GenerativeAI.pdf)، سدايا (2025). نظرة عامة في الذكاء الاصطناعي التوليدي وما يتيحه.
+- [الذكاء الاصطناعي التوليدي في التعليم](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/GenAIE.pdf)، سدايا (2023). توصيات للمؤسسات التعليمية: تحديد الهدف من استخدامه في المقرر، والتصريح باستخدامه في الواجبات، والتحقق من مخرجاته وعدم الاعتماد عليها.
+- [استشراف حوكمة الذكاء الاصطناعي العام](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/Foresight.pdf)، سدايا. الوضع الحالي والتطلعات المستقبلية لحوكمة الذكاء الاصطناعي العام.
+
+## التبنّي والمعايير
+
+- [إطار تبني الذكاء الاصطناعي](https://sdaia.gov.sa/ar/SDAIA/about/Files/AIAdoptionFramework.pdf)، سدايا (2025). إطار إرشادي للجهات الحكومية والخاصة لتبني تقنيات الذكاء الاصطناعي.
+- [معايير الذكاء الاصطناعي العالمية: جهود وتحديات](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/%D8%A7%D9%84%D9%85%D8%B9%D8%A7%D9%8A%D9%8A%D8%B1%20%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%D9%8A%D8%A9%20%D9%84%D9%84%D8%B0%D9%83%D8%A7%D8%A1%20%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A.pdf)، سدايا (2023). الجهود الدولية لوضع معايير للذكاء الاصطناعي، وما تواجهه من تحديات.
+- [أخلاقيات الذكاء الاصطناعي: سلسلة الذكاء الاصطناعي للتنفيذيين (3)](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/SDAIAPublications07.pdf)، سدايا (الطبعة الثانية). دليل مختصر لصنّاع القرار يلخّص مبادئ أخلاقيات الذكاء الاصطناعي.
+
+## المنطقة العربية
+
+- [أتُفوِّت المنطقة العربية قطار الثورة الصناعية الرابعة؟](https://www.unescwa.org/sites/default/files/pubs/pdf/arab-region-missing-fourth-industrial-revoloution-arabic.pdf)، الإسكوا. أثر الذكاء الاصطناعي وتقنيات الثورة الصناعية الرابعة في الوظائف والمهارات بالمنطقة العربية.
+
+## المصطلحات
+
+- [البيانات والذكاء الاصطناعي: معجم عربي إنجليزي](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/ResearchLibrary/SDAIAPublications15.pdf)، سدايا بالتعاون مع مجمع الملك سلمان العالمي للغة العربية (الطبعة الثانية، 2024). مصطلحات عربية موحّدة في البيانات والذكاء الاصطناعي ومقابلاتها الإنجليزية، وتضيف الطبعة الثانية مصطلحات الذكاء الاصطناعي التوليدي.
+- [إصدارات سدايا](https://sdaia.gov.sa/ar/MediaCenter/KnowledgeCenter/Pages/SDAIAPublications.aspx). الفهرس الكامل لإصدارات الهيئة، وفيه الطبعات الأحدث من الوثائق أعلاه.
+
+## ذو صلة
+
+- [قراءات مختارة من مختبرات الذكاء الاصطناعي](/resources/ai-labs-reading-list): مصادر أولية أغلبها بالإنجليزية.
+- [كيف بُنيت هسّارة](/resources/how-hessara-is-built)`,
     },
   },
 ];

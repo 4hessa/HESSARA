@@ -161,6 +161,7 @@ It is meant for university students, researchers, software developers, AI engine
 - How many times each page was opened each day, with no visitor identifier: no address and no cookie. Nothing is counted when your browser asks sites not to track it.
 - Your answers to the usability questionnaire, if you choose to fill it in. The project owner sees them only aggregated with others, without your name or email.
 - Technical errors: when something fails on the server or in your browser, the type of error, a cleaned message, and the page template are counted per day, with no visitor identifier and no text you wrote. They are deleted after 30 days.
+- Messages you send through the contact form: your name if you give it, your email, the message, the interface language and the time. Only the project owner reads them, to reply to you. They are not linked to any account, and are deleted automatically after a year, or sooner if you ask.
 - We collect no location data and use no tracking or advertising tools.
 
 ## Where it is stored
@@ -202,6 +203,7 @@ In the platform's database on its server. Each account's consultations are isola
 - عدد مرات فتح كل صفحة في كل يوم، دون أي معرّف للزائر: لا عنوان ولا ملف ارتباط. ولا يُحتسب شيء إن طلب متصفحك من المواقع عدم تتبّعه.
 - إجاباتك عن استبيان سهولة الاستخدام إن اخترت ملأه. لا يراها صاحب المشروع إلا مجمّعة مع غيرها، دون اسمك أو بريدك.
 - الأخطاء التقنية: حين يتعطل شيء في الخادم أو في متصفحك يُحصى في كل يوم نوع الخطأ ورسالته بعد تنقيتها وقالب الصفحة، دون أي معرّف للزائر ودون أي نص كتبته. تُحذف بعد ٣٠ يومًا.
+- رسائل نموذج «تواصل معنا»: الاسم إن كتبته، والبريد، ونص الرسالة، ولغة الواجهة، ووقت الإرسال. يقرؤها صاحب المشروع وحده ليرد عليك، ولا تُربط بأي حساب، وتُحذف تلقائيًا بعد سنة، أو قبل ذلك إن طلبت.
 - لا نجمع بيانات موقع، ولا نستخدم أدوات تتبّع أو إعلانات.
 
 ## أين تُخزَّن
