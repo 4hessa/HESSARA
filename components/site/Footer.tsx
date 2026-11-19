@@ -1,10 +1,11 @@
 "use client";
-// تذييل الموقع المرجعي: أربعة أعمدة داخل العمود الأوسط، ثم هوية المشروع (المالك والجامعة والكلية والعام)،
-// ثم سطر الحقوق وحساب المشروع على منصة X ومبدّلي اللغة والمظهر، ثم تنبيه المنصة التجريبية والانتماء الأكاديمي.
-// لا تُضاف أيقونة تواصل إلا لحساب فعلي.
+// تذييل الموقع: كتلة العلامة (الاسم، والتعريف، وسطر الهوية الأكاديمية، وأيقونتا البريد وحساب X) بجوار أعمدة
+// الروابط الأربعة، ثم سطر الحقوق ومبدّلا اللغة والمظهر، ثم تنبيه قصير. التفاصيل الكاملة للهوية في «من نحن» وحدها.
+// لا تُضاف أيقونة تواصل إلا لحساب فعلي، والبريد لا يظهر نصًّا (انظر Mail.tsx).
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useApp } from "../app";
+import { MailButton } from "./Mail";
 import { LangToggle } from "./Nav";
 
 type Col = { title: [string, string]; links: [string, string, string][] };
@@ -15,22 +16,13 @@ const COLS: Col[] = [
   { title: ["السياسات", "Policies"], links: [["شروط الاستخدام", "Terms & Usability", "/terms"], ["سياسة الخصوصية", "Privacy Policy", "/privacy"]] },
 ];
 
-// هوية المشروع كما اعتمدها صاحبه (١٩ نوفمبر ٢٠٢٦): [العنوان بالعربية، بالإنجليزية، القيمة أو [عربي، إنجليزي]].
-// اسم الجامعة يبقى بصيغته الرسمية الإنجليزية في اللغتين إلى أن يُعتمد اسم عربي رسمي.
-const IDENTITY: [string, string, string | [string, string]][] = [
-  ["التأسيس والملكية والتطوير", "Founded, owned & developed by", ["م. حصة أحمد الزهراني", "Eng. Hessa Ahmed Alzahrani"]],
-  ["الجامعة", "Academic institution", "Smart University of Technical Sciences"],
-  ["الكلية", "College", ["كلية الذكاء الاصطناعي", "College of Artificial Intelligence"]],
-  ["العام الأكاديمي", "Academic year", "2027"],
-];
-
 // حساب المشروع على منصة X. الشعار بشكله الرسمي (مملوء) لا بخط الأيقونات، وبلون النص.
 const X_URL = "https://x.com/4hessa";
 
 function XLink() {
   const { t } = useApp();
   return (
-    <a className="footer__x" href={X_URL} target="_blank" rel="noopener noreferrer" title="@4hessa"
+    <a className="footer__icon" href={X_URL} target="_blank" rel="noopener noreferrer" title="@4hessa"
       aria-label={t("حساب ‎@4hessa على منصة X (يفتح في تبويب جديد)", "@4hessa on X (opens in a new tab)")}>
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
@@ -62,31 +54,34 @@ export function Footer() {
   const i = lang === "ar" ? 0 : 1;
   return (
     <footer className="footer">
-      <div className="footer__cols">
-        {COLS.map((c) => (
-          <div key={c.title[1]}>
-            <h2 className="footer__title">{c.title[i]}</h2>
-            <ul>{c.links.map((l) => <li key={l[2]}><Link href={l[2]}>{l[i]}</Link></li>)}</ul>
-          </div>
-        ))}
-      </div>
-      <div className="footer__identity">
-        <p className="footer__brand"><span lang="en">HESSARA</span> · {t("الاستشارات التقنية والمعرفة بالذكاء الاصطناعي", "AI-Powered Technical Consulting & Knowledge")}</p>
-        <p>{t("مشروع تخرج أكاديمي يركّز على الاستشارة التقنية الذكية، والوكلاء المتخصصين، وربط الاستشارة بالمعرفة العلمية.",
-          "An academic graduation project focused on intelligent technical consultation, specialised AI agents, and scientific knowledge integration.")}</p>
-        <dl className="footer__facts">
-          {IDENTITY.map(([ar, en, value]) => (
-            <div key={en}><dt>{i === 0 ? ar : en}</dt><dd>{typeof value === "string" ? value : value[i]}</dd></div>
+      <div className="footer__top">
+        <div className="footer__brand">
+          <p className="footer__logo" lang="en">HESSARA</p>
+          <p className="footer__tagline">{t("الاستشارات التقنية والمعرفة بالذكاء الاصطناعي", "AI-Powered Technical Consulting & Knowledge")}</p>
+          <p className="footer__about">
+            {t("مشروع تخرج أكاديمي للمهندسة حصة أحمد الزهراني، في كلية الذكاء الاصطناعي بجامعة ", "An academic graduation project by Eng. Hessa Ahmed Alzahrani, College of Artificial Intelligence, ")}
+            <bdi>Smart University of Technical Sciences</bdi>
+            {t("، العام الأكاديمي 2027. ", ", academic year 2027. ")}
+            <Link href="/about">{t("عن المشروع", "About the project")}</Link>
+          </p>
+          <div className="footer__social"><MailButton /><XLink /></div>
+        </div>
+        <div className="footer__cols">
+          {COLS.map((c) => (
+            <div key={c.title[1]}>
+              <h2 className="footer__title">{c.title[i]}</h2>
+              <ul>{c.links.map((l) => <li key={l[2]}><Link href={l[2]}>{l[i]}</Link></li>)}</ul>
+            </div>
           ))}
-        </dl>
+        </div>
       </div>
       <div className="footer__base">
-        <div><span>© <span suppressHydrationWarning>{new Date().getFullYear()}</span> <span lang="en">HESSARA</span> · {t("م. حصة أحمد الزهراني. جميع الحقوق محفوظة.", "Eng. Hessa Ahmed Alzahrani. All rights reserved.")}</span><XLink /></div>
+        <p>© <span suppressHydrationWarning>{new Date().getFullYear()}</span> <span lang="en">HESSARA</span> · {t("المهندسة حصة أحمد الزهراني. جميع الحقوق محفوظة.", "Eng. Hessa Ahmed Alzahrani. All rights reserved.")}</p>
         <div><LangToggle /><ThemeToggle /></div>
       </div>
       <p className="footer__note">
-        {t("منصة أكاديمية تجريبية: قد يحتاج المحتوى المولَّد بالذكاء الاصطناعي إلى تحقق مستقل قبل الاعتماد عليه. الانتماء الأكاديمي يبيّن المكان الذي طُوّر فيه المشروع، ولا يعني أن الجامعة تملك المنصة أو تعتمدها رسميًا أو تشغّلها. أسماء النماذج ملك لأصحابها، وذكرها لا يعني شراكة أو اعتمادًا رسميًا.",
-          "Experimental academic platform: AI-generated content may need independent verification before you rely on it. The academic affiliation identifies where the project was developed; it does not imply that the university owns, officially endorses or operates the platform. Model names belong to their owners, and mentioning them implies no partnership or endorsement.")}
+        {t("منصة أكاديمية تجريبية؛ قد يحتاج المحتوى المولَّد بالذكاء الاصطناعي إلى تحقق مستقل. أسماء النماذج ملك لأصحابها، وذكرها لا يعني شراكة أو اعتمادًا.",
+          "Experimental academic platform; AI-generated content may need independent verification. Model names belong to their owners, and mentioning them implies no partnership or endorsement.")}
       </p>
     </footer>
   );

@@ -11,15 +11,12 @@ export const PAGES: Record<"about" | "privacy" | "terms", { ar: Doc; en: Doc }> 
       description: "HESSARA is an academic AI-powered technical consulting platform, founded, owned and developed by Eng. Hessa Ahmed Alzahrani as a graduation project at the Smart University of Technical Sciences, College of Artificial Intelligence.",
       note: "HESSARA is an experimental academic platform, still under development. The academic affiliation identifies where the project was developed; it does not imply that the university owns, officially endorses or operates the platform.",
       cta: "Want to see how HESSARA works?",
-      body: `HESSARA is an academic AI-powered technical consulting platform, founded, owned and developed by Eng. Hessa Ahmed Alzahrani as a graduation project at the Smart University of Technical Sciences, College of Artificial Intelligence, academic year 2027. It brings together specialised AI agents, language models, scientific resources and curated educational media to support technical problem-solving, analytical thinking and knowledge development.
-
-Consultation is the platform's central service. The articles, research resources and videos support it; HESSARA is not meant to be only a content library.
+      body: `HESSARA is an academic platform for AI-powered technical consulting. Consultation is its central service; the articles, research resources and videos support it.
 
 ## Project identity
 
 | Item | Details |
 | --- | --- |
-| Project | HESSARA |
 | Founder, owner and developer | Eng. Hessa Ahmed Alzahrani |
 | Project type | Academic graduation project |
 | Category | AI-powered technical consulting and knowledge platform |
@@ -28,25 +25,21 @@ Consultation is the platform's central service. The articles, research resources
 | Academic year | 2027 |
 | Status | Experimental platform, under development |
 
-## Vision
+## Vision and mission
 
-To establish an accessible, intelligent and knowledge-driven platform that enhances technical decision-making through artificial intelligence, specialised consultation and reliable scientific resources.
+**Vision.** An accessible, intelligent and knowledge-driven platform that enhances technical decision-making through artificial intelligence, specialised consultation and reliable scientific resources.
 
-## Mission
+**Mission.** An integrated consulting environment that helps users understand technical challenges, evaluate alternative solutions, get specialised AI assistance, and build their technical knowledge from credible academic and educational content.
 
-To provide an integrated AI-powered consulting environment that helps users understand technical challenges, evaluate alternative solutions, access specialised AI assistance, and strengthen their technical knowledge through credible academic and educational content.
-
-## What the platform offers today
+## What the platform offers
 
 - **[AI consulting](/consulting)** through six [specialised agents](/agents), each with written instructions and a fixed answer structure.
-- **[Language models](/models)** from several providers, each shown with its real status. Connecting real models is still in progress; until one is confirmed working, answers come from a clearly labelled demo engine.
+- **[Language models](/models)** from several providers, each shown with its real status.
 - **[A critique lab](/lab)** that tests answers against stated criteria and keeps a record of each review.
 - **[Articles](/insights)** that cite their sources, and a [reading list](/resources/ai-labs-reading-list) of primary sources from AI labs.
 - **[HESSARA Media](/media):** curated educational videos, each credited to its channel and linked to the original.
 
-## Who it is for
-
-University students, academic researchers, software developers, AI engineers, technology professionals, independent learners, technical project teams, and anyone seeking technology-related consultation.
+It is meant for university students, researchers, software developers, AI engineers, technology professionals, independent learners and technical project teams.
 
 ## Project objectives
 
@@ -61,41 +54,39 @@ University students, academic researchers, software developers, AI engineers, te
 
 ## Core values
 
-- **Accuracy and reliability.** Technically sound information, transparent explanations, and access to credible sources.
-- **Transparency.** AI-generated responses, external scientific materials and independently verified information are kept clearly apart.
-- **Accessibility.** Technical knowledge and consultation that are easier to reach and to understand.
-- **Responsible AI.** Ethical use, careful handling of data, and awareness of what models cannot do. Models inform decisions; a person remains responsible for them.
-- **Continuous improvement.** Testing, evaluation, user feedback and ongoing development.
-- **Knowledge integration.** Consultation connected to scientific research, educational media and practical learning.
+- **Accuracy and reliability:** technically sound information and credible sources.
+- **Transparency:** AI-generated answers, external material and verified information kept clearly apart.
+- **Accessibility:** technical knowledge and consultation that are easier to reach and to understand.
+- **Responsible AI:** careful handling of data and awareness of model limits; models inform decisions, and a person remains responsible for them.
+- **Continuous improvement:** testing, evaluation and user feedback.
+- **Knowledge integration:** consultation connected to research, educational media and practical learning.
 
-## Responsible AI and transparency
+## Current limits
 
-- HESSARA's AI-generated responses support technical exploration, learning, research and decision-making. They are not independently verified expert judgments.
-- Scientific articles, research publications and external educational media remain attributable to their original authors, publishers and creators.
+- Connecting real language models is still in progress. Until one is confirmed working, answers come from a clearly labelled demo engine.
+- AI-generated answers support exploration, learning and decisions; they are not independently verified expert judgments.
 - This version handles text only, its agents have no external tools, and its reviews do not verify facts.
+- Articles, research and videos remain attributable to their original authors, publishers and creators.
 
 ## Find out more
 
-- Read the [insights](/insights) on AI-assisted consultation
-- Browse the [resource library](/resources)
-- [Get in touch](/contact)`,
+- [Insights](/insights) on AI-assisted consultation
+- The [resource library](/resources)
+- [Contact](/contact)`,
     },
     ar: {
       title: "عن هسّارة",
       sub: "الاستشارات التقنية والمعرفة بالذكاء الاصطناعي",
-      description: "هسّارة منصة أكاديمية للاستشارات التقنية بالذكاء الاصطناعي، ومشروع تخرج في كلية الذكاء الاصطناعي بجامعة Smart University of Technical Sciences. التأسيس والملكية والتطوير: م. حصة أحمد الزهراني.",
+      description: "هسّارة منصة أكاديمية للاستشارات التقنية بالذكاء الاصطناعي، ومشروع تخرج في كلية الذكاء الاصطناعي بجامعة Smart University of Technical Sciences. التأسيس والملكية والتطوير: المهندسة حصة أحمد الزهراني.",
       note: "هسّارة منصة أكاديمية تجريبية ما تزال قيد التطوير. والانتماء الأكاديمي يبيّن المكان الذي طُوّر فيه المشروع، ولا يعني أن الجامعة تملك المنصة أو تعتمدها رسميًا أو تشغّلها.",
       cta: "تريد أن ترى كيف تعمل هسّارة؟",
-      body: `هسّارة منصة أكاديمية للاستشارات التقنية بالذكاء الاصطناعي، ومشروع تخرج في كلية الذكاء الاصطناعي بجامعة Smart University of Technical Sciences للعام الأكاديمي 2027. التأسيس والملكية والتطوير: م. حصة أحمد الزهراني. وتجمع المنصة وكلاء ذكاء اصطناعي متخصصين ونماذج لغوية ومصادر علمية ومواد تعليمية مختارة، لتدعم حل المشكلات التقنية والتفكير التحليلي وبناء المعرفة.
-
-الاستشارة هي الخدمة الأساسية في المنصة، والمقالات والمصادر البحثية والفيديوهات تدعمها. فهسّارة ليست مكتبة محتوى فحسب.
+      body: `هسّارة منصة أكاديمية للاستشارات التقنية بالذكاء الاصطناعي. الاستشارة خدمتها الأساسية، والمقالات والمصادر البحثية والفيديوهات تدعمها.
 
 ## هوية المشروع
 
 | البند | التفاصيل |
 | --- | --- |
-| المشروع | هسّارة (HESSARA) |
-| التأسيس والملكية والتطوير | م. حصة أحمد الزهراني |
+| التأسيس والملكية والتطوير | المهندسة حصة أحمد الزهراني |
 | نوع المشروع | مشروع تخرج أكاديمي |
 | التصنيف | منصة للاستشارات التقنية والمعرفة بالذكاء الاصطناعي |
 | الجامعة | Smart University of Technical Sciences |
@@ -103,25 +94,21 @@ University students, academic researchers, software developers, AI engineers, te
 | العام الأكاديمي | 2027 |
 | الحالة | منصة تجريبية قيد التطوير |
 
-## الرؤية
+## الرؤية والرسالة
 
-منصة ذكية في متناول الجميع، قائمة على المعرفة، تحسّن اتخاذ القرار التقني بالذكاء الاصطناعي والاستشارة المتخصصة والمصادر العلمية الموثوقة.
+**الرؤية:** منصة ذكية في متناول الجميع، قائمة على المعرفة، تحسّن اتخاذ القرار التقني بالذكاء الاصطناعي والاستشارة المتخصصة والمصادر العلمية الموثوقة.
 
-## الرسالة
+**الرسالة:** بيئة استشارية متكاملة تساعد المستخدم على فهم التحديات التقنية، وتقييم الحلول البديلة، والوصول إلى مساعدة ذكية متخصصة، وتعزيز معرفته التقنية بمحتوى أكاديمي وتعليمي موثوق.
 
-تقديم بيئة استشارية متكاملة بالذكاء الاصطناعي، تساعد المستخدم على فهم التحديات التقنية، وتقييم الحلول البديلة، والوصول إلى مساعدة ذكية متخصصة، وتعزيز معرفته التقنية بمحتوى أكاديمي وتعليمي موثوق.
-
-## ما تقدّمه المنصة اليوم
+## ما تقدّمه المنصة
 
 - **[استشارات ذكية](/consulting)** عبر ستة [وكلاء متخصصين](/agents)، لكلٍّ منهم تعليمات مكتوبة وبنية إجابة ثابتة.
-- **[نماذج لغوية](/models)** من عدة مزوّدين، كلٌّ بحالته الفعلية. ربط النماذج الحقيقية ما يزال جاريًا، وإلى أن يُتأكد من عمل أحدها تأتي الإجابات من محرك تجريبي موسوم بوضوح.
+- **[نماذج لغوية](/models)** من عدة مزوّدين، كلٌّ بحالته الفعلية.
 - **[مختبر للنقد](/lab)** يختبر الإجابات بمعايير معلنة ويحتفظ بسجل لكل مراجعة.
 - **[مقالات](/insights)** تذكر مصادرها، و[قائمة قراءة](/resources/ai-labs-reading-list) من مصادر أولية لمختبرات الذكاء الاصطناعي.
 - **[ميديا هسّارة](/media):** فيديوهات تعليمية مختارة، كلٌّ منها منسوب إلى قناته ومربوط بمصدره الأصلي.
 
-## لمن هي
-
-طلاب الجامعات، والباحثون الأكاديميون، ومطوّرو البرمجيات، ومهندسو الذكاء الاصطناعي، والمهنيون في التقنية، والمتعلمون الذاتيون، وفرق المشاريع التقنية، وكل من يبحث عن استشارة في شأن تقني.
+وهي موجّهة إلى طلاب الجامعات، والباحثين، ومطوّري البرمجيات، ومهندسي الذكاء الاصطناعي، والمهنيين في التقنية، والمتعلمين الذاتيين، وفرق المشاريع التقنية.
 
 ## أهداف المشروع
 
@@ -136,23 +123,24 @@ University students, academic researchers, software developers, AI engineers, te
 
 ## القيم الأساسية
 
-- **الدقة والموثوقية.** معلومات سليمة تقنيًا، وشرح شفاف، ووصول إلى مصادر موثوقة.
-- **الشفافية.** فصل واضح بين ما يولّده الذكاء الاصطناعي، والمواد العلمية الخارجية، والمعلومات المتحقق منها.
-- **سهولة الوصول.** معرفة تقنية واستشارة أسهل منالًا وأوضح فهمًا.
-- **الذكاء الاصطناعي المسؤول.** استخدام أخلاقي، وتعامل حريص مع البيانات، ووعي بما لا تستطيعه النماذج. النماذج تُغني القرار، ويبقى الإنسان مسؤولًا عنه.
-- **التحسين المستمر.** اختبار وتقييم وآراء المستخدمين وتطوير متواصل.
-- **تكامل المعرفة.** استشارة موصولة بالبحث العلمي والمواد التعليمية والتعلم العملي.
+- **الدقة والموثوقية:** معلومات سليمة تقنيًا ومصادر موثوقة.
+- **الشفافية:** فصل واضح بين ما يولّده الذكاء الاصطناعي، والمواد الخارجية، والمعلومات المتحقق منها.
+- **سهولة الوصول:** معرفة تقنية واستشارة أسهل منالًا وأوضح فهمًا.
+- **الذكاء الاصطناعي المسؤول:** تعامل حريص مع البيانات ووعي بحدود النماذج؛ فالنماذج تُغني القرار، ويبقى الإنسان مسؤولًا عنه.
+- **التحسين المستمر:** اختبار وتقييم وآراء المستخدمين.
+- **تكامل المعرفة:** استشارة موصولة بالبحث العلمي والمواد التعليمية والتعلم العملي.
 
-## الذكاء الاصطناعي المسؤول والشفافية
+## الحدود الحالية
 
-- إجابات هسّارة المولَّدة بالذكاء الاصطناعي تدعم الاستكشاف التقني والتعلم والبحث واتخاذ القرار، وليست أحكام خبراء متحققًا منها بشكل مستقل.
-- المقالات العلمية والمنشورات البحثية والمواد التعليمية الخارجية تبقى منسوبة إلى مؤلفيها وناشريها وصنّاعها الأصليين.
+- ربط النماذج اللغوية الحقيقية ما يزال جاريًا، وإلى أن يُتأكد من عمل أحدها تأتي الإجابات من محرك تجريبي موسوم بوضوح.
+- الإجابات المولَّدة بالذكاء الاصطناعي تدعم الاستكشاف والتعلم واتخاذ القرار، وليست أحكام خبراء متحققًا منها بشكل مستقل.
 - هذه النسخة تتعامل مع النص فقط، ووكلاؤها بلا أدوات خارجية، ومراجعاتها لا تتحقق من صحة المعلومات.
+- المقالات والأبحاث والفيديوهات تبقى منسوبة إلى مؤلفيها وناشريها وصنّاعها الأصليين.
 
 ## اعرف المزيد
 
-- اقرأ [رؤانا](/insights) في الاستشارة بمساعدة الذكاء الاصطناعي
-- تصفّح [مكتبة الموارد](/resources)
+- [رؤانا](/insights) في الاستشارة بمساعدة الذكاء الاصطناعي
+- [مكتبة الموارد](/resources)
 - [تواصل معنا](/contact)`,
     },
   },

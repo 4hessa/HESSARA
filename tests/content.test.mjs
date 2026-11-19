@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 
 const { INSIGHTS } = await import("../content/insights.ts");
 const { RESOURCES } = await import("../content/resources.ts");
+const { mailHref } = await import("../lib/mail.ts");
 
 const HEAD = { en: "## Sources", ar: "## المصادر" };
 const links = (md) => [...md.matchAll(/\]\(([^)\s]+)\)/g)].map((m) => m[1]);
@@ -40,4 +41,10 @@ test("الروابط الخارجية في المقالات وقائمة الق�
   const ext = (lang) => links(list[lang].body).filter((h) => h.startsWith("https://"));
   assert.deepEqual(ext("ar"), ext("en"), "الروابط نفسها وبالترتيب نفسه في اللغتين");
   assert.ok(ext("en").length >= 25);
+});
+
+test("زر البريد يركّب رسالة إلى عنوان صحيح الشكل، والموضوع مرمَّز", () => {
+  const href = mailHref("رسالة من موقع هسّارة & سؤال");
+  assert.match(href, /^mailto:[a-z0-9.]+@[a-z0-9-]+\.[a-z]{2,}\?subject=/);
+  assert.equal(decodeURIComponent(href.split("?subject=")[1]), "رسالة من موقع هسّارة & سؤال");
 });
