@@ -102,23 +102,24 @@ try {
   await noOverflow(page, "الرئيسية/حاسب");
 
   // الصفحات التعريفية والمقالات بالعربية
-  for (const [p, n] of [["/platform", "platform"], ["/models", "models"], ["/consulting", "consulting"], ["/insights", "insights"], ["/insights/multi-agent-deliberation", "insight-article"], ["/resources", "resources"], ["/resources/security", "resource-doc"], ["/about", "about"], ["/contact", "contact"], ["/privacy", "privacy"], ["/terms", "terms"], ["/help", "help"]]) {
+  for (const [p, n] of [["/agents", "agents-visitor"], ["/models", "models"], ["/insights", "insights"], ["/insights/multi-agent-deliberation", "insight-article"], ["/resources", "resources"], ["/resources/security", "resource-doc"], ["/resources/how-hessara-is-built", "how-built"], ["/about", "about"], ["/contact", "contact"], ["/privacy", "privacy"], ["/terms", "terms"], ["/help", "help"]]) {
     const r = await page.goto(BASE + p);
     check(`صفحة ${n} تعمل (200)`, r?.status() === 200);
     await noOverflow(page, `${n}/حاسب`);
-    if (["platform", "consulting", "insight-article", "resources", "privacy"].includes(n)) await axe(page, `${n} (عربي)`);
-    if (n === "consulting") await shot(page, "01b-consulting-ar", true);
+    if (["agents-visitor", "insight-article", "resources", "how-built", "privacy"].includes(n)) await axe(page, `${n} (عربي)`);
+    if (n === "agents-visitor") await shot(page, "01b-agents-visitor-ar", true);
   }
-  for (const old of ["/careers", "/programs"]) {
+  // الصفحات المحذوفة أو المدموجة تحوّل تحويلًا دائمًا، فلا ينتهي رابط قديم بصفحة غير موجودة.
+  for (const [old, to] of [["/careers", "/about"], ["/programs", "/about"], ["/platform", "/"], ["/consulting", "/agents"]]) {
     const r = await fetch(BASE + old, { redirect: "manual" });
-    check(`الصفحة المحذوفة ${old} تحوّل دائمًا إلى «من نحن»`, r.status === 308 && r.headers.get("location") === "/about", `${r.status} ${r.headers.get("location")}`);
+    check(`الصفحة المحذوفة ${old} تحوّل دائمًا إلى ${to}`, r.status === 308 && r.headers.get("location") === to, `${r.status} ${r.headers.get("location")}`);
   }
-  check("التذييل بلا روابط إلى الصفحتين المحذوفتين", (await page.locator('footer a[href="/careers"], footer a[href="/programs"]').count()) === 0);
+  check("التذييل والقائمة بلا روابط إلى الصفحات المحذوفة", (await page.locator('footer a[href="/careers"], footer a[href="/programs"], a[href="/platform"], a[href="/consulting"]').count()) === 0);
   const nf = await page.goto(BASE + "/no-such-page");
   check("صفحة غير موجودة تعرض 404 بتصميم الموقع", nf?.status() === 404 && (await page.locator("h1").innerText()).includes("لا يقود"));
 
-  // معاينة حية (المحرك التجريبي والمراجع القاعدي دون حساب) في صفحة الاستشارات
-  await page.goto(BASE + "/consulting");
+  // معاينة حية (المحرك التجريبي والمراجع القاعدي دون حساب) في الصفحة الرئيسية
+  await page.goto(BASE + "/");
   await page.getByRole("button", { name: "أرسل السؤال" }).click();
   await page.getByRole("button", { name: /شغّل مراجعة/ }).click({ timeout: 20000 });
   await page.getByText("المراجع القاعدي").first().waitFor();

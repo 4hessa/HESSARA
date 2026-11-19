@@ -14,7 +14,7 @@ const C = {
     copy: "Whether you want to run a consultation, ask about the language models, or discuss the project, we would like to hear from you.",
     e1: "How we can help", t1: "Choose Your Path",
     tiles: [
-      { icon: "knight", title: "Advisory Sessions", text: "Bring a question to one of six specialised agents.", href: "/consulting" },
+      { icon: "knight", title: "Advisory Sessions", text: "Bring a question to one of six specialised agents.", href: "/agents" },
       { icon: "gem", title: "Language Models", text: "See which models are configured and how status works.", href: "/models" },
       { icon: "map", title: "About the Project", text: "What HESSARA is, what it offers, and what it believes.", href: "/about" },
     ],
@@ -29,7 +29,7 @@ const C = {
     copy: "سواء أردت إجراء استشارة، أو السؤال عن النماذج اللغوية، أو مناقشة المشروع، يسعدنا أن نسمع منك.",
     e1: "كيف نساعدك", t1: "اختر طريقك",
     tiles: [
-      { icon: "knight", title: "جلسات استشارية", text: "اعرض سؤالك على أحد ستة وكلاء متخصصين.", href: "/consulting" },
+      { icon: "knight", title: "جلسات استشارية", text: "اعرض سؤالك على أحد ستة وكلاء متخصصين.", href: "/agents" },
       { icon: "gem", title: "النماذج اللغوية", text: "اعرف النماذج المهيّأة وكيف تُحسب حالتها.", href: "/models" },
       { icon: "map", title: "عن المشروع", text: "ما هسّارة، وما تقدّمه، وما تؤمن به.", href: "/about" },
     ],

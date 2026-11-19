@@ -37,10 +37,10 @@ export function ProsePage({ doc, lang, section }: { doc: Doc; lang: Lang; sectio
         {back && <p className="article__back"><Link href={back[0]}>{ar ? "→ " : "← "}{back[1]}</Link></p>}
       </article>
       <Cta
-        title={doc.cta ?? (ar ? "مستعد لتفكيك المعقّد؟" : "Ready to navigate the complex?")}
+        title={doc.cta ?? (ar ? "لديك سؤال تريد تفكيكه؟" : "Have a question to work through?")}
         actions={[
           { label: ar ? "ابدأ استشارة" : "Start a Consultation", href: "/consult/new" },
-          { label: ar ? "استكشف المنصة" : "Explore the Platform", href: "/platform", ghost: true },
+          { label: ar ? "تعرّف على الوكلاء" : "Meet the Agents", href: "/agents", ghost: true },
         ]}
       />
     </MarketingPage>

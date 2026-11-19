@@ -1,5 +1,6 @@
 // قسم «الموارد»: أُعيدت كتابة الوثائق الأربع الأولى لتصف المنصة كما هي فعلًا. النسخ المرجعية كانت تصف
-// نماذج وأدوارًا ومداولة جماعية وإسنادًا بالوثائق غير موجودة في هسّارة. الخامسة قائمة قراءة من مصادر أولية.
+// نماذج وأدوارًا ومداولة جماعية وإسنادًا بالوثائق غير موجودة في هسّارة. الخامسة نظرة تقنية في بناء المنصة،
+// والسادسة قائمة قراءة من مصادر أولية.
 import type { Entry } from "./types";
 
 export const RESOURCES: Entry[] = [
@@ -495,6 +496,143 @@ If you believe you have found a security issue, please use the [contact page](/c
 
 - [سياسة الخصوصية](/privacy)
 - [شروط الاستخدام](/terms)`,
+    },
+  },
+  {
+    // وثيقة تقنية للجنة التقييم ولمن يريد أن يعرف ما وراء الواجهة. حلّت محل صفحة «المنصة» التسويقية (٢٠٢٦-١١-١٩)،
+    // وكل ما فيها مأخوذ من الشيفرة كما هي: إن تغيّر جزء في الشيفرة فليتغيّر هنا.
+    slug: "how-hessara-is-built",
+    en: {
+      kicker: "Technical overview",
+      title: "How HESSARA is built",
+      sub: "Architecture, models, agents, review, data, security and testing, as implemented",
+      description: "A technical overview of how HESSARA is built: the model layer, the agents, critical review, data handling, security and testing.",
+      note: "This document describes the code as it stands. Where a part depends on something outside the project, such as provider credit, it says so.",
+      body: `HESSARA is one web application that serves both the public pages and the consulting workspace, in Arabic and English from the same pages.
+
+## Building blocks
+
+| Layer | What it uses |
+| --- | --- |
+| Web application | Next.js (App Router) and React, rendered on the server |
+| Hosting | Vercel |
+| Database | PostgreSQL (Neon) in production; SQLite on a local machine |
+| Model access | The Vercel AI Gateway by default, or each provider's own API |
+| Languages | Arabic from right to left and English from left to right, on the same pages |
+
+## The model layer
+
+- One interface over models from several providers, listed in the [model registry](/resources/model-registry) with their real status: ready, configured but untested, last test failed, or not configured.
+- Every answer is labelled with the model that wrote it.
+- A demo engine answers when no real model is confirmed working, and each of its answers says so.
+- A daily limit for each user, and one shared daily cap for the whole platform, keep the cost of real model calls bounded.
+
+## Agents
+
+Each of the six agents is a written playbook on top of a general model, not a separately trained model. It has instructions for its field, an intake form that asks for what the field needs, a fixed answer structure, stated limits and a default review mode. No agent has external tools in this version. See the [multi-agent playbook](/resources/multi-agent-playbook).
+
+## Critical review
+
+- Six review modes: technical critic, evidence checker, risk analyst, logic reviewer, delivery reviewer, and structured judge.
+- The structured judge uses the Jev evaluation model from TypeSafe AI when it is available. The other modes use a language model when one is available, and a rule-based reviewer otherwise. Each review states which engine produced it.
+- Findings are ranked by severity, and a revised version can be compared with the original word by word.
+
+## Data and privacy
+
+- Stored: name, email, a password hash, consultations, answers, reviews, favourites and preferences.
+- Passwords are hashed with scrypt, and session tokens are random and stored hashed.
+- Each user can download all their data, or delete the account together with its consultations.
+- Visit counts keep no visitor identifier, and the statistics page shows aggregate numbers only. Details are in [Security, privacy, and data handling](/resources/security).
+
+## Security
+
+- Session cookies are HttpOnly and SameSite=Lax, and requests that change data are refused when they come from another origin.
+- Every page is sent with a Content-Security-Policy and with nosniff and frame headers.
+- Sign-in, sign-up and account deletion are rate-limited, with the counters shared in the database.
+- Read-only share links use random tokens, and the owner can revoke them at any time.
+
+## Testing
+
+- Unit tests for the database layer, limits, providers, review engines and content, on Node's built-in test runner.
+- An end-to-end suite that drives the site in a real browser: sign-up, consultation, review, sharing, privacy checks, automated accessibility checks with axe, and no horizontal scrolling on phone, tablet and desktop.
+- On every change, continuous integration runs the unit tests on Node 22 and 26, and the end-to-end suite on Chromium, Firefox and WebKit.
+
+## Known limits
+
+- Answers come from the demo engine until a real model is confirmed working.
+- Text only: no file uploads, browsing or code execution.
+- Reviews check structure and stated criteria; they do not verify facts.
+
+## Related
+
+- [About HESSARA](/about)
+- [Getting started](/resources/getting-started)`,
+    },
+    ar: {
+      kicker: "نظرة تقنية",
+      title: "كيف بُنيت هسّارة",
+      sub: "البنية والنماذج والوكلاء والمراجعة والبيانات والأمان والاختبار، كما هي في الشيفرة",
+      description: "نظرة تقنية في بناء هسّارة: طبقة النماذج، والوكلاء، والمراجعة النقدية، والتعامل مع البيانات، والأمان، والاختبار.",
+      note: "تصف هذه الوثيقة الشيفرة كما هي. وحيث يعتمد جزء على شيء خارج المشروع، كرصيد المزوّدين، تقول ذلك.",
+      body: `هسّارة تطبيق ويب واحد يقدّم الصفحات العامة ومساحة الاستشارة معًا، بالعربية والإنجليزية من الصفحات نفسها.
+
+## المكوّنات الأساسية
+
+| الطبقة | ما تستخدمه |
+| --- | --- |
+| تطبيق الويب | Next.js (موجّه التطبيق) و React، مع العرض من الخادم |
+| الاستضافة | Vercel |
+| قاعدة البيانات | PostgreSQL (Neon) في الإنتاج، و SQLite على الجهاز المحلي |
+| الوصول إلى النماذج | بوابة Vercel للذكاء الاصطناعي افتراضيًا، أو الواجهة البرمجية لكل مزوّد مباشرة |
+| اللغتان | العربية من اليمين والإنجليزية من اليسار، في الصفحات نفسها |
+
+## طبقة النماذج
+
+- واجهة واحدة لنماذج من عدة مزوّدين، مدرجة في [سجل النماذج](/resources/model-registry) بحالتها الفعلية: يعمل، أو مهيّأ لم يُختبر، أو فشل آخر اختبار، أو غير مهيّأ.
+- كل إجابة موسومة باسم النموذج الذي كتبها.
+- يجيب محرك تجريبي حين لا يوجد نموذج حقيقي مؤكَّد العمل، وكل إجابة منه تقول ذلك.
+- حد يومي لكل مستخدم، وسقف يومي واحد للمنصة كلها، يُبقيان كلفة استدعاء النماذج الحقيقية محدودة.
+
+## الوكلاء
+
+كل وكيل من الستة دليل عمل مكتوب فوق نموذج عام، لا نموذج مدرَّب على حدة. لكلٍّ منهم تعليمات لمجاله، ونموذج إدخال يطلب ما يحتاجه المجال، وبنية إجابة ثابتة، وحدود معلنة، ونمط مراجعة افتراضي. ولا يملك أي وكيل أدوات خارجية في هذه النسخة. انظر [دليل الوكلاء المتعددين](/resources/multi-agent-playbook).
+
+## المراجعة النقدية
+
+- ستة أنماط مراجعة: الناقد التقني، ومدقق الأدلة، ومحلل المخاطر، والمراجع المنطقي، ومراجع التنفيذ، والمحكّم المنظّم.
+- يحكم المحكّم المنظّم بنموذج التقييم Jev من TypeSafe AI حين يتاح. وتعمل بقية الأنماط بنموذج لغوي إن وُجد، وإلا بالمراجع القاعدي. وكل مراجعة تذكر المحرك الذي أنتجها.
+- الملاحظات مرتّبة بالخطورة، ويمكن مقارنة النسخة المنقّحة بالأصل كلمةً بكلمة.
+
+## البيانات والخصوصية
+
+- ما يُخزَّن: الاسم والبريد وكلمة مرور مجزّأة، والاستشارات والإجابات والمراجعات والمفضلات والتفضيلات.
+- كلمات المرور مجزّأة بـ scrypt، ورموز الجلسات عشوائية وتُخزَّن مجزّأة.
+- يستطيع كل مستخدم تنزيل بياناته كلها، أو حذف حسابه مع استشاراته.
+- عدّاد الزيارات لا يحفظ أي معرّف للزائر، وصفحة الإحصاءات تعرض أعدادًا مجمّعة فقط. التفاصيل في [الأمان والخصوصية والتعامل مع البيانات](/resources/security).
+
+## الأمان
+
+- ملفات ارتباط الجلسة HttpOnly و SameSite=Lax، والطلبات التي تغيّر البيانات تُرفض إن جاءت من أصل آخر.
+- تُرسل كل صفحة بسياسة أمان المحتوى (Content-Security-Policy) وبترويستي nosniff ومنع التأطير.
+- الدخول والتسجيل وحذف الحساب محدودة المحاولات، وعدّاداتها مشتركة في قاعدة البيانات.
+- روابط المشاركة للقراءة فقط برموز عشوائية، ويستطيع صاحب الاستشارة إيقافها متى شاء.
+
+## الاختبار
+
+- اختبارات وحدة لطبقة البيانات والحدود والمزوّدين ومحركات المراجعة والمحتوى، بمشغّل الاختبارات المدمج في Node.
+- مجموعة اختبارات شاملة تقود الموقع في متصفح حقيقي: التسجيل، والاستشارة، والمراجعة، والمشاركة، وفحوص الخصوصية، وفحص سهولة الوصول الآلي بأداة axe، وغياب التمرير الأفقي على الهاتف واللوحي والحاسب.
+- مع كل تعديل يشغّل التكامل المستمر اختبارات الوحدة على Node 22 و 26، والاختبارات الشاملة على Chromium و Firefox و WebKit.
+
+## الحدود المعروفة
+
+- الإجابات من المحرك التجريبي إلى أن يُتأكد من عمل نموذج حقيقي.
+- النص فقط: لا رفع ملفات ولا تصفّح ولا تنفيذ شفرة.
+- المراجعات تفحص البنية والمعايير المعلنة، ولا تتحقق من صحة المعلومات.
+
+## ذو صلة
+
+- [عن هسّارة](/about)
+- [البدء](/resources/getting-started)`,
     },
   },
   {

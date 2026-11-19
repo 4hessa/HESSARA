@@ -31,7 +31,7 @@ export default async function MediaPage() {
         "A library of educational videos from YouTube, each opening at its original source. A video is published here only after its existence has been checked automatically through YouTube's official embed interface. The view count shown is what YouTube displayed on the day of the check: a helpful signal, not evidence of quality. The level is estimated automatically from the title; the videos have not been reviewed by watching them in full.")}
     >
       <details className="card" style={{ marginBottom: "1.5rem" }} open={VIDEOS.length === 0}>
-        <summary style={{ cursor: "pointer" }}><strong>{t(`حالة اكتمال المكتبة: ${VIDEOS.length} من ${TARGET_TOTAL} فيديو متحقق منه`, `Library progress: ${VIDEOS.length} of ${TARGET_TOTAL} verified videos`)}</strong>{remaining > 0 && <span className="muted"> — {t(`المتبقي ${remaining}`, `${remaining} remaining`)}</span>}</summary>
+        <summary style={{ cursor: "pointer" }}><strong>{t(`حالة اكتمال مكتبة الفيديو: ${VIDEOS.length} من ${TARGET_TOTAL} فيديو متحقق منه`, `Video library progress: ${VIDEOS.length} of ${TARGET_TOTAL} verified videos`)}</strong>{remaining > 0 && <span className="muted"> — {t(`المتبقي ${remaining}`, `${remaining} remaining`)}</span>}</summary>
         <div className="article" style={{ paddingTop: 0 }}>
           <div className="table-wrap">
             <table>

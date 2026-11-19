@@ -18,7 +18,7 @@ const C = {
       { icon: "lantern", title: "Briefings", text: "Short guidance for leaders who must decide." },
     ],
     e2: "Latest", t2: "Recent Thinking",
-    cta: "Ready to turn insight into action?", c1: "Start a Consultation", c2: "Explore the Platform",
+    cta: "Ready to turn insight into action?", c1: "Start a Consultation", c2: "Meet the Agents",
   },
   ar: {
     meta: "رؤى", desc: "مذكرات بحثية وتقارير ميدانية وإحاطات في الاستشارة بمساعدة الذكاء الاصطناعي والاستدلال واتخاذ القرار.",
@@ -32,7 +32,7 @@ const C = {
       { icon: "lantern", title: "إحاطات", text: "إرشاد موجز لمن عليه أن يقرر." },
     ],
     e2: "الأحدث", t2: "أحدث ما كتبنا",
-    cta: "مستعد لتحويل الرؤية إلى فعل؟", c1: "ابدأ استشارة", c2: "استكشف المنصة",
+    cta: "مستعد لتحويل الرؤية إلى فعل؟", c1: "ابدأ استشارة", c2: "تعرّف على الوكلاء",
   },
 };
 
@@ -48,8 +48,7 @@ export default async function InsightsPage() {
   const rows = INSIGHTS.map((e) => ({ kind: e[lang].kicker ?? "", title: e[lang].title, text: e[lang].description, href: `/insights/${e.slug}` }));
   return (
     <MarketingPage
-      art={{ name: "insights", kind: "fade", dark: true, fade: { "--art-h": "42rem", "--f1": "80%", "--f2": "90%", "--f3": "100%" } }}
-      heroTop="44rem"
+      art={{ name: "insights", kind: "fade", dark: true, y: "-18%", fade: { "--art-h": "24rem", "--f1": "62%", "--f2": "84%", "--f3": "100%" } }}
       hero={
         <>
           <h1>{c.h1}</h1>
@@ -70,7 +69,7 @@ export default async function InsightsPage() {
         <SectionHead eyebrow={c.e2} title={c.t2} />
         <Rows items={rows} rtl={lang === "ar"} />
       </section>
-      <Cta title={c.cta} actions={[{ label: c.c1, href: "/consult/new" }, { label: c.c2, href: "/platform", ghost: true }]} />
+      <Cta title={c.cta} actions={[{ label: c.c1, href: "/consult/new" }, { label: c.c2, href: "/agents", ghost: true }]} />
     </MarketingPage>
   );
 }
