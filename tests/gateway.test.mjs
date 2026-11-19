@@ -203,3 +203,15 @@ test("محرك المراجعة يقدّم ما نجح اختباره، ويتج
     globalThis.__hessaraChecks.clear();
   }
 });
+
+test("مستضيف متوافق مع OpenAI: كتلة التفكير في أول الإجابة لا تصل إلى المستخدم", async () => {
+  process.env.QWEN_API_KEY = "k";
+  process.env.QWEN_MODEL = "qwen/some-model";
+  process.env.QWEN_BASE_URL = process.env.AI_GATEWAY_BASE_URL;
+  try {
+    handlers.push(sse(["<thi", "nk>أحلل السؤال خطوة خطوة", "</think>\n\n", "الجواب ", "المختصر"]));
+    assert.equal(await ask(P.resolveModel("qwen")), "الجواب المختصر");
+  } finally {
+    for (const k of ["QWEN_API_KEY", "QWEN_MODEL", "QWEN_BASE_URL"]) delete process.env[k];
+  }
+});
