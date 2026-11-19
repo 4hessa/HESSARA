@@ -1,6 +1,7 @@
 // موائم لواجهات «chat/completions» المتوافقة مع OpenAI
 // (OpenAI نفسها، DeepSeek، مستضيفو Llama وQwen، والخوادم المحلية مثل Ollama).
 import { httpError, safeFetch, sseData } from "./sse.ts";
+import { thinkFilter } from "./think.ts";
 import type { ProviderAdapter, ProviderError, StreamRequest } from "./types.ts";
 
 /** onError: تحويل ردّ الخطأ إلى رسالة خاصة بالمزوّد (تستخدمه بوابة Vercel). */
@@ -21,15 +22,22 @@ export function openaiCompatAdapter(cfg: { baseUrl: string; apiKey?: string; onE
         }),
       });
       if (!res.ok) throw cfg.onError ? await cfg.onError(res) : httpError(res.status);
+      // كتلة التفكير في أول الإجابة لا تُعرض (think.ts)؛ التفكير في حقل منفصل يُتجاهل أصلًا.
+      const visible = thinkFilter();
       for await (const data of sseData(res)) {
         if (data === "[DONE]") break;
         try {
           const delta = JSON.parse(data)?.choices?.[0]?.delta?.content;
-          if (typeof delta === "string" && delta) yield delta;
+          if (typeof delta === "string" && delta) {
+            const text = visible(delta);
+            if (text) yield text;
+          }
         } catch {
           /* سطر غير مكتمل: يُتجاهل */
         }
       }
+      const rest = visible("", true);
+      if (rest) yield rest;
     },
   };
 }
