@@ -490,7 +490,9 @@ try {
   check("تنزيل إجابات الاستبيان مرفوض لغير صاحب المشروع (404)", (await ctx.request.get(BASE + "/api/admin/sus")).status() === 404);
   await shot(op, "16-admin", true);
   await axe(op, "إحصاءات المنصة");
-  check("الإحصاءات: رابط رسائل التواصل بعددها", /رسائل التواصل \([1١]،/.test(adminText));
+  // سياق صاحب المشروع بلا لغة محددة، فيتبع لغة المتصفح (الإنجليزية في Firefox): الفحوص تقبل اللغتين.
+  const inboxLink = (await op.locator('a[href="/admin/messages"]').innerText()).replace(/\s+/g, " ");
+  check("الإحصاءات: رابط رسائل التواصل بعددها", /(رسائل التواصل|Contact messages) \([1١][،,]/.test(inboxLink), inboxLink);
   check("رسائل التواصل غير موجودة لغير صاحب المشروع (404)", (await ctx.request.get(BASE + "/admin/messages")).status() === 404);
   check("حذف رسالة تواصل مرفوض لغير صاحب المشروع (404)", (await ctx.request.delete(BASE + "/api/admin/contact/x")).status() === 404);
   await op.goto(BASE + "/admin/messages");
@@ -499,7 +501,7 @@ try {
     inboxText.includes("ريم") && inboxText.includes("reem@example.com") && inboxText.includes("موعد مناقشة مشروع التخرج") && !inboxText.includes("bot@example.com"));
   await axe(op, "رسائل التواصل");
   op.once("dialog", (d) => d.accept());
-  await op.locator(".inbox li").first().getByRole("button", { name: /حذف/ }).click();
+  await op.locator(".inbox li").first().getByRole("button", { name: /حذف|Delete/ }).click();
   check("رسائل التواصل: صاحب المشروع يحذف رسالة", await op.locator(".inbox").waitFor({ state: "detached", timeout: 10000 }).then(() => true, () => false));
   await op.reload();
   check("رسائل التواصل: الحذف دائم بعد إعادة التحميل", (await op.locator(".inbox").count()) === 0);
