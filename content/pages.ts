@@ -173,12 +173,13 @@ In the platform's database on its server. Each account's consultations are isola
 - When you choose a model run by a third party, the consultation's text and conversation history are sent to that model's provider and processed under its policies. Your explicit consent is requested before the first such message, and you can withdraw it from your profile.
 - The demo engine and the rule-based reviewer run on the platform's server and send nothing out.
 - Video thumbnails load directly from YouTube's servers when you open HESSARA Media, and on your dashboard if you have saved videos or switched on video suggestions.
+- If you use voice input, your recording is sent to a speech-to-text service (currently Groq) and comes back as text for you to review before sending. The platform does not keep the recording, and the text is kept only if you send it in a consultation. Your consent is asked before the first recording.
 - If you create a share link for a consultation, anyone with the link can read that consultation and its reviews, without your name or email, until you stop sharing it.
 
 ## Cookies and local storage
 
 - A session cookie that JavaScript cannot read, a cookie for your theme, a cookie for your language, and a cookie with your time zone so that times are shown in your local time.
-- The browser's local storage holds the break-reminder timer, whether you have dismissed the getting-started card, and a temporary draft of your consultation while you sign in.
+- The browser's local storage holds the break-reminder timer, whether you have dismissed the getting-started card, whether you have accepted the voice-input notice, and a temporary draft of your consultation while you sign in.
 
 ## Your rights
 
@@ -215,12 +216,13 @@ In the platform's database on its server. Each account's consultations are isola
 - عند اختيار نموذج تشغّله جهة خارجية يُرسَل نص الاستشارة وسجل محادثتها إلى مزوّد ذلك النموذج لمعالجته وفق سياساته. يُطلب إذنك الصريح قبل أول إرسال، ويمكنك سحبه من الملف الشخصي.
 - المحرك التجريبي والمراجع القاعدي يعملان على خادم المنصة ولا يرسلان شيئًا إلى الخارج.
 - الصور المصغّرة للفيديوهات تُحمَّل من خوادم يوتيوب مباشرة عند فتح ميديا هسّارة، وفي لوحتك إن حفظت فيديوهات أو فعّلت اقتراحها.
+- إن استخدمت الإدخال الصوتي، يُرسَل تسجيلك إلى خدمة لتحويل الكلام إلى نص (Groq حاليًا)، ويعود نصًّا تراجعه قبل الإرسال. لا تحفظ المنصة التسجيل، ولا يُحفظ النص إلا إن أرسلته ضمن استشارة. تُطلب موافقتك قبل أول تسجيل.
 - إن أنشأت رابط مشاركة لاستشارة، يستطيع كل من يملك الرابط قراءة تلك الاستشارة ومراجعاتها، دون اسمك أو بريدك، حتى توقف المشاركة.
 
 ## ملفات الارتباط والتخزين المحلي
 
 - ملف ارتباط للجلسة لا يقرؤه JavaScript، وآخر لتفضيل المظهر، وثالث للغة الواجهة، ورابع بمنطقتك الزمنية لعرض الأوقات بتوقيتك.
-- يُستخدم التخزين المحلي في المتصفح لمؤقت تذكير الاستراحة، ولتذكّر إخفائك لوحة البداية، ولحفظ مسودة استشارتك مؤقتًا أثناء تسجيل الدخول.
+- يُستخدم التخزين المحلي في المتصفح لمؤقت تذكير الاستراحة، ولتذكّر إخفائك لوحة البداية وموافقتك على تنبيه الإدخال الصوتي، ولحفظ مسودة استشارتك مؤقتًا أثناء تسجيل الدخول.
 
 ## حقوقك
 

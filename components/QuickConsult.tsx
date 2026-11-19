@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { agentsFor } from "@/lib/catalog/agents";
 import { suggestAgent } from "@/lib/catalog/suggestAgent";
 import { AdvisorPicker, defaultModel, type Advisor } from "./AdvisorPicker";
+import { VoiceInput } from "./VoiceInput";
 import { api, useApp } from "./app";
 import { Icon } from "./Icon";
 
@@ -74,6 +75,7 @@ export function QuickConsult({ examples, initialAgent, initialModel, initialText
         <div className="composer-bar">
           <AdvisorPicker value={advisor} onChange={setAdvisor} />
           <span className="grow" />
+          <VoiceInput disabled={busy} onText={(s) => { setText((x) => (x.trim() ? `${x.trimEnd()} ${s}` : s)); ta.current?.focus(); }} />
           <button type="submit" className="btn btn-primary btn-sm" disabled={!text.trim() || busy}>
             {busy ? <span className="spinner" /> : <Icon name="send" size={18} />}
             {busy ? t("جارٍ البدء…", "Starting…") : t("أرسل", "Send")}

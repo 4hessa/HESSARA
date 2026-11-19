@@ -2,6 +2,7 @@
 // التشغيل: npm run build && npm run e2e   (يشغّل خادمًا مؤقتًا بقاعدة بيانات مؤقتة)
 import { spawn } from "node:child_process";
 import fs from "node:fs";
+import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -31,8 +32,25 @@ const results = [];
 const benign = (e) => /401|404|412|Failed to load resource|Viewport argument key "interactive-widget"|[?&]_rsc=\S+ due to access control checks|Failed to fetch RSC payload for \S+ Falling back to browser navigation|^TypeError: Error in input stream \[[^\]]*\] TypeError: Error in input stream <? *$/.test(e);
 const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`); };
 
+// خدمة محاكية لتحويل الكلام إلى نص (واجهة audio/transcriptions): تسجّل ما وصلها وتعيد نصًّا ثابتًا.
+const sttHits = [];
+const sttServer = http.createServer((req, res) => {
+  const parts = [];
+  req.on("data", (c) => parts.push(c));
+  req.on("end", () => {
+    const body = Buffer.concat(parts).toString("latin1");
+    const field = (name) => new RegExp(`name="${name}"\\r\\n\\r\\n([^\\r]*)`).exec(body)?.[1];
+    sttHits.push({ url: req.url, auth: req.headers.authorization, model: field("model"), language: field("language"), file: /name="file"; filename="([^"]+)"/.exec(body)?.[1] });
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ text: "سؤال من التسجيل الصوتي" }));
+  });
+});
+await new Promise((r) => sttServer.listen(0, "127.0.0.1", r));
+const STT_URL = `http://127.0.0.1:${sttServer.address().port}/v1`;
+
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)], {
-  env: { ...process.env, ...dbEnv, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: ENGINE === "chromium" ? "15" : "45", HESSARA_ADMIN_EMAILS: "sara@example.com", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
+  env: { ...process.env, ...dbEnv, HESSARA_INSECURE_COOKIE: "1", HESSARA_DEMO_DELAY_MS: ENGINE === "chromium" ? "15" : "45", HESSARA_ADMIN_EMAILS: "sara@example.com",
+    WHISPER_API_KEY: "stt-key", WHISPER_BASE_URL: STT_URL, WHISPER_MODEL: "whisper-test", NODE_OPTIONS: "--disable-warning=ExperimentalWarning" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 let serverLog = "";
@@ -476,6 +494,68 @@ try {
   check("نموذج التواصل: البرنامج الآلي يتلقى ردًّا عاديًا", bot.ok);
   const foreign = await contactPost({ email: "x@example.com", body: "رسالة من موقع آخر" }, { origin: "https://evil.example" });
   check("نموذج التواصل: الطلب من أصل آخر مرفوض (403)", foreign.status === 403);
+  // الإدخال الصوتي: للمستخدم المسجَّل فقط، بموافقة صريحة، والتسجيل لا يُحفظ
+  check("الإدخال الصوتي: ترويسة الأذونات تسمح بالميكروفون للموقع نفسه فقط", /microphone=\(self\)/.test((await fetch(BASE + "/")).headers.get("permissions-policy") ?? ""));
+  check("الإدخال الصوتي: الطلب دون حساب مرفوض (401)", (await fetch(BASE + "/api/transcribe", { method: "POST" })).status === 401);
+  const visitorCtx = await browser.newContext({ locale: "ar" });
+  const visitorPage = await visitorCtx.newPage();
+  await visitorPage.goto(BASE + "/");
+  check("الإدخال الصوتي: لا يظهر زر الميكروفون للزائر", (await visitorPage.getByRole("button", { name: "اكتب بالصوت" }).count()) === 0);
+  await visitorCtx.close();
+  const vctx = await browser.newContext({ locale: "ar" });
+  await vctx.addCookies([{ name: "hs_lang", value: "ar", url: BASE }]);
+  await vctx.request.post(BASE + "/api/auth/signup", { data: { name: "نورة", email: "noura@example.com", password: "voice-pass-1234", accept: true } });
+  const clip = { name: "voice.webm", mimeType: "audio/webm", buffer: Buffer.alloc(2048, 1) };
+  const noConsent = await vctx.request.post(BASE + "/api/transcribe", { multipart: { audio: clip } });
+  check("الإدخال الصوتي: دون موافقة على الإرسال الخارجي يُطلب الإذن (412)", noConsent.status() === 412 && (await noConsent.json()).code === "consent");
+  const vpage = await vctx.newPage();
+  await vpage.goto(BASE + "/consult/new");
+  const mic = vpage.getByRole("button", { name: "اكتب بالصوت" });
+  // الزر لا يظهر إلا في متصفح يدعم التسجيل؛ بعض نسخ الاختبار من WebKit و Firefox قد لا تدعمه
+  const canRecord = await vpage.evaluate(() => !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== "undefined");
+  if (canRecord) {
+    check("الإدخال الصوتي: زر الميكروفون في حقل الاستشارة للمستخدم المسجَّل", await mic.waitFor({ timeout: 10000 }).then(() => true, () => false));
+    await axe(vpage, "حقل الاستشارة مع زر الميكروفون");
+    await mic.click();
+    const voiceDialog = vpage.getByRole("dialog");
+    const dialogText = await voiceDialog.innerText();
+    check("الإدخال الصوتي: نافذة موافقة خاصة بالصوت تذكر خادم التحويل، قبل أي تسجيل",
+      dialogText.includes("تحويل صوتك إلى نص") && dialogText.includes(new URL(STT_URL).host) && dialogText.includes("لا تحفظ المنصة التسجيل"));
+    await voiceDialog.getByRole("button", { name: "إلغاء" }).click();
+    check("الإدخال الصوتي: الإلغاء لا يمنح الموافقة", (await vctx.request.get(BASE + "/api/me").then((r) => r.json())).user.externalConsent === false);
+  } else {
+    await vpage.waitForTimeout(1000);
+    check(`الإدخال الصوتي: متصفح لا يدعم التسجيل (${ENGINE}) لا يُعرض فيه الزر`, (await mic.count()) === 0);
+  }
+  if (ENGINE === "chromium") {
+    // تسجيل فعلي بميكروفون محاكى (خيارات Chromium وحده)، ثم تحويل عبر الخدمة المحاكية
+    const fake = await chromium.launch({ args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"] });
+    const fctx = await fake.newContext({ locale: "ar", storageState: await vctx.storageState() });
+    const fpage = await fctx.newPage();
+    await fpage.goto(BASE + "/consult/new");
+    await fpage.getByRole("button", { name: "اكتب بالصوت" }).click();
+    await fpage.getByRole("dialog").getByRole("button", { name: "أوافق وأسجّل" }).click();
+    const stopBtn = fpage.getByRole("button", { name: "أوقف التسجيل وحوّله إلى نص" });
+    await stopBtn.waitFor({ timeout: 10000 });
+    await fpage.waitForTimeout(1500);
+    await stopBtn.click();
+    const filled = await fpage.waitForFunction(() => document.querySelector("#quick-consult")?.value.includes("سؤال من التسجيل الصوتي"), null, { timeout: 15000 }).then(() => true, () => false);
+    const hit = sttHits.at(-1);
+    check("الإدخال الصوتي: تسجيل فعلي يتحول إلى نص في الحقل دون إرسال تلقائي",
+      filled && hit?.model === "whisper-test" && hit?.language === "ar" && hit?.auth === "Bearer stt-key" && /^voice\.(webm|ogg)$/.test(hit?.file ?? "") && fpage.url().endsWith("/consult/new"),
+      `${hit?.file ?? "لا طلب"}`);
+    await fctx.close();
+    await fake.close();
+  } else {
+    await vctx.request.patch(BASE + "/api/me", { data: { externalConsent: true } });
+  }
+  const okClip = await vctx.request.post(BASE + "/api/transcribe", { multipart: { audio: clip } });
+  check("الإدخال الصوتي: بعد الموافقة يعود النص من الخدمة", okClip.ok() && (await okClip.json()).text === "سؤال من التسجيل الصوتي" && sttHits.at(-1)?.file === "voice.webm");
+  const notAudio = await vctx.request.post(BASE + "/api/transcribe", { multipart: { audio: { name: "x.txt", mimeType: "text/plain", buffer: Buffer.from("hello") } } });
+  check("الإدخال الصوتي: صيغة غير صوتية مرفوضة (415)", notAudio.status() === 415);
+  const tooBig = await vctx.request.post(BASE + "/api/transcribe", { multipart: { audio: { name: "big.webm", mimeType: "audio/webm", buffer: Buffer.alloc(4_100_000, 1) } } });
+  check("الإدخال الصوتي: تسجيل أكبر من الحد مرفوض (413)", tooBig.status() === 413);
+  await vctx.close();
   // صفحة الإحصاءات: لصاحب المشروع فقط
   check("إحصاءات المنصة غير موجودة لغير صاحب المشروع (404)", (await ctx.request.get(BASE + "/admin")).status() === 404);
   await op.goto(BASE + "/admin");
@@ -567,6 +647,7 @@ try {
 } catch (e) {
   check("تنفيذ السكربت", false, String(e.stack || e).slice(0, 600));
 } finally {
+  sttServer.close();
   await browser?.close();
   server.kill();
   const failed = results.filter((r) => !r.ok);
