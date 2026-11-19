@@ -99,7 +99,7 @@ export default async function Home() {
 
         {videos.length > 0 && (
           <section className="stack" aria-labelledby="vids">
-            <div className="row-between"><h2 id="vids" className="t-h3">{savedVideos.length ? t("فيديوهاتك المحفوظة", "Your saved videos") : t("فيديوهات مقترحة", "Suggested videos")}</h2><Link className="link t-small" href="/media">{t("المكتبة", "Library")}</Link></div>
+            <div className="row-between"><h2 id="vids" className="t-h3">{savedVideos.length ? t("فيديوهاتك المحفوظة", "Your saved videos") : t("فيديوهات مقترحة", "Suggested videos")}</h2><Link className="link t-small" href="/media">{t("كل الفيديوهات", "All videos")}</Link></div>
             <div className="grid-3">{videos.map((v) => (
               <a key={v!.id} href={videoUrl(v!.id)} target="_blank" rel="noopener noreferrer" className="card card-link">
                 <div className="video-thumb"><img src={videoThumb(v!.id)} alt="" loading="lazy" width={480} height={270} /></div>

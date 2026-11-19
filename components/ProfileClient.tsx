@@ -111,7 +111,7 @@ export function ProfileClient() {
         <h2 id="p-priv" className="t-h3">{t("الخصوصية", "Privacy")}</h2>
         <label className="switch"><span><strong>{t("الإرسال إلى مزوّدي النماذج الخارجيين", "Sending to external model providers")}</strong><br /><span className="hint">{t("عند التعطيل يُطلب إذنك قبل أول إرسال إلى نموذج خارجي.", "When off, your permission is requested before the first message to an external model.")}</span></span>
           <input type="checkbox" role="switch" checked={user.externalConsent} onChange={(e) => save({ externalConsent: e.target.checked })} /></label>
-        <label className="switch"><span><strong>{t("اقتراح فيديوهات في لوحتي", "Suggest videos on my dashboard")}</strong><br /><span className="hint">{t("عرض مختارات من المكتبة في الصفحة الرئيسية.", "Show a selection from the library on your dashboard.")}</span></span>
+        <label className="switch"><span><strong>{t("اقتراح فيديوهات في لوحتي", "Suggest videos on my dashboard")}</strong><br /><span className="hint">{t("عرض مختارات من ميديا هسّارة في لوحتك.", "Show a selection from HESSARA Media on your dashboard.")}</span></span>
           <input type="checkbox" role="switch" checked={user.personalize} onChange={(e) => save({ personalize: e.target.checked })} /></label>
         <div className="row"><Link className="btn btn-secondary btn-sm" href="/consult?saved=1"><Icon name="bookmark" size={18} /> {t("استشاراتي المحفوظة", "My saved consultations")}</Link></div>
       </section>

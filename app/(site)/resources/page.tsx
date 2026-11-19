@@ -14,7 +14,7 @@ const C = {
     e1: "Collections", t1: "Find Your Shelf",
     tiles: [
       { icon: "document", title: "Documentation", text: "Concepts, setup, and day-to-day use.", href: "#library" },
-      { icon: "film", title: "Video Library", text: "Lessons from their original sources, with every link checked.", href: "/media" },
+      { icon: "film", title: "HESSARA Media", text: "Lessons from their original sources, with every link checked.", href: "/media" },
       { icon: "map", title: "Guides & Playbooks", text: "Step-by-step methods for real questions.", href: "#library" },
     ],
     e2: "Start Here", t2: "Three Steps to Your First Session",
@@ -24,7 +24,7 @@ const C = {
       { title: "Review", text: "Read the reasoning, run a critical review, and decide." },
     ],
     e3: "Library", t3: "Popular Resources",
-    cta: "Cannot find what you are looking for?", c1: "Talk to an Advisor", c2: "Read Insights",
+    cta: "Cannot find what you are looking for?", c1: "Start a Consultation", c2: "Read Insights",
   },
   ar: {
     meta: "الموارد", desc: "أدلة ومراجع وأدلة عملية للعمل مع هسّارة ونماذجها اللغوية ووكلائها.",
@@ -34,7 +34,7 @@ const C = {
     e1: "المجموعات", t1: "اعثر على رفّك",
     tiles: [
       { icon: "document", title: "التوثيق", text: "المفاهيم والإعداد والاستخدام اليومي.", href: "#library" },
-      { icon: "film", title: "مكتبة الفيديو", text: "دروس من مصادرها الأصلية، وكل رابط فيها مفحوص.", href: "/media" },
+      { icon: "film", title: "ميديا هسّارة", text: "دروس من مصادرها الأصلية، وكل رابط فيها مفحوص.", href: "/media" },
       { icon: "map", title: "أدلة وخطط عمل", text: "مناهج خطوة بخطوة لأسئلة حقيقية.", href: "#library" },
     ],
     e2: "ابدأ من هنا", t2: "ثلاث خطوات إلى جلستك الأولى",
@@ -44,7 +44,7 @@ const C = {
       { title: "راجِع", text: "اقرأ الاستدلال، وشغّل مراجعة نقدية، ثم قرّر." },
     ],
     e3: "المكتبة", t3: "الموارد الأكثر طلبًا",
-    cta: "لم تجد ما تبحث عنه؟", c1: "تحدّث إلى مستشار", c2: "اقرأ الرؤى",
+    cta: "لم تجد ما تبحث عنه؟", c1: "ابدأ استشارة", c2: "اقرأ الرؤى",
   },
 };
 
@@ -60,8 +60,7 @@ export default async function ResourcesPage() {
   const rows = RESOURCES.map((e) => ({ kind: e[lang].kicker ?? "", title: e[lang].title, text: e[lang].description, href: `/resources/${e.slug}` }));
   return (
     <MarketingPage
-      art={{ name: "resources" }}
-      heroTop="37.5rem"
+      art={{ name: "resources", kind: "fade", fade: { "--art-h": "40rem", "--f1": "40%", "--f2": "62%", "--f3": "90%" } }}
       hero={
         <>
           <h1>{c.h1}</h1>
@@ -86,7 +85,7 @@ export default async function ResourcesPage() {
         <SectionHead eyebrow={c.e3} title={c.t3} />
         <Rows items={rows} rtl={lang === "ar"} />
       </section>
-      <Cta title={c.cta} actions={[{ label: c.c1, href: "/consulting" }, { label: c.c2, href: "/insights", ghost: true }]} />
+      <Cta title={c.cta} actions={[{ label: c.c1, href: "/consult/new" }, { label: c.c2, href: "/insights", ghost: true }]} />
     </MarketingPage>
   );
 }

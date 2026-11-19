@@ -1,6 +1,6 @@
 // Builds the responsive hero artwork in public/art from high-resolution masters (needs sharp: npm i --no-save sharp).
 // Usage: node scripts/build-art.mjs <dir-with-master-pngs> [name ...] [--mobile-only]
-// Masters are greyscale PNGs named <page>.png (home, platform, models, consulting, insights, resources).
+// Masters are greyscale PNGs named <page>.png (home, platform, models, insights, resources, agents).
 //
 // Two sets are written for each master:
 // - full-width tiers (<name>-<w>.avif|webp) for screens wider than 540px

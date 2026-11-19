@@ -782,12 +782,12 @@ dialog.drawer.start { margin-inline-start: 0; margin-inline-end: auto; border-in
 /* رسمة قسم الوكلاء: داكنة الأصل (فتاة في حقل نجوم)، فيقع العنوان تحتها لا فوقها لأن حبره داكن.
    --art-cy نقطة من ارتفاع الرسمة نفسها تقع في منتصف الشريط، فتبقى الفتاة والقطة في الإطار مع اتساع الشاشة.
    على الهاتف قصّ أعرض من المعتاد (mfrac في data/art.json) حتى تبقى القطة في الإطار. */
-.art--agents { --art-h: 38rem; --art-cy: 64%; --f1: 80%; --f2: 91%; --f3: 100%; }
+.art--agents { --art-h: 30rem; --art-cy: 66%; --f1: 78%; --f2: 90%; --f3: 100%; }
 @media (max-width: 820px) {
-  .art-band .art--agents { --art-h: 36rem; --art-cy: 61%; height: var(--art-h); }
-  .app-hero--agents { padding-top: 35rem; }
+  .art-band .art--agents { --art-h: 28rem; --art-cy: 64.5%; height: var(--art-h); }
+  .app-hero--agents { padding-top: 27rem; }
 }
 @media (max-width: 540px) {
-  .art-band .art--agents { --art-h: 29rem; }
-  .app-hero--agents { padding-top: 28rem; }
+  .art-band .art--agents { --art-h: 24rem; --art-cy: 65%; }
+  .app-hero--agents { padding-top: 23rem; }
 }

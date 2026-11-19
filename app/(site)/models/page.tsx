@@ -66,8 +66,7 @@ export default async function ModelsPage() {
   const favs = user ? (await all<{ ref: string }>("SELECT ref FROM favorites WHERE user_id = ? AND kind = 'model'", user.id)).map((f) => f.ref) : [];
   return (
     <MarketingPage
-      art={{ name: "models", kind: "fade", fade: { "--art-h": "52.66rem", "--f1": "88%", "--f2": "94%", "--f3": "100%" } }}
-      heroTop="45rem"
+      art={{ name: "models", kind: "fade", fade: { "--art-h": "40rem", "--f1": "40%", "--f2": "62%", "--f3": "90%" } }}
       hero={
         <>
           <h1>{c.h1}</h1>

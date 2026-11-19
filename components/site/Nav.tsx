@@ -12,11 +12,11 @@ import { Icon } from "../Icon";
 type Item = { href: string; ar: string; en: string };
 
 export const SITE_LINKS: Item[] = [
-  { href: "/platform", ar: "المنصة", en: "Platform" },
-  { href: "/models", ar: "النماذج اللغوية", en: "Language Models" },
-  { href: "/consulting", ar: "الاستشارات الذكية", en: "AI Consulting" },
+  { href: "/agents", ar: "الوكلاء", en: "Agents" },
+  { href: "/models", ar: "النماذج", en: "Models" },
   { href: "/insights", ar: "رؤى", en: "Insights" },
   { href: "/resources", ar: "الموارد", en: "Resources" },
+  { href: "/about", ar: "من نحن", en: "About" },
 ];
 export const APP_LINKS: Item[] = [
   { href: "/consult", ar: "الاستشارات", en: "Consultations" },
@@ -121,11 +121,10 @@ export function Nav() {
 
   const links = user ? APP_LINKS : SITE_LINKS;
   const current = (href: string) => (pathname === href || pathname.startsWith(href + "/") ? "page" : undefined);
+  // زر واحد بصياغة واحدة للزائر في كل الصفحات.
   const cta = user
     ? { href: "/consult/new", label: t("استشارة جديدة", "New Consultation") }
-    : pathname.startsWith("/consulting") || pathname.startsWith("/models")
-      ? { href: "/consult/new", label: t("ابدأ استشارة", "Start Consultation") }
-      : { href: "/consulting", label: t("تحدّث إلى مستشار", "Talk to an Advisor") };
+    : { href: "/consult/new", label: t("ابدأ استشارة", "Start a Consultation") };
   const label = (i: Item) => i[lang];
 
   return (

@@ -33,7 +33,7 @@ export const PAGES: Record<"about" | "privacy" | "terms", { ar: Doc; en: Doc }> 
 
 ## What the platform offers
 
-- **[AI consulting](/consulting)** through six [specialised agents](/agents), each with written instructions and a fixed answer structure.
+- **[AI consulting](/agents)** through six specialised agents, each with written instructions and a fixed answer structure.
 - **[Language models](/models)** from several providers, each shown with its real status.
 - **[A critique lab](/lab)** that tests answers against stated criteria and keeps a record of each review.
 - **[Articles](/insights)** that cite their sources, and a [reading list](/resources/ai-labs-reading-list) of primary sources from AI labs.
@@ -102,7 +102,7 @@ It is meant for university students, researchers, software developers, AI engine
 
 ## ما تقدّمه المنصة
 
-- **[استشارات ذكية](/consulting)** عبر ستة [وكلاء متخصصين](/agents)، لكلٍّ منهم تعليمات مكتوبة وبنية إجابة ثابتة.
+- **[استشارات ذكية](/agents)** عبر ستة وكلاء متخصصين، لكلٍّ منهم تعليمات مكتوبة وبنية إجابة ثابتة.
 - **[نماذج لغوية](/models)** من عدة مزوّدين، كلٌّ بحالته الفعلية.
 - **[مختبر للنقد](/lab)** يختبر الإجابات بمعايير معلنة ويحتفظ بسجل لكل مراجعة.
 - **[مقالات](/insights)** تذكر مصادرها، و[قائمة قراءة](/resources/ai-labs-reading-list) من مصادر أولية لمختبرات الذكاء الاصطناعي.
@@ -171,7 +171,7 @@ In the platform's database on its server. Each account's consultations are isola
 
 - When you choose a model run by a third party, the consultation's text and conversation history are sent to that model's provider and processed under its policies. Your explicit consent is requested before the first such message, and you can withdraw it from your profile.
 - The demo engine and the rule-based reviewer run on the platform's server and send nothing out.
-- Video thumbnails load directly from YouTube's servers when you open the library pages.
+- Video thumbnails load directly from YouTube's servers when you open HESSARA Media, and on your dashboard if you have saved videos or switched on video suggestions.
 - If you create a share link for a consultation, anyone with the link can read that consultation and its reviews, without your name or email, until you stop sharing it.
 
 ## Cookies and local storage
@@ -212,7 +212,7 @@ In the platform's database on its server. Each account's consultations are isola
 
 - عند اختيار نموذج تشغّله جهة خارجية يُرسَل نص الاستشارة وسجل محادثتها إلى مزوّد ذلك النموذج لمعالجته وفق سياساته. يُطلب إذنك الصريح قبل أول إرسال، ويمكنك سحبه من الملف الشخصي.
 - المحرك التجريبي والمراجع القاعدي يعملان على خادم المنصة ولا يرسلان شيئًا إلى الخارج.
-- الصور المصغّرة للفيديوهات تُحمَّل من خوادم يوتيوب مباشرة عند فتح صفحات المكتبة.
+- الصور المصغّرة للفيديوهات تُحمَّل من خوادم يوتيوب مباشرة عند فتح ميديا هسّارة، وفي لوحتك إن حفظت فيديوهات أو فعّلت اقتراحها.
 - إن أنشأت رابط مشاركة لاستشارة، يستطيع كل من يملك الرابط قراءة تلك الاستشارة ومراجعاتها، دون اسمك أو بريدك، حتى توقف المشاركة.
 
 ## ملفات الارتباط والتخزين المحلي
@@ -256,7 +256,7 @@ The names of models and companies belong to their owners and are mentioned for i
 
 ## Visual content
 
-The library's videos are links to their original sources on YouTube; the platform does not host or republish them.`,
+HESSARA Media's videos are links to their original sources on YouTube; the platform does not host or republish them.`,
     },
     ar: {
       title: "شروط الاستخدام",
@@ -285,7 +285,7 @@ The library's videos are links to their original sources on YouTube; the platfor
 
 ## المحتوى المرئي
 
-فيديوهات المكتبة روابط إلى مصادرها الأصلية على يوتيوب؛ لا تستضيفها المنصة ولا تعيد نشرها.`,
+فيديوهات ميديا هسّارة روابط إلى مصادرها الأصلية على يوتيوب؛ لا تستضيفها المنصة ولا تعيد نشرها.`,
     },
   },
 };

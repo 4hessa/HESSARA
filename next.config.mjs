@@ -32,6 +32,9 @@ const nextConfig = {
       // صفحتا «الوظائف» و«البرامج» حُذفتا؛ الروابط القديمة إليهما تقود إلى «من نحن».
       { source: "/careers", destination: "/about", permanent: true },
       { source: "/programs", destination: "/about", permanent: true },
+      // «المنصة» دُمجت في الرئيسية، و«الاستشارات الذكية» في صفحة الوكلاء (٢٠٢٦-١١-١٩).
+      { source: "/platform", destination: "/", permanent: true },
+      { source: "/consulting", destination: "/agents", permanent: true },
     ];
   },
   async headers() {

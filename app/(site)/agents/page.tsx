@@ -49,7 +49,7 @@ export default async function AgentsPage() {
   return (
     <AppPage
       art={{ name: "agents", kind: "fade", dark: true, y: "calc(var(--art-h) / 2 - var(--art-cy))" }}
-      top="37rem"
+      top="29rem"
       eyebrow={t("المجلس الاستشاري", "Advisory Council")}
       title={t("الوكلاء المتخصصون", "Specialised Agents")}
       copy={t("الوكيل في هسّارة تركيب من: نموذج أساسي تختاره أنت، وتعليمات تخصصية، ونموذج إدخال يطلب ما يحتاجه مجاله، وبنية إجابة محددة، ونمط مراجعة افتراضي. في هذه النسخة لا يملك أي وكيل أدوات خارجية: يحلّل ويقترح ولا ينفّذ.",
@@ -83,6 +83,15 @@ export default async function AgentsPage() {
           </article>
         ))}
       </div>
+      <section className="card block" aria-labelledby="how">
+        <h2 id="how" className="t-h3">{t("كيف تجري الاستشارة", "How a consultation works")}</h2>
+        <ul className="list-check">
+          <li><Icon name="check" size={16} /><span>{t("تصل الإجابة مبثوثةً أثناء كتابتها، موسومةً بالنموذج والوكيل، وتستطيع إيقافها أو إعادة توليدها أو تبديل النموذج.", "The answer streams in as it is written, labelled with the model and the agent; you can stop it, regenerate it, or switch models.")}</span></li>
+          <li><Icon name="check" size={16} /><span>{t("ثم تُراجَع أي إجابة بأحد ستة أنماط مراجعة أو بمعاييرك الخاصة، والملاحظات مرتّبة بالخطورة، وتُقارَن النسخة المنقّحة كلمةً بكلمة.", "Any answer can then be reviewed in one of six review modes or against your own criteria, with findings ranked by severity and the revised version compared word by word.")}</span></li>
+          <li><Icon name="check" size={16} /><span>{t("لا يملك الوكلاء أدوات خارجية في هذه النسخة: ما يقدّمونه تحليل نصي تتحقق منه أنت.", "Agents have no external tools in this version: what they produce is text analysis for you to check.")}</span></li>
+        </ul>
+        <div className="btn-row"><Link className="btn" href="/consult/new">{t("ابدأ استشارة", "Start a Consultation")}</Link></div>
+      </section>
       {user && (
         <section className="card block" aria-labelledby="log">
           <h2 id="log" className="t-h3">{t("سجل الإجراءات المنفَّذة فعلًا", "Log of actions actually taken")}</h2>
