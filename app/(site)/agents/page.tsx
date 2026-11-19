@@ -90,7 +90,7 @@ export default async function AgentsPage() {
           <li><Icon name="check" size={16} /><span>{t("ثم تُراجَع أي إجابة بأحد ستة أنماط مراجعة أو بمعاييرك الخاصة، والملاحظات مرتّبة بالخطورة، وتُقارَن النسخة المنقّحة كلمةً بكلمة.", "Any answer can then be reviewed in one of six review modes or against your own criteria, with findings ranked by severity and the revised version compared word by word.")}</span></li>
           <li><Icon name="check" size={16} /><span>{t("لا يملك الوكلاء أدوات خارجية في هذه النسخة: ما يقدّمونه تحليل نصي تتحقق منه أنت.", "Agents have no external tools in this version: what they produce is text analysis for you to check.")}</span></li>
         </ul>
-        <div className="btn-row"><Link className="btn" href="/consult/new">{t("ابدأ استشارة", "Start a Consultation")}</Link></div>
+        <div className="card-foot"><Link className="btn btn-primary btn-sm" href="/consult/new">{t("ابدأ استشارة", "Start a Consultation")}</Link></div>
       </section>
       {user && (
         <section className="card block" aria-labelledby="log">
