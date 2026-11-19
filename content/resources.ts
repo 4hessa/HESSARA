@@ -1,5 +1,5 @@
-// قسم «الموارد»: أُعيدت كتابة الوثائق الأربع لتصف المنصة كما هي فعلًا. النسخ المرجعية كانت تصف
-// نماذج وأدوارًا ومداولة جماعية وإسنادًا بالوثائق غير موجودة في هسّارة.
+// قسم «الموارد»: أُعيدت كتابة الوثائق الأربع الأولى لتصف المنصة كما هي فعلًا. النسخ المرجعية كانت تصف
+// نماذج وأدوارًا ومداولة جماعية وإسنادًا بالوثائق غير موجودة في هسّارة. الخامسة قائمة قراءة من مصادر أولية.
 import type { Entry } from "./types";
 
 export const RESOURCES: Entry[] = [
@@ -495,6 +495,149 @@ If you believe you have found a security issue, please use the [contact page](/c
 
 - [سياسة الخصوصية](/privacy)
 - [شروط الاستخدام](/terms)`,
+    },
+  },
+  {
+    // قائمة قراءة من مصادر أولية: كل رابط يقود إلى منشور صاحبه أو إلى arXiv. تحقّقنا من وجود كل مصدر وعنوانه
+    // وتاريخه في ١٩ نوفمبر ٢٠٢٦. الوصف المرافق يلخّص ما في المصدر نفسه، لا رأي هسّارة فيه.
+    slug: "ai-labs-reading-list",
+    en: {
+      kicker: "Reading list",
+      title: "Selected reading from AI labs",
+      sub: "Primary sources from Google, OpenAI, Anthropic, DeepSeek, Moonshot AI, Alibaba and others",
+      description: "Papers, guides and frameworks published by the companies and institutions that build or assess today's AI models, each linked to its original source.",
+      note: "These are external links to their owners' sites or to arXiv, mostly in English. Each source and its title were checked on 19 November 2026; pages can move or change after that date. HESSARA has no affiliation with these organisations.",
+      body: `This list gathers primary material from the organisations that build or assess today's AI models. Each entry links to the original publication. The items were chosen because they explain how models work, how to build with them, or how to judge their risks. The insights articles on this site cite several of them.
+
+## Google and Google DeepMind
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762) (2017). The paper that introduced the Transformer, the architecture behind today's large language models.
+- [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) (2022). Shows that a few worked, step-by-step examples in a prompt improve reasoning in large models.
+- [Gemini 2.5: Pushing the Frontier with Advanced Reasoning, Multimodality, Long Context, and Next Generation Agentic Capabilities](https://arxiv.org/abs/2507.06261) (2025). Technical report on the Gemini 2.5 family, including its safety evaluations.
+- [Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies). Practical guidance on instructions, examples, constraints and structured output.
+
+## OpenAI
+
+- [Why language models hallucinate](https://openai.com/index/why-language-models-hallucinate/) (2025). Argues that training and evaluation reward guessing over admitting uncertainty, and proposes scoring that penalises confident errors.
+- [A practical guide to building agents](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) (2025). When an agent is worth building, its components, single- and multi-agent designs, and guardrails.
+- [Optimizing LLM Accuracy](https://developers.openai.com/api/docs/guides/optimizing-llm-accuracy). How to choose between prompting, retrieval and fine-tuning, starting with prompting.
+- [GPT-4 Technical Report](https://arxiv.org/abs/2303.08774) (2023). Capabilities, limitations and safety work for GPT-4.
+
+## Anthropic (Claude)
+
+- [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) (2024). Favours simple, composable patterns, and separates fixed workflows from autonomous agents.
+- [How we built our multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) (2025). Lessons from a lead agent that coordinates sub-agents working in parallel.
+- [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) (2025). Keeping what a model sees small and relevant over long tasks.
+- [Introducing Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval) (2024). Adding context to document chunks before indexing them, to reduce retrieval failures.
+- [Introducing Citations on the Anthropic API](https://www.anthropic.com/news/introducing-citations-api) (2025). Answers that point to the exact sentences and passages they rely on.
+- [Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/abs/2212.08073) (2022). Training a model against a written list of principles, with AI feedback in place of human labels for harmfulness.
+- [Tracing the thoughts of a large language model](https://www.anthropic.com/research/tracing-thoughts-language-model) (2025). Interpretability research that traces part of a model's internal computation, with its limits stated.
+
+## DeepSeek
+
+- [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://arxiv.org/abs/2501.12948) (2025). Reasoning developed through reinforcement learning without human-written reasoning examples; later published in [Nature](https://doi.org/10.1038/s41586-025-09422-z).
+- [DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437) (2024). A mixture-of-experts model with 671 billion parameters, 37 billion of them active for each token, and the details of its training.
+
+## Moonshot AI (Kimi)
+
+- [Kimi k1.5: Scaling Reinforcement Learning with LLMs](https://arxiv.org/abs/2501.12599) (2025). Scaling reinforcement learning with long context, without tree search or value functions.
+- [Kimi K2: Open Agentic Intelligence](https://arxiv.org/abs/2507.20534) (2025). An open mixture-of-experts model built for agentic tasks, with 32 billion active parameters.
+
+## Alibaba (Qwen)
+
+- [Qwen3 Technical Report](https://arxiv.org/abs/2505.09388) (2025). Open dense and mixture-of-experts models that combine a thinking and a non-thinking mode, with a budget for reasoning effort.
+- [Qwen2.5 Technical Report](https://arxiv.org/abs/2412.15115) (2024). The previous Qwen generation, from 0.5 to 72 billion parameters.
+
+## Meta
+
+- [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401) (2020). The paper that introduced retrieval-augmented generation (RAG).
+- [The Llama 3 Herd of Models](https://arxiv.org/abs/2407.21783) (2024). Open models of up to 405 billion parameters, released with a safety model for inputs and outputs.
+
+## Microsoft
+
+- [Can Generalist Foundation Models Outcompete Special-Purpose Tuning? Case Study in Medicine](https://arxiv.org/abs/2311.16452) (2023). How far prompting alone takes a general model in a specialised field.
+- [Fine-Tuning or Retrieval? Comparing Knowledge Injection in LLMs](https://arxiv.org/abs/2312.05934) (2023). Retrieval outperformed unsupervised fine-tuning for adding knowledge to a model.
+
+## Standards and independent references
+
+- [Artificial Intelligence Risk Management Framework (AI RMF 1.0)](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf), NIST (2023). A voluntary framework built on four functions: govern, map, measure and manage.
+- [Generative Artificial Intelligence Profile (NIST AI 600-1)](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf), NIST (2024). Risks specific to generative AI, such as confabulation, with suggested actions.
+- [OWASP Top 10 for LLM Applications 2025](https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/). The main security risks in applications built on language models, starting with prompt injection.
+- [The 2026 AI Index Report](https://hai.stanford.edu/ai-index/2026-ai-index-report), Stanford HAI. An annual, data-based account of progress in AI and its effects.
+
+## Related
+
+- [Insights](/insights): four method notes that cite their sources.
+- [Security, privacy, and data handling](/resources/security)`,
+    },
+    ar: {
+      kicker: "قائمة قراءة",
+      title: "قراءات مختارة من مختبرات الذكاء الاصطناعي",
+      sub: "مصادر أولية من Google وOpenAI وAnthropic وDeepSeek وMoonshot AI وAlibaba وجهات أخرى",
+      description: "أوراق وأدلة وأُطر نشرتها الشركات والجهات التي تبني نماذج الذكاء الاصطناعي اليوم أو تقيّمها، وكلٌّ منها مربوط بمصدره الأصلي.",
+      note: "روابط خارجية إلى مواقع أصحابها أو إلى arXiv، وأغلبها بالإنجليزية. تحقّقنا من وجود كل مصدر وعنوانه في 19 نوفمبر 2026، وقد تنتقل الصفحات أو تتغير بعد ذلك. لا تربط هسّارة بهذه الجهات أي صلة.",
+      body: `تجمع هذه القائمة مواد أولية من الجهات التي تبني نماذج الذكاء الاصطناعي اليوم أو تقيّمها، وكل عنصر فيها يقود إلى المنشور الأصلي. اختيرت لأنها تشرح كيف تعمل النماذج، أو كيف يُبنى بها، أو كيف تُقدَّر مخاطرها. وتستشهد مقالات «رؤى» في هذا الموقع بعدد منها.
+
+## جوجل وجوجل ديب مايند (Google)
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762) (2017). الورقة التي قدّمت بنية المحوِّل (Transformer)، وهي البنية التي تقوم عليها النماذج اللغوية الكبيرة اليوم.
+- [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) (2022). تُظهر أن أمثلة قليلة محلولة خطوة بخطوة في الطلب تحسّن الاستدلال في النماذج الكبيرة.
+- [Gemini 2.5: Pushing the Frontier with Advanced Reasoning, Multimodality, Long Context, and Next Generation Agentic Capabilities](https://arxiv.org/abs/2507.06261) (2025). التقرير التقني لعائلة Gemini 2.5، ومعه تقييمات السلامة.
+- [Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies). دليل عملي لصياغة التعليمات والأمثلة والقيود والمخرجات المنظّمة.
+
+## أوبن إيه آي (OpenAI)
+
+- [Why language models hallucinate](https://openai.com/index/why-language-models-hallucinate/) (2025). تحاجّ بأن التدريب والتقييم يكافئان التخمين أكثر من الاعتراف بعدم اليقين، وتقترح تقييمًا يعاقب الخطأ الواثق.
+- [A practical guide to building agents](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) (2025). متى يستحق بناء وكيل، ومكوّناته، والفرق بين الوكيل الواحد وتعدد الوكلاء، وضوابط الحماية.
+- [Optimizing LLM Accuracy](https://developers.openai.com/api/docs/guides/optimizing-llm-accuracy). كيف تختار بين صياغة الطلبات والاسترجاع والضبط الدقيق، بدءًا بصياغة الطلبات.
+- [GPT-4 Technical Report](https://arxiv.org/abs/2303.08774) (2023). قدرات GPT-4 وحدوده وأعمال السلامة عليه.
+
+## أنثروبيك (Anthropic، مطوّرة Claude)
+
+- [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) (2024). تفضّل الأنماط البسيطة القابلة للتركيب، وتميّز بين مسارات العمل الثابتة والوكلاء المستقلين.
+- [How we built our multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) (2025). دروس من وكيل قائد ينسّق وكلاء فرعيين يعملون بالتوازي.
+- [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) (2025). كيف يبقى ما يراه النموذج صغيرًا وذا صلة في المهام الطويلة.
+- [Introducing Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval) (2024). إضافة سياق إلى مقاطع الوثائق قبل فهرستها لتقليل إخفاقات الاسترجاع.
+- [Introducing Citations on the Anthropic API](https://www.anthropic.com/news/introducing-citations-api) (2025). إجابات تشير إلى الجمل والمقاطع التي استندت إليها.
+- [Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/abs/2212.08073) (2022). تدريب النموذج على قائمة مكتوبة من المبادئ، بتقييم من نموذج بدل التصنيف البشري للضرر.
+- [Tracing the thoughts of a large language model](https://www.anthropic.com/research/tracing-thoughts-language-model) (2025). بحث في التفسير يتتبّع جزءًا من الحسابات الداخلية لنموذج، مع بيان حدود الطريقة.
+
+## ديب سيك (DeepSeek)
+
+- [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://arxiv.org/abs/2501.12948) (2025). تطوير الاستدلال بالتعلم المعزَّز دون أمثلة استدلال يكتبها البشر، ونُشرت لاحقًا في مجلة [Nature](https://doi.org/10.1038/s41586-025-09422-z).
+- [DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437) (2024). نموذج من نوع «خليط الخبراء» بـ 671 مليار معامل، يعمل منها 37 مليارًا لكل رمز، مع تفاصيل تدريبه.
+
+## مونشوت (Moonshot AI، مطوّرة Kimi)
+
+- [Kimi k1.5: Scaling Reinforcement Learning with LLMs](https://arxiv.org/abs/2501.12599) (2025). توسيع التعلم المعزَّز مع سياق طويل، دون بحث شجري ولا دوال قيمة.
+- [Kimi K2: Open Agentic Intelligence](https://arxiv.org/abs/2507.20534) (2025). نموذج مفتوح من نوع «خليط الخبراء» صُمّم للمهام الوكيلية، يعمل منه 32 مليار معامل.
+
+## علي بابا (Alibaba، مطوّرة Qwen)
+
+- [Qwen3 Technical Report](https://arxiv.org/abs/2505.09388) (2025). نماذج مفتوحة كثيفة ومن نوع «خليط الخبراء»، تجمع وضع التفكير ووضع الإجابة المباشرة، مع ميزانية لجهد الاستدلال.
+- [Qwen2.5 Technical Report](https://arxiv.org/abs/2412.15115) (2024). الجيل السابق من Qwen، من 0.5 إلى 72 مليار معامل.
+
+## ميتا (Meta)
+
+- [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401) (2020). الورقة التي قدّمت التوليد المعزَّز بالاسترجاع (RAG).
+- [The Llama 3 Herd of Models](https://arxiv.org/abs/2407.21783) (2024). نماذج مفتوحة حتى 405 مليارات معامل، صدرت مع نموذج سلامة لفحص المدخلات والمخرجات.
+
+## مايكروسوفت (Microsoft)
+
+- [Can Generalist Foundation Models Outcompete Special-Purpose Tuning? Case Study in Medicine](https://arxiv.org/abs/2311.16452) (2023). إلى أي حد تكفي صياغة الطلبات وحدها نموذجًا عامًا في مجال متخصص.
+- [Fine-Tuning or Retrieval? Comparing Knowledge Injection in LLMs](https://arxiv.org/abs/2312.05934) (2023). الاسترجاع تفوّق على الضبط الدقيق غير الموجَّه في إضافة المعرفة إلى النموذج.
+
+## معايير ومراجع مستقلة
+
+- [Artificial Intelligence Risk Management Framework (AI RMF 1.0)](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf)، المعهد الوطني الأمريكي للمعايير NIST (2023). إطار طوعي يقوم على أربع وظائف: الحوكمة، والتحديد، والقياس، والإدارة.
+- [Generative Artificial Intelligence Profile (NIST AI 600-1)](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf)، NIST (2024). مخاطر خاصة بالذكاء الاصطناعي التوليدي، منها اختلاق المعلومات، مع إجراءات مقترحة.
+- [OWASP Top 10 for LLM Applications 2025](https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/). أهم المخاطر الأمنية في التطبيقات المبنية على النماذج اللغوية، وأولها حقن التعليمات.
+- [The 2026 AI Index Report](https://hai.stanford.edu/ai-index/2026-ai-index-report)، معهد ستانفورد للذكاء الاصطناعي المتمحور حول الإنسان (Stanford HAI). تقرير سنوي قائم على البيانات عن تقدّم الذكاء الاصطناعي وآثاره.
+
+## ذو صلة
+
+- [رؤى](/insights): أربع مذكرات منهجية تذكر مصادرها.
+- [الأمان والخصوصية والتعامل مع البيانات](/resources/security)`,
     },
   },
 ];

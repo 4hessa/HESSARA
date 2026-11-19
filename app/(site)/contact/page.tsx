@@ -4,8 +4,8 @@ import { MarketingPage } from "@/components/site/Page";
 import { getLang } from "@/lib/i18n-server";
 import { pageMeta } from "@/lib/meta";
 
-// عنوان التواصل العام. يبقى فارغًا حتى يُعتمد عنوان حقيقي (كما في الموقع المرجعي).
-const CONTACT_EMAIL = "";
+// عنوان التواصل العام، اعتمده صاحب المشروع للنشر في ١٩ نوفمبر ٢٠٢٦. إن فُرّغ عادت الصفحة إلى ملاحظة «لم يُنشر بعد».
+const CONTACT_EMAIL = "hessa.alzahrani.sa@gmail.com";
 
 const C = {
   en: {
@@ -60,7 +60,7 @@ export default async function ContactPage() {
           <h1>{c.h1}</h1>
           <p className="hero__sub">{c.sub}</p>
           <div className="hero__copy"><p>{c.copy}</p></div>
-          {CONTACT_EMAIL && <div className="btn-row"><a className="btn" href={`mailto:${CONTACT_EMAIL}`}>{c.email} {CONTACT_EMAIL}</a></div>}
+          {CONTACT_EMAIL && <div className="btn-row"><a className="btn" href={`mailto:${CONTACT_EMAIL}`}>{c.email} <bdi>{CONTACT_EMAIL}</bdi></a></div>}
         </>
       }
     >
