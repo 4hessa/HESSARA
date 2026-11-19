@@ -164,6 +164,18 @@ export const MODELS: ModelDef[] = [
     env: { key: "LLAMA_API_KEY", model: "LLAMA_MODEL", baseUrl: "LLAMA_BASE_URL" },
   },
   {
+    id: "gpt-oss",
+    name: "GPT-OSS",
+    vendor: "OpenAI",
+    vendorKey: "openai",
+    adapter: "openai",
+    category: "سحابي",
+    description: "نموذج مفتوح الأوزان من OpenAI، غير نماذج GPT التجارية. يُخدَم عبر مستضيف متوافق مع OpenAI يحدد مشغّل المنصة عنوانه وإصداره.",
+    tasks: ["استشارات عامة", "استدلال"],
+    inputs: TEXT_ONLY,
+    env: { key: "GPTOSS_API_KEY", model: "GPTOSS_MODEL", baseUrl: "GPTOSS_BASE_URL" },
+  },
+  {
     id: "local",
     name: "نموذج محلي",
     vendor: "خادم المنصة",
@@ -240,6 +252,11 @@ const EN: Record<string, ModelText> = {
     tasks: ["General consultations", "Experiments"],
     inputs: TEXT_ONLY_EN,
     pricing: `Through the gateway: US$0.24 input and US$0.97 output per million tokens. ${GATEWAY_PRICING_NOTE_EN}`,
+  },
+  "gpt-oss": {
+    description: "An open-weight model from OpenAI, separate from its commercial GPT models. It is served by an OpenAI-compatible host whose address and version the platform operator sets.",
+    tasks: ["General consultations", "Reasoning"],
+    inputs: TEXT_ONLY_EN,
   },
   local: {
     name: "Local model",

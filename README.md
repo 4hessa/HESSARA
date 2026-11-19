@@ -99,6 +99,7 @@ scripts/        الاختبار الشامل، التحقق من الفيديو
 | `DEEPSEEK_API_KEY` و`DEEPSEEK_MODEL` | لنماذج DeepSeek بمفتاح مباشر، معًا | `DEEPSEEK_BASE_URL` اختياري، والافتراضي عنوان DeepSeek |
 | `QWEN_API_KEY` و`QWEN_MODEL` و`QWEN_BASE_URL` | لـ Qwen لدى أي مستضيف متوافق مع OpenAI، الثلاثة معًا | مثل مستضيف بمستوى مجاني؛ يُكتب المعرّف كما يعرضه المستضيف |
 | `LLAMA_API_KEY` و`LLAMA_MODEL` و`LLAMA_BASE_URL` | لـ Llama لدى أي مستضيف متوافق مع OpenAI، الثلاثة معًا | كما في Qwen |
+| `GPTOSS_API_KEY` و`GPTOSS_MODEL` و`GPTOSS_BASE_URL` | لـ GPT-OSS، نموذج OpenAI مفتوح الأوزان، لدى أي مستضيف متوافق مع OpenAI، الثلاثة معًا | لا يمر عبر البوابة؛ يُكتب المعرّف كما يعرضه المستضيف |
 
 مسار البث يطلب مدة قصوى 300 ثانية (`maxDuration`). هذه القيمة لم يُتحقق منها مقابل حدود خطة الاستضافة؛ إن رُفض النشر بسببها فاخفضها في `app/api/consultations/[id]/messages/route.ts`.
 
