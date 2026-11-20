@@ -16,6 +16,7 @@ export function ReviewView({ result }: { result: ReviewResult }) {
         <Icon name="info" />
         <div>
           <strong>{result.engineLabel}</strong>
+          {result.fallback && <p className="t-small"><strong>{result.fallback}</strong></p>}
           <p className="t-small">{result.summary}</p>
         </div>
       </div>
@@ -37,6 +38,9 @@ export function ReviewView({ result }: { result: ReviewResult }) {
       {result.findings.length > 0 && (
         <section className="stack-sm" aria-label={t("الملاحظات", "Findings")}>
           <h3 className="t-h4">{t("الملاحظات", "Findings")} ({result.findings.length})</h3>
+          {result.engine === "heuristic" && (
+            <p className="t-small muted">{t("هذه ملاحظات فحص الألفاظ: قد يكون العنصر موجودًا في النص بصياغة لم يكشفها الفحص، فتحقق منه قبل الأخذ بالملاحظة.", "These findings come from word checks: an element may be present in the text in wording the checks did not detect, so confirm it before acting on a finding.")}</p>
+          )}
           {result.findings.map((f, i) => (
             <article className={`finding ${f.severity}`} key={i}>
               <div className="row-between">

@@ -204,6 +204,25 @@ test("محرك المراجعة يقدّم ما نجح اختباره، ويتج
   }
 });
 
+test("المراجعة تتجنب النموذج الذي كتب الإجابة متى وُجد غيره بالثقة نفسها، ولا تقدّم عليه نموذجًا أقل ثقة", async () => {
+  process.env.AI_GATEWAY_API_KEY = "gw-key";
+  try {
+    globalThis.__hessaraChecks.clear();
+    await P.recordCheck("gemini", true);
+    await P.recordCheck("deepseek", true);
+    assert.equal(P.firstLlm(null, "gemini").def.id, "deepseek", "نموذج آخر جاهز يراجع بدل الكاتب");
+    assert.equal(P.firstLlm("gemini", "gemini").def.id, "deepseek", "المفضَّل لا يُعتمد إن كان هو الكاتب");
+    assert.equal(P.firstLlm("gemini").def.id, "gemini", "دون كاتب يبقى المفضَّل الجاهز أولًا");
+    await P.recordCheck("deepseek", false, "x");
+    assert.equal(P.firstLlm(null, "gemini").def.id, "gemini", "الكاتب الجاهز مقدَّم على نموذج لم يُختبر");
+    assert.deepEqual(P.llmCandidates(null, "gemini").slice(0, 2).map((m) => m.def.id), ["gemini", "claude-opus-5-5"]);
+    assert.equal(P.llmCandidates(null, "gemini").at(-1).def.id, "deepseek", "الفاشل أخيرًا");
+  } finally {
+    delete process.env.AI_GATEWAY_API_KEY;
+    globalThis.__hessaraChecks.clear();
+  }
+});
+
 test("مستضيف متوافق مع OpenAI: كتلة التفكير في أول الإجابة لا تصل إلى المستخدم", async () => {
   process.env.QWEN_API_KEY = "k";
   process.env.QWEN_MODEL = "qwen/some-model";

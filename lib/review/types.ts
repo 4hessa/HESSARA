@@ -11,6 +11,8 @@ export type ReviewResult = {
   verdicts: Verdict[];
   needsHuman: boolean;
   limits: string[];
+  /** حين ارتدّت المراجعة إلى فحص الألفاظ بعد أن تعذّر النموذج اللغوي: جملة تُعرض أعلى النتيجة. */
+  fallback?: string;
 };
 
 export type ReviewMode = {

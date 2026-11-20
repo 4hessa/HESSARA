@@ -30,12 +30,16 @@ export const POST = authed(async (req, user) => {
   // لا تُربط المراجعة باستشارة إلا إذا كانت ملكًا للمستخدم نفسه.
   let consultationId: string | null = null;
   let messageId: string | null = null;
+  let authorModel: string | null = null;
   if (typeof b?.consultationId === "string") {
     if (!await get("SELECT 1 FROM consultations WHERE id = ? AND user_id = ?", b.consultationId, user.id)) return fail(404, t("الاستشارة غير موجودة.", "Consultation not found."));
     consultationId = b.consultationId;
     if (typeof b.messageId === "string") {
-      if (!await get("SELECT 1 FROM messages WHERE id = ? AND consultation_id = ?", b.messageId, consultationId)) return fail(404, t("الرسالة غير موجودة.", "Message not found."));
+      const msg = await get<{ model_id: string | null }>("SELECT model_id FROM messages WHERE id = ? AND consultation_id = ?", b.messageId, consultationId);
+      if (!msg) return fail(404, t("الرسالة غير موجودة.", "Message not found."));
       messageId = b.messageId;
+      // النموذج الذي كتب الإجابة: تُراجَع بنموذج غيره متى أمكن.
+      authorModel = msg.model_id;
     }
   }
   // النص يُرسَل إلى جهة خارجية إن وُجد نموذج لغوي، أو كان النمط المحكّم المنظّم و Jev متاحًا.
@@ -50,10 +54,14 @@ export const POST = authed(async (req, user) => {
     mode: mode.id, text, criteria,
     engine: b?.engine === "heuristic" || overQuota ? "heuristic" : "auto",
     preferredModel: user.pref_model,
+    authorModel,
     lang,
     signal: AbortSignal.any([req.signal, AbortSignal.timeout(120_000)]),
   });
-  if (overQuota) result.limits.unshift(quotaMessage(quota!, lang));
+  if (overQuota) {
+    result.limits.unshift(quotaMessage(quota!, lang));
+    result.fallback = quotaMessage(quota!, lang);
+  }
   if (result.engine === "llm" || result.engine === "jev") await countUse(user.id).catch(() => {});
   const id = newId();
   await run("INSERT INTO reviews (id, user_id, consultation_id, message_id, mode, criteria, input, result, engine, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",

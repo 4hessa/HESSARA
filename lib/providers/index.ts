@@ -169,13 +169,23 @@ function trustRank(def: ModelDef): number {
 }
 
 /**
- * نموذج لغوي حقيقي مهيّأ لمحرك المراجعة: المفضَّل ما لم يفشل آخر اختبار له، وإلا ما نجح اختباره، ثم ما لم يُختبر،
- * ثم ما فشل، بترتيب الفهرس داخل كل درجة. فإن عمل نموذج مجاني وتعطّل غيره، اختير العامل.
+ * النماذج اللغوية الحقيقية المهيّأة لمحرك المراجعة، بترتيب التفضيل: المفضَّل ما لم يفشل آخر اختبار له، ثم ما نجح
+ * اختباره، ثم ما لم يُختبر، ثم ما فشل، بترتيب الفهرس داخل كل درجة. فإن عمل نموذج مجاني وتعطّل غيره، تقدّم العامل.
+ * avoid: نموذج يتأخر عن أقرانه في الدرجة نفسها، كالذي كتب الإجابة المراد مراجعتها؛ فتُراجَع بنموذج غيره متى
+ * كان مثله ثقة، ولا يُقدَّم عليه نموذج أقل ثقة. ولا يكون هو المفضَّل.
  * نتائج الاختبار من ذاكرة النسخة؛ استدعِ syncChecks قبله ليقرأ ما سجّلته النسخ الأخرى.
  */
-export function firstLlm(preferred?: string | null): ResolvedModel | null {
-  const pref = preferred ? modelById(preferred) : undefined;
-  if (pref && pref.adapter !== "demo" && routeOf(pref) && trustRank(pref) < 2) return resolveModel(pref.id);
-  const candidates = MODELS.filter((m) => m.adapter !== "demo" && routeOf(m)).sort((a, b) => trustRank(a) - trustRank(b));
-  return candidates.length ? resolveModel(candidates[0].id) : null;
+export function llmCandidates(preferred?: string | null, avoid?: string | null): ResolvedModel[] {
+  const usable = MODELS.filter((m) => m.adapter !== "demo" && routeOf(m));
+  const order = (m: ModelDef) => trustRank(m) * 2 + (m.id === avoid ? 1 : 0);
+  const pref = usable.find((m) => m.id === preferred && m.id !== avoid && trustRank(m) < 2);
+  const rest = usable.filter((m) => m !== pref).sort((a, b) => order(a) - order(b));
+  return [...(pref ? [pref] : []), ...rest].map((m) => resolveModel(m.id)).filter((m): m is ResolvedModel => m !== null);
 }
+
+export function firstLlm(preferred?: string | null, avoid?: string | null): ResolvedModel | null {
+  return llmCandidates(preferred, avoid)[0] ?? null;
+}
+
+/** فشل آخر اختبار لهذا النموذج على طريقه الحالي. */
+export const lastCheckFailed = (def: ModelDef) => trustRank(def) === 2;

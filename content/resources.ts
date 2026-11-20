@@ -536,6 +536,7 @@ Each of the six agents is a written playbook on top of a general model, not a se
 
 - Six review modes: technical critic, evidence checker, risk analyst, logic reviewer, delivery reviewer, and structured judge.
 - The structured judge uses the Jev evaluation model from TypeSafe AI when it is available. The other modes use a language model when one is available, and a rule-based reviewer otherwise. Each review states which engine produced it.
+- An answer is reviewed by a model other than the one that wrote it whenever another model is available with the same reliability; otherwise the review says it is a self-review. If the first model fails, a second is tried before falling back to the rule-based reviewer, and the fallback is stated at the top of the result.
 - Findings are ranked by severity, and a revised version can be compared with the original word by word.
 
 ## Data and privacy
@@ -604,6 +605,7 @@ Each of the six agents is a written playbook on top of a general model, not a se
 
 - ستة أنماط مراجعة: الناقد التقني، ومدقق الأدلة، ومحلل المخاطر، والمراجع المنطقي، ومراجع التنفيذ، والمحكّم المنظّم.
 - يحكم المحكّم المنظّم بنموذج التقييم Jev من TypeSafe AI حين يتاح. وتعمل بقية الأنماط بنموذج لغوي إن وُجد، وإلا بالمراجع القاعدي. وكل مراجعة تذكر المحرك الذي أنتجها.
+- تُراجَع الإجابة بنموذج غير الذي كتبها متى أُتيح نموذج آخر بالثقة نفسها، وإلا صرّحت المراجعة بأنها ذاتية. وإن تعذّر النموذج الأول جُرّب ثانٍ قبل الارتداد إلى المراجع القاعدي، ويُذكر الارتداد أعلى النتيجة.
 - الملاحظات مرتّبة بالخطورة، ويمكن مقارنة النسخة المنقّحة بالأصل كلمةً بكلمة.
 
 ## البيانات والخصوصية

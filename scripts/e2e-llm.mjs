@@ -30,6 +30,12 @@ const ANSWER = `## ملخص المشكلة
 1. **قِس أولًا** زمن أول رمز والزمن الكلي.
 2. فعّل البث إن لم يكن مفعّلًا.
 
+## مقارنة سريعة
+| الخيار | متى يفيد |
+| --- | --- |
+| البث | حين يطول الانتظار<br>قبل أول رمز |
+| ذاكرة مؤقتة | للأسئلة المتكررة |
+
 ## حدود الثقة
 هذه أسباب شائعة لا تشخيص لتطبيقك.`;
 const REVIEW = { summary: "الإجابة منظمة لكنها لا تذكر خطة تراجع.", strengths: ["تبدأ بالقياس"], findings: [{ severity: "medium", title: "لا خطة تراجع", detail: "لم تُذكر طريقة العودة.", quote: "فعّل البث", suggestion: "أضف مفتاح تبديل." }], verdicts: [], needsHuman: true };
@@ -124,6 +130,18 @@ try {
   const meta = await page.locator(".msg-meta").first().innerText();
   check("الإجابة موسومة باسم النموذج و«مولَّد بالذكاء الاصطناعي»", meta.includes("Claude Opus 5.5") && meta.includes("مولَّد بالذكاء الاصطناعي"));
   check("نص الإجابة المبثوث معروض كاملًا ومنسّقًا", await page.locator(".prose h3", { hasText: "حدود الثقة" }).isVisible());
+  const table = page.locator(".prose table").last();
+  const proseText = await page.locator(".prose").last().innerText();
+  check("جدول الإجابة جدولٌ حقيقي: رأس وصفّان، والسطر الجديد داخل الخلية سطرٌ لا وسم خام",
+    (await table.locator("th").first().innerText()).includes("الخيار") && (await table.locator("tbody tr").count()) === 2
+      && (await table.locator("td br").count()) === 1 && !/\|\s*-{3}|<br/i.test(proseText), proseText.slice(0, 120));
+  // على الهاتف يُمرَّر الجدول داخل إطاره ولا يوسّع الصفحة
+  await page.setViewportSize({ width: 390, height: 844 });
+  await table.scrollIntoViewIfNeeded();
+  const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  check("جدول الإجابة لا يوسّع الصفحة على الهاتف", over <= 0, over > 0 ? `+${over}px` : "");
+  await page.screenshot({ path: path.join(OUT, "02b-table-phone.png") });
+  await page.setViewportSize({ width: 1366, height: 860 });
   const consultCall = calls.at(-1);
   check("طلب الاستشارة: تعليمات المنصة، رسالة المستخدم، صيغة إعادة التوجيه",
     String(consultCall.body.system).includes("منصة «هسّارة»") && consultCall.body.messages.at(-1).content.includes("بطيء") && consultCall.body.fallbacks === "default");

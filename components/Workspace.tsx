@@ -211,7 +211,7 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
 
   const panelBody = panel && (
     <div className="dialog-body">
-      <p className="t-small muted">{t("تُراجَع الإجابة المحددة مراجعة مستقلة عن النموذج الذي كتبها، وفق معايير معلنة.", "The selected answer is reviewed independently of the model that wrote it, against stated criteria.")}</p>
+      <p className="t-small muted">{t("تُراجَع الإجابة المحددة وفق معايير معلنة، بنموذج غير الذي كتبها متى أُتيح ذلك.", "The selected answer is reviewed against stated criteria, by a model other than the one that wrote it whenever one is available.")}</p>
       <ReviewRunner key={panel.id} text={panel.content} consultationId={c.id} messageId={panel.id} defaultMode={agent?.reviewMode} />
     </div>
   );
