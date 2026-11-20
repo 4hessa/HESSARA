@@ -38,6 +38,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const lang = await getLang();
   // الوضع الفاتح هو الافتراضي كما في التصميم المرجعي؛ الداكن اختيار صريح يُحفظ في ملف ارتباط.
   const theme = (await cookies()).get("hs_theme")?.value === "dark" ? "dark" : undefined;
+  // وقت ما قبل القراءة: كل كتابة في الحساب سبقته تظهر في هذه النسخة.
+  const readAt = Date.now();
   const user = await currentUser();
   return (
     <html lang={lang} dir={dirOf(lang)} data-theme={theme} suppressHydrationWarning>
@@ -50,7 +52,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {lang === "ar" && <link rel="preload" href="/fonts/plex-arabic-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />}
       </head>
       <body>
-        <AppProvider lang={lang} tz={await getTimeZone()} user={user ? toPublic(user) : null} models={await listModels(!!user, lang)} stt={sttPublic()}>{children}<PageView /><ErrorReporter /></AppProvider>
+        <AppProvider lang={lang} tz={await getTimeZone()} user={user ? toPublic(user, readAt) : null} models={await listModels(!!user, lang)} stt={sttPublic()}>{children}<PageView /><ErrorReporter /></AppProvider>
       </body>
     </html>
   );

@@ -69,3 +69,31 @@ test("أخطاء الخدمة برسائل واضحة، والصيغة غير ا
     reply = (res) => { res.writeHead(200, { "content-type": "application/json" }); res.end('{"text":"ok"}'); };
   }
 });
+
+test("المقاطع التي تقدّر الخدمة أنها صمت تُحذف، والعبارة المختلَقة المعروفة تُحذف حين تكون النص كله فقط", () => {
+  const seg = (text, no_speech_prob = 0.05, avg_logprob = -0.2, compression_ratio = 1.2) => ({ text, no_speech_prob, avg_logprob, compression_ratio });
+  assert.equal(T.cleanTranscript({ text: "x", segments: [seg(" ما الفرق بين"), seg(" التعلم الآلي والعميق؟"), seg(" اشتركوا في القناة", 0.92, -1.4)] }), "ما الفرق بين التعلم الآلي والعميق؟");
+  assert.equal(T.cleanTranscript({ segments: [seg(" نعم نعم نعم نعم", 0.1, -0.3, 3.1)] }), "", "تكرار مفرط");
+  for (const t of ["اشتركوا في القناة.", "  شكرًا للمشاهدة! ", "موسيقى", "Thank you.", "[موسيقى]"]) assert.equal(T.cleanTranscript({ text: t }), "", t);
+  const real = "أريد أن أعرف كيف أشترك في القناة الرسمية للجامعة";
+  assert.equal(T.cleanTranscript({ text: real }), real, "كلام حقيقي يتضمن العبارة لا يُمس");
+  assert.equal(T.cleanTranscript(null), "");
+});
+
+test("إن رفضت خدمة متوافقة صيغة verbose_json يُعاد الطلب مرة واحدة بالصيغة البسيطة", async () => {
+  const seen = [];
+  reply = (res) => {
+    const body = hits.at(-1).body;
+    const format = /name="response_format"\r\n\r\n([^\r]+)/.exec(body)?.[1];
+    seen.push(format);
+    if (format === "verbose_json") { res.writeHead(400, { "content-type": "application/json" }); return res.end('{"error":{"message":"unsupported"}}'); }
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end('{"text":"نص بالصيغة البسيطة"}');
+  };
+  try {
+    assert.equal(await T.transcribe(cfg, audio(10), "audio/webm", "ar"), "نص بالصيغة البسيطة");
+    assert.deepEqual(seen, ["verbose_json", "json"]);
+  } finally {
+    reply = (res) => { res.writeHead(200, { "content-type": "application/json" }); res.end('{"text":"ok"}'); };
+  }
+});

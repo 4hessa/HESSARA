@@ -71,11 +71,15 @@ export type PublicUser = {
   reminderEnabled: boolean; reminderMinutes: number; personalize: boolean; externalConsent: boolean;
   /** صاحب المشروع (HESSARA_ADMIN_EMAILS): يرى صفحة الإحصاءات. */
   admin: boolean;
+  /** وقت قراءة هذه النسخة على الخادم: يُبقي المتصفح أحدث النسخ (lib/account-sync.ts). */
+  readAt: number;
 };
-export const toPublic = (u: UserRow): PublicUser => ({
+/** readAt: وقتٌ تظهر في الصف كل كتابة سبقته؛ من قرأ الصف قبل الآن بمدة يمرّر وقت ما قبل القراءة. */
+export const toPublic = (u: UserRow, readAt = Date.now()): PublicUser => ({
   id: u.id, name: u.name, email: u.email, avatar: u.avatar,
   prefModel: u.pref_model, prefAgent: u.pref_agent,
   reminderEnabled: !!u.reminder_enabled, reminderMinutes: u.reminder_minutes,
   personalize: !!u.personalize, externalConsent: !!u.external_consent,
   admin: isAdmin(u.email),
+  readAt,
 });
