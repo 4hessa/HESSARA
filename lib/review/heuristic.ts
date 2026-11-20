@@ -15,9 +15,14 @@ type Check = {
   strength?: Bi;
 };
 
-const lacks = (re: RegExp) => (t: string) => !re.test(t);
+// النماذج تكتب التنوين والشدة أحيانًا («نسخًا احتياطية»، «تأخّر»): يُطابَق النص كما هو ومجرّدًا من التشكيل معًا،
+// فيصيب النمطُ المشكول النصَّ المشكول، وغيرُ المشكول النصَّ المجرّد.
+const bare = (t: string) => t.replace(/[\u064B-\u0652\u0640]/g, "");
+const has = (re: RegExp, t: string) => re.test(t) || re.test(bare(t));
+const lacks = (re: RegExp) => (t: string) => !has(re, t);
 const firstMatch = (re: RegExp) => (t: string) => {
-  const m = t.match(re);
+  const m = t.match(re) ?? bare(t).match(re);
+  if (m && !t.match(re)) t = bare(t);
   if (!m) return false;
   const i = m.index ?? 0;
   return t.slice(Math.max(0, i - 30), i + m[0].length + 40).replace(/\s+/g, " ").trim();
@@ -31,8 +36,11 @@ const ASSUME = /(افتراض|يُفترض|بافتراض|معلومات ناق�
 const SOURCE = /(https?:\/\/|المصدر|وفق|بحسب|حسب (دراسة|تقرير|توثيق)|مرجع|\[\d+\]|\b(?:source[sd]?|according to|reference[sd]?|cited|documentation states)\b)/i;
 // التكرارات محدودة الطول: تعابير بلا حدود كانت تربيعية الكلفة على سلاسل أرقام أو أسطر طويلة.
 const NUMBER_CLAIM = /(\d{1,12}([.,٫]\d{1,12})?\s?[%٪]|[٠-٩]{1,12}\s?[%٪]|\d{1,12}\s?(x|×|ضعف|أضعاف|times (?:faster|better|slower))|أسرع ب|أفضل ب|faster by|better by)/i;
-const RISK = /(مخاطر|مخاطرة|خطر|قد يفشل|قد يؤدي|\b(?:risks?|risky|could fail|may fail|might fail|failure mode)\b)/i;
-const ROLLBACK = /(تراجع|استرجاع|نسخ احتياطي|نسخة احتياطية|مفتاح تبديل|\b(?:roll ?back|revert\w*|backups?|feature flag|kill switch)\b)/i;
+// «فشل» بلا حدود كلمة يطابق «يفشل» و«لفشل» و«الفشل». ولا «تحدي» مفردة: تطابق «تحديد».
+// والتأخر مخاطرةٌ في صيغته الشرطية وحدها («إذا تأخرتم»)؛ أما «يتأخر الرد» في سؤال عن البطء فهو العَرَض نفسه.
+const RISK = /(مخاطر|خطر|فشل|إخفاق|اخفاق|تعثر|تعثّر|إذا تأخر|إن تأخر|قد يتأخر|قد تتأخر|في حال تأخر|عائق|عوائق|عقبة|عقبات|تحديات|ثغرة|ثغرات|ماذا لو|قد يؤدي|\b(?:risks?|risky|fail\w*|blockers?|pitfalls?|challenges?|what if|scope creep|could go wrong|worst case)\b)/i;
+// لا «استرجاع» مجردة (تعني استرجاع البيانات في أسئلة الاسترجاع المعزَّز)، ولا «تراجع» مجردة (تراجع الأداء).
+const ROLLBACK = /(خطة تراجع|خطة للتراجع|خطة الرجوع|التراجع عن|تراجع عن|استعادة|احتياط|مفتاح تبديل|\b(?:roll ?back|revert\w*|backups?|feature flag|kill switch)\b)/i;
 const MONITOR = /(مراقبة|تنبيه|سجلات|سجّل|\b(?:monitor\w*|alert\w*|logs?|logging|dashboard|observab\w*)\b)/i;
 const GRADUAL = /(تدريج|مرحل|جزء من المستخدمين|تجريبي[ًا]? أول|خلف مفتاح|\b(?:gradual\w*|phased|staged|canary|subset of users|behind a flag|pilot)\b)/i;
 const SECRETS = /(سر|أسرار|مفتاح|بيانات شخصية|خصوصية|تشفير|\b(?:secrets?|keys?|personal data|privacy|encrypt\w*|credentials?)\b)/i;
@@ -57,13 +65,14 @@ const CHECKS: Record<string, Check[]> = {
     { title: b("شفرة بلا معالجة أخطاء ظاهرة", "Code without visible error handling"), severity: "low", problem: (t) => CODE.test(t) && !ERR_HANDLING.test(t), detail: b("يحتوي النص شفرة، ولم يُعثر فيها على نمط معالجة أخطاء.", "The text contains code, and no error-handling pattern was found in it."), suggestion: b("وضّح سلوك الشفرة عند فشل الاستدعاء أو المدخل غير الصالح.", "Make clear what the code does when a call fails or the input is invalid.") },
   ],
   evidence: [
-    { title: b("رقم أو نسبة بلا مصدر", "A figure or percentage without a source"), severity: "high", problem: (t) => (NUMBER_CLAIM.test(t) && !SOURCE.test(t) ? (firstMatch(NUMBER_CLAIM)(t) as string) : false), detail: b("ورد ادعاء كمّي ولم يرد في النص أي مصدر أو طريقة قياس.", "A quantitative claim appears, with no source or method of measurement in the text."), suggestion: b("اذكر مصدر الرقم أو كيف قيس، أو احذفه.", "State the figure's source or how it was measured, or remove it.") },
+    { title: b("رقم أو نسبة بلا مصدر", "A figure or percentage without a source"), severity: "high", problem: (t) => (has(NUMBER_CLAIM, t) && !has(SOURCE, t) ? (firstMatch(NUMBER_CLAIM)(t) as string) : false), detail: b("ورد ادعاء كمّي ولم يرد في النص أي مصدر أو طريقة قياس.", "A quantitative claim appears, with no source or method of measurement in the text."), suggestion: b("اذكر مصدر الرقم أو كيف قيس، أو احذفه.", "State the figure's source or how it was measured, or remove it.") },
     { title: b("لا مصادر في النص", "No sources in the text"), severity: "medium", problem: lacks(SOURCE), detail: b("لا يحتوي النص روابط ولا إحالات يمكن الرجوع إليها.", "The text contains no links or references that can be consulted."), suggestion: b("أرفق مصدرًا لكل ادعاء لا يُعدّ معرفة عامة.", "Attach a source to every claim that is not common knowledge."), strength: b("يحتوي النص إحالات أو روابط (لم يُتحقق من صحتها).", "The text contains references or links (not checked for accuracy).") },
     { title: b("لا فصل بين الحقيقة والاستنتاج", "No separation of fact and inference"), severity: "medium", problem: lacks(INFERENCE), detail: b("لا توجد ألفاظ تميّز المؤكد من المرجّح.", "No wording distinguishes what is certain from what is likely."), suggestion: b("علّم الجمل الاستنتاجية بألفاظ ترجيح صريحة.", "Mark inferred sentences with explicit words of likelihood."), strength: b("يميّز النص بين المؤكد والمرجّح.", "The text distinguishes the certain from the likely.") },
     { title: b("لا تصريح بما لم يُتحقق منه", "Nothing said about what was not verified"), severity: "low", problem: lacks(ASSUME), detail: b("لم يُذكر ما لم يُتحقق منه.", "What has not been verified is not mentioned."), suggestion: b("أضف فقرة «ما لم أتحقق منه».", "Add a paragraph on what you have not verified."), strength: b("يصرّح النص بحدود التحقق.", "The text states the limits of verification.") },
   ],
   risk: [
-    { title: b("المخاطر غير مذكورة", "Risks are not mentioned"), severity: "high", problem: lacks(RISK), detail: b("لا يذكر النص أي مخاطرة أو احتمال فشل.", "The text mentions no risk or possibility of failure."), suggestion: b("اذكر لكل خطوة مؤثرة: ما الذي قد يفشل وما أثره.", "For every significant step, state what could fail and what the impact would be."), strength: b("يذكر النص مخاطر صراحةً.", "The text names risks explicitly.") },
+    // خطة التراجع أو النسخ الاحتياطي حديث عن مخاطرة، فلا يُقال إن النص لا يذكر مخاطر وهو يذكر علاجها.
+    { title: b("المخاطر غير مذكورة", "Risks are not mentioned"), severity: "high", problem: (t) => !has(RISK, t) && !has(ROLLBACK, t), detail: b("لم يُعثر في النص على ألفاظ تدل على مخاطرة أو احتمال فشل.", "No wording in the text points to a risk or a possibility of failure."), suggestion: b("اذكر لكل خطوة مؤثرة: ما الذي قد يفشل وما أثره.", "For every significant step, state what could fail and what the impact would be."), strength: b("يذكر النص مخاطر أو علاجًا لها.", "The text names risks or ways to handle them.") },
     { title: b("لا خطة تراجع", "No rollback plan"), severity: "high", problem: lacks(ROLLBACK), detail: b("لا توجد خطة تراجع أو نسخ احتياطي.", "There is no rollback plan or backup."), suggestion: b("حدّد كيف تعود للحالة السابقة وكم يستغرق ذلك.", "State how you would return to the previous state, and how long it would take."), strength: b("توجد خطة تراجع أو نسخ احتياطي.", "There is a rollback plan or a backup.") },
     { title: b("لا مراقبة تكشف الفشل", "No monitoring to reveal failure"), severity: "medium", problem: lacks(MONITOR), detail: b("لم تُذكر مراقبة أو تنبيهات.", "No monitoring or alerts are mentioned."), suggestion: b("حدّد المؤشر الذي سينبّهك إلى الفشل وعتبته.", "Name the signal that would warn you of failure, and its threshold."), strength: b("تُذكر مراقبة أو سجلات.", "Monitoring or logs are mentioned.") },
     { title: b("تنفيذ دفعة واحدة", "All-at-once rollout"), severity: "medium", problem: lacks(GRADUAL), detail: b("لا يدل النص على تنفيذ تدريجي.", "Nothing in the text points to a gradual rollout."), suggestion: b("طبّق التغيير على جزء محدود أولًا.", "Apply the change to a limited part first."), strength: b("التنفيذ تدريجي.", "The rollout is gradual.") },
@@ -73,7 +82,7 @@ const CHECKS: Record<string, Check[]> = {
     { title: b("تعميم مطلق", "Absolute generalisation"), severity: "medium", problem: firstMatch(ABSOLUTE), detail: b("تعميم قاطع يكفي مثال مضاد واحد لنقضه.", "A categorical generalisation that a single counter-example would refute."), suggestion: b("حدّد نطاق صحة العبارة.", "State the range within which the statement holds."), strength: b("لم يُعثر على تعميمات مطلقة من النوع الذي يكشفه هذا الفحص.", "No absolute generalisations of the kind this check detects were found.") },
     { title: b("استنتاجات بلا تعليل ظاهر", "Conclusions without visible reasoning"), severity: "medium", problem: lacks(BECAUSE), detail: b("لا توجد أدوات تعليل تربط النتائج بمقدماتها.", "No reasoning words link the conclusions to their premises."), suggestion: b("اربط كل توصية بسببها.", "Tie every recommendation to its reason."), strength: b("يستخدم النص تعليلًا صريحًا.", "The text uses explicit reasoning.") },
     { title: b("لا بدائل ولا تفسيرات أخرى", "No alternatives or other explanations"), severity: "medium", problem: lacks(ALTERNATIVES), detail: b("يعرض النص مسارًا واحدًا دون بدائل.", "The text presents a single path with no alternatives."), suggestion: b("اذكر بديلًا واحدًا على الأقل ولماذا استُبعد.", "Name at least one alternative and why it was ruled out."), strength: b("يعرض النص بدائل.", "The text presents alternatives.") },
-    { title: b("سبب واحد لمشكلة مركّبة", "A single cause for a compound problem"), severity: "low", problem: (t) => ONE_CAUSE.test(t), detail: b("يُنسب الأثر لسبب واحد دون استبعاد غيره.", "The effect is attributed to one cause without ruling out others."), suggestion: b("اذكر الأسباب الأخرى الممكنة وكيف تُستبعد.", "List the other possible causes and how they are ruled out.") },
+    { title: b("سبب واحد لمشكلة مركّبة", "A single cause for a compound problem"), severity: "low", problem: (t) => has(ONE_CAUSE, t), detail: b("يُنسب الأثر لسبب واحد دون استبعاد غيره.", "The effect is attributed to one cause without ruling out others."), suggestion: b("اذكر الأسباب الأخرى الممكنة وكيف تُستبعد.", "List the other possible causes and how they are ruled out.") },
   ],
   feasibility: [
     { title: b("الخطوات غير مرقّمة", "The steps are not numbered"), severity: "medium", problem: lacks(STEPS), detail: b("لا توجد خطوات مرقّمة مرتّبة.", "There are no numbered, ordered steps."), suggestion: b("حوّل الخطة إلى خطوات مرقّمة.", "Turn the plan into numbered steps."), strength: b("الخطوات مرقّمة ومرتّبة.", "The steps are numbered and ordered.") },
