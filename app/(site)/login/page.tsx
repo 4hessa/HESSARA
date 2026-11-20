@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/AuthForm";
+import { DraftNotice } from "@/components/DraftNotice";
 import { Art } from "@/components/site/Art";
 import { Footer } from "@/components/site/Footer";
 import { currentUser } from "@/lib/auth";
@@ -35,7 +36,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <div className="auth">
         <div className="auth-card frame">
           <div>
-            {next.startsWith("/consult/new") && <p className="notice notice-accent t-small" style={{ gridTemplateColumns: "1fr" }}>{t("نص استشارتك محفوظ مؤقتًا في متصفحك، وسيظهر لك مباشرة بعد الدخول.", "Your consultation text is kept temporarily in your browser and will be back as soon as you sign in.")}</p>}
+            {next.startsWith("/consult/new") && <DraftNotice />}
             <AuthForm key={signup ? "s" : "l"} mode={signup ? "signup" : "login"} next={next} />
           </div>
         </div>

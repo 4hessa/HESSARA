@@ -184,6 +184,28 @@ try {
   await page.goto(BASE + "/models");
   check("بعد نجاح إعادة المحاولة تعود حالة النموذج إلى «يعمل»", (await page.locator("article#claude-opus-5-5 .model-row__status .badge").innerText()).includes("يعمل"));
 
+  // ── فشل النموذج: إعادة المحاولة بنموذج آخر يعمل، بضغطة واحدة ──
+  await page.locator("article#claude-sonnet-5-5").getByRole("button", { name: "التفاصيل" }).click();
+  await page.getByRole("button", { name: "اختبر الاتصال" }).click();
+  await page.getByText("نجح اختبار الاتصال.").waitFor();
+  await page.goto(BASE + "/consult/new");
+  await page.locator("#quick-consult").fill("سؤال يفشل نموذجه أولًا ثم يُعاد بنموذج آخر");
+  failNext = { status: 400, type: "invalid_request_error", message: "Your credit balance is too low to access the Anthropic API." };
+  await page.locator("form.composer").getByRole("button", { name: "أرسل" }).click();
+  await page.waitForURL(/\/consult\/[\w-]{8,}$/);
+  await page.locator(".notice-danger").waitFor({ timeout: 20000 });
+  const altRetry = page.getByRole("button", { name: /أعد المحاولة بنموذج/ });
+  check("فشل النموذج يعرض إعادة المحاولة بنموذج آخر يعمل", (await altRetry.innerText().catch(() => "")).includes("Claude Sonnet 5.5"));
+  await altRetry.click();
+  await page.getByRole("button", { name: "أعد التوليد" }).waitFor({ timeout: 30000 });
+  check("إعادة المحاولة بالنموذج الآخر تنجح، وتصير الاستشارة على النموذج الجديد",
+    calls.at(-1).body.model === "claude-sonnet-5-5" && (await page.locator(".msg-meta").last().innerText()).includes("Claude Sonnet 5.5"));
+  // فشل Opus سُجّل في حالته؛ يُعاد اختباره كي تبدأ الخطوات التالية من الحالة نفسها
+  await page.goto(BASE + "/models");
+  await page.locator("article#claude-opus-5-5").getByRole("button", { name: "التفاصيل" }).click();
+  await page.getByRole("button", { name: "اختبر الاتصال" }).click();
+  await page.getByText("نجح اختبار الاتصال.").waitFor();
+
   // ── وكيل متخصص: تعليماته تصل إلى المزوّد ولا تصل إلى المتصفح ──
   await page.goto(BASE + "/consult/new?agent=coding");
   await page.locator("#in-error").fill("TypeError: cannot read properties of undefined (reading 'map')");

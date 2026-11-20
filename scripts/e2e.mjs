@@ -150,17 +150,26 @@ try {
   await page.getByText("المراجع القاعدي").first().waitFor();
   check("المعاينة الحية: رد ثم مراجعة", true);
 
-  // ── ٢. الزائر يبدأ استشارة فيُطلب منه الدخول ثم يعود إلى المسار ──
+  // ── ٢. الزائر يبدأ استشارة فيُطلب منه إنشاء حساب ثم يعود إلى المسار ──
   const Q = "لدي تطبيق يعتمد على نموذج لغوي، لكن استجابته بطيئة. أريد معرفة السبب وتحسين الأداء.";
-  await page.locator(".cta").getByRole("link", { name: "ابدأ استشارة" }).click();
-  await page.waitForURL(/\/login\?next=/);
-  await shot(page, "02-login-light-desktop");
+  // صفحة الدخول نفسها: الإتاحة وتحقق الحقول
+  await page.goto(BASE + "/login");
   await axe(page, "تسجيل الدخول");
-  // تحقق الحقول
   await page.getByRole("button", { name: "سجّل الدخول" }).click();
   check("تحقق الحقول يعرض رسائل واضحة", await page.locator(".field-error").count() >= 2);
-  await page.getByRole("link", { name: "أنشئ حسابًا جديدًا" }).click();
-  await page.waitForURL(/mode=signup/);
+  // من يضغط «ابدأ استشارة» دون حساب زائر جديد في الغالب: يرى إنشاء الحساب، لا «مرحبًا بعودتك»
+  await page.goto(BASE + "/");
+  await page.locator(".cta").getByRole("link", { name: "ابدأ استشارة" }).click();
+  await page.waitForURL(/\/login\?mode=signup&next=/);
+  check("«ابدأ استشارة» يفتح للزائر إنشاء الحساب", await page.getByRole("heading", { name: "أنشئ حسابك في هسّارة" }).isVisible());
+  check("لا تنبيه بنص محفوظ لزائر لم يكتب شيئًا", (await page.getByText("نص استشارتك محفوظ مؤقتًا").count()) === 0);
+  await page.evaluate(() => sessionStorage.setItem("hs_draft", JSON.stringify({ text: "سؤال كتبه الزائر قبل الدخول" })));
+  await page.reload();
+  check("تنبيه النص المحفوظ يظهر حين يوجد نص فعلًا", await page.getByText("نص استشارتك محفوظ مؤقتًا").waitFor({ timeout: 5000 }).then(() => true, () => false));
+  await page.evaluate(() => sessionStorage.removeItem("hs_draft"));
+  await page.reload();
+  await shot(page, "02-login-light-desktop");
+  await axe(page, "إنشاء الحساب");
   await page.locator("#name").fill("أحمد");
   await page.locator("#email").fill("ahmad@example.com");
   await page.locator("#password").fill("correct-horse-9");

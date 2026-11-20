@@ -63,7 +63,7 @@ It is meant for university students, researchers, software developers, AI engine
 
 ## Current limits
 
-- Connecting real language models is still in progress. Until one is confirmed working, answers come from a clearly labelled demo engine.
+- Which real language models are available depends on the service keys set on the platform. The models page shows each one's actual status, and the demo engine is clearly labelled whenever it answers.
 - AI-generated answers support exploration, learning and decisions; they are not independently verified expert judgments.
 - This version handles text only, its agents have no external tools, and its reviews do not verify facts.
 - Articles, research and videos remain attributable to their original authors, publishers and creators.
@@ -132,7 +132,7 @@ It is meant for university students, researchers, software developers, AI engine
 
 ## الحدود الحالية
 
-- ربط النماذج اللغوية الحقيقية ما يزال جاريًا، وإلى أن يُتأكد من عمل أحدها تأتي الإجابات من محرك تجريبي موسوم بوضوح.
+- النماذج اللغوية الحقيقية المتاحة تتوقف على مفاتيح الخدمة المضبوطة على المنصة. وصفحة النماذج تعرض حالة كلٍّ منها الفعلية، والمحرك التجريبي موسوم بوضوح كلما أجاب.
 - الإجابات المولَّدة بالذكاء الاصطناعي تدعم الاستكشاف والتعلم واتخاذ القرار، وليست أحكام خبراء متحققًا منها بشكل مستقل.
 - هذه النسخة تتعامل مع النص فقط، ووكلاؤها بلا أدوات خارجية، ومراجعاتها لا تتحقق من صحة المعلومات.
 - المقالات والأبحاث والفيديوهات تبقى منسوبة إلى مؤلفيها وناشريها وصنّاعها الأصليين.

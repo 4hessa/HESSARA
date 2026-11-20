@@ -110,8 +110,8 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
         else if (timeout.aborted) {
           // بلوغ السقف الزمني ليس اكتمالًا: تُحفظ الإجابة ناقصة ويُبلَّغ المستخدم.
           await save("stopped");
-          send({ t: "error", message: t("تجاوز التوليد المدة القصوى فأُوقف. الإجابة المحفوظة غير مكتملة.", "Generation exceeded the maximum time and was stopped. The saved answer is incomplete."), partial: !!text.trim(), id: assistantId });
-        } else if (!text.trim()) send({ t: "error", message: t("أعاد النموذج ردًا فارغًا. أعد المحاولة.", "The model returned an empty reply. Try again.") });
+          send({ t: "error", kind: "timeout", message: t("تجاوز التوليد المدة القصوى فأُوقف. الإجابة المحفوظة غير مكتملة.", "Generation exceeded the maximum time and was stopped. The saved answer is incomplete."), partial: !!text.trim(), id: assistantId });
+        } else if (!text.trim()) send({ t: "error", kind: "empty", message: t("أعاد النموذج ردًا فارغًا. أعد المحاولة.", "The model returned an empty reply. Try again.") });
         else {
           await save("complete");
           if (model.def.adapter !== "demo") await recordCheck(c.model_id, true);
@@ -128,7 +128,8 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
           // الامتناع وحد المعدل والبتر لا تعني أن الاتصال بالنموذج معطّل.
           else if (e.kind !== "refused" && e.kind !== "rate_limit" && e.kind !== "truncated") await recordCheck(c.model_id, false, { ar: e.message, en: e.en });
           await save("stopped");
-          send({ t: "error", message, partial: !!text.trim(), id: assistantId });
+          // نوع الخطأ يحدد في الواجهة هل يفيد التبديل إلى نموذج آخر.
+          send({ t: "error", kind: e instanceof ProviderError ? e.kind : "unexpected", message, partial: !!text.trim(), id: assistantId });
         }
       } finally {
         release();
