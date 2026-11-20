@@ -87,6 +87,9 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
   const [draft, setDraft] = useState("");
   const [streaming, setStreaming] = useState<string | null>(null);
   const [error, setError] = useState("");
+  /** نوع آخر خطأ من المزوّد: يحدد هل يفيد عرض نموذج آخر جاهز. */
+  const [errorKind, setErrorKind] = useState("");
+  const [retryAfterSwitch, setRetryAfterSwitch] = useState(false);
   const [panel, setPanel] = useState<Msg | null>(null);
   const [sideOpen, setSideOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -121,6 +124,7 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
   const send = useCallback(async (text: string | null) => {
     if (abortRef.current) return;
     setError("");
+    setErrorKind("");
     const retry = text === null;
     const tempId = `tmp-${Date.now()}`;
     if (!retry) setMsgs((m) => [...m, { id: tempId, role: "user", content: text, model_id: null, engine: null, status: "complete", feedback: null }]);
@@ -128,7 +132,7 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
     setStreaming("");
     const ctl = new AbortController();
     abortRef.current = ctl;
-    let acc = "", assistantId = "", finished = false, failed = "";
+    let acc = "", assistantId = "", finished = false, failed = "", failedKind = "";
     try {
       const doFetch = () => fetch(`/api/consultations/${c.id}/messages`, {
         method: "POST", headers: { "content-type": "application/json" }, signal: ctl.signal,
@@ -159,7 +163,7 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
             if (ev.userMessageId) setMsgs((m) => m.map((x) => (x.id === tempId ? { ...x, id: ev.userMessageId } : x)));
           } else if (ev.t === "d") { acc += ev.v; setStreaming(acc); }
           else if (ev.t === "done") { finished = true; if (typeof ev.left === "number") setLeft(ev.left); }
-          else if (ev.t === "error") failed = ev.message;
+          else if (ev.t === "error") { failed = ev.message; failedKind = ev.kind ?? ""; }
         }
       }
       if (!finished && !failed) failed = t("انقطع الاتصال قبل اكتمال الإجابة.", "The connection dropped before the answer was complete.");
@@ -176,9 +180,15 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
       setMsgs((m) => [...m, { id: assistantId || `tmp-a-${Date.now()}`, role: "assistant", content: acc, model_id: c.model_id, engine: model?.engine ?? "llm", status: finished ? "complete" : "stopped", feedback: null }]);
     }
     setStreaming(null);
-    if (failed) setError(failed);
+    if (failed) { setError(failed); setErrorKind(failedKind); }
     router.refresh();
   }, [c.id, c.model_id, ensureConsent, model?.engine, router, t]);
+
+  // بعد التبديل إلى نموذج آخر تُعاد المحاولة بعد أن يصل النموذج الجديد إلى الحالة.
+  useEffect(() => { if (retryAfterSwitch) { setRetryAfterSwitch(false); send(null); } }, [retryAfterSwitch, send]);
+  // نموذج آخر نجح آخر اختبار له: يُعرض حين يفشل النموذج الحالي لسبب لا يخص الطلب نفسه (لا رفض محتوى ولا بتر).
+  const SWITCHABLE = ["unavailable", "network", "auth", "bad_request", "rate_limit", "timeout", "empty"];
+  const alt = SWITCHABLE.includes(errorKind) ? models.find((m) => m.engine === "llm" && m.status === "ready" && m.id !== c.model_id) : undefined;
 
   // الرسالة الأولى القادمة من حقل البدء السريع.
   useEffect(() => {
@@ -299,6 +309,14 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
                   <span>{error}</span>
                   <div className="row">
                     {msgs[msgs.length - 1]?.role === "user" && <button className="btn btn-secondary btn-sm" onClick={() => send(null)}><Icon name="retry" size={18} /> {t("أعد المحاولة", "Try again")}</button>}
+                    {msgs[msgs.length - 1]?.role === "user" && alt && (
+                      <button className="btn btn-secondary btn-sm" onClick={async () => {
+                        const r = await api<{ consultation: ConsultRow }>(`/api/consultations/${c.id}`, { method: "PATCH", body: { modelId: alt.id } });
+                        if (!r.ok) { toast(r.data.error ?? t("تعذر تغيير النموذج.", "Could not change the model.")); return; }
+                        setC(r.data.consultation);
+                        setRetryAfterSwitch(true);
+                      }}><Icon name="retry" size={18} /> {t("أعد المحاولة بنموذج ", "Retry with ")}<bdi>{alt.name}</bdi></button>
+                    )}
                     <Link className="btn btn-ghost btn-sm" href="/models">{t("حالة النماذج", "Model status")}</Link>
                   </div>
                 </div>

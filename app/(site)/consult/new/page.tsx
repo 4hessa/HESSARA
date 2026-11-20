@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function NewConsult({ searchParams }: { searchParams: Promise<{ agent?: string; model?: string }> }) {
   const sp = await searchParams;
   const qs = new URLSearchParams(sp as Record<string, string>).toString();
-  await requireUser(`/consult/new${qs ? `?${qs}` : ""}`);
+  await requireUser(`/consult/new${qs ? `?${qs}` : ""}`, { signup: true });
   const lang = await getLang();
   const t = makeT(lang);
   const agent = agentById(sp.agent, lang);

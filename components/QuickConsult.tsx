@@ -53,7 +53,7 @@ export function QuickConsult({ examples, initialAgent, initialModel, initialText
     setError("");
     if (!user) {
       try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ text: value, advisor })); } catch { /* يُكمل دون حفظ */ }
-      router.push("/login?next=/consult/new");
+      router.push("/login?mode=signup&next=/consult/new");
       return;
     }
     setBusy(true);

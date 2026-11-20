@@ -60,6 +60,8 @@ export const anthropicAdapter: ProviderAdapter = {
     } catch (err) {
       if (err instanceof ProviderError) throw err;
       if (err instanceof Anthropic.APIUserAbortError) return;
+      // ردّ المزوّد في سجلات الخادم للتشخيص، ولا يُعرض للمستخدم.
+      if (err instanceof Anthropic.APIError) console.error("[anthropic]", err.status, String(err.message).replace(/\s+/g, " ").slice(0, 300));
       if (err instanceof Anthropic.AuthenticationError)
         throw new ProviderError({ ar: "مفتاح Anthropic غير صالح أو منتهي الصلاحية.", en: "The Anthropic key is invalid or has expired." }, "auth");
       if (err instanceof Anthropic.PermissionDeniedError)

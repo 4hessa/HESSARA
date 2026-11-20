@@ -1,6 +1,6 @@
 // موائم لواجهات «chat/completions» المتوافقة مع OpenAI
 // (OpenAI نفسها، DeepSeek، مستضيفو Llama وQwen، والخوادم المحلية مثل Ollama).
-import { httpError, safeFetch, sseData } from "./sse.ts";
+import { providerHttpError, safeFetch, sseData } from "./sse.ts";
 import { thinkFilter } from "./think.ts";
 import type { ProviderAdapter, ProviderError, StreamRequest } from "./types.ts";
 
@@ -21,7 +21,7 @@ export function openaiCompatAdapter(cfg: { baseUrl: string; apiKey?: string; onE
           messages: [{ role: "system", content: req.system }, ...req.messages],
         }),
       });
-      if (!res.ok) throw cfg.onError ? await cfg.onError(res) : httpError(res.status);
+      if (!res.ok) throw cfg.onError ? await cfg.onError(res) : await providerHttpError(res, `openai-compat ${new URL(cfg.baseUrl).host}`);
       // كتلة التفكير في أول الإجابة لا تُعرض (think.ts)؛ التفكير في حقل منفصل يُتجاهل أصلًا.
       const visible = thinkFilter();
       for await (const data of sseData(res)) {

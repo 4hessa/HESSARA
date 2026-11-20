@@ -26,6 +26,23 @@ export function httpError(status: number): ProviderError {
   return new ProviderError({ ar: "خدمة المزوّد غير متاحة مؤقتًا.", en: "The provider's service is temporarily unavailable." }, "unavailable");
 }
 
+/**
+ * خطأ HTTP من مزوّد يُتصل به مباشرة: يُسجَّل رمزه وبداية ردّه في سجلات الخادم للتشخيص، ولا يُعرض للمستخدم.
+ * بدونه لا يُعرف لماذا فشل نموذج على الموقع الحي (ردّ المزوّد لا يحمل المفتاح).
+ */
+export async function providerHttpError(res: Response, label: string): Promise<ProviderError> {
+  const raw = (await res.text().catch(() => "")).slice(0, 2000);
+  let message = raw;
+  try {
+    const j = JSON.parse(raw);
+    message = String(j?.error?.message ?? j?.message ?? raw);
+  } catch {
+    /* نص عادي */
+  }
+  console.error(`[${label}]`, res.status, message.replace(/\s+/g, " ").slice(0, 300));
+  return httpError(res.status);
+}
+
 export async function safeFetch(url: string, init: RequestInit): Promise<Response> {
   try {
     return await fetch(url, init);
