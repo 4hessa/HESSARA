@@ -23,6 +23,7 @@ const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); c
 // ───── مزوّد محاكٍ ─────
 const calls = [];
 let failNext = null; // { status, type, message } لمحاكاة خطأ في الطلب التالي
+let hangNext = false; // الطلب التالي يبدأ البث ولا يرسل حرفًا (مزوّد معلّق)
 const ANSWER = `## ملخص المشكلة
 تطبيق يعتمد على نموذج لغوي واستجابته بطيئة.
 
@@ -46,6 +47,12 @@ const mock = http.createServer((req, res) => {
     const body = JSON.parse(raw || "{}");
     calls.push({ headers: req.headers, body });
     if (failNext) { const f = failNext; failNext = null; res.writeHead(f.status, { "content-type": "application/json" }); return res.end(JSON.stringify({ type: "error", error: { type: f.type, message: f.message } })); }
+    if (hangNext) {
+      hangNext = false;
+      res.writeHead(200, { "content-type": "text/event-stream" });
+      res.write(`event: message_start\ndata: ${JSON.stringify({ type: "message_start", message: { id: "msg_hang", type: "message", role: "assistant", model: body.model, content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 10, output_tokens: 1 } } })}\n\n`);
+      return; // يبقى الاتصال مفتوحًا بلا حرف حتى يقطعه الخادم
+    }
     const sys = String(body.system ?? "");
     const text = sys.includes("أنت مراجع نقدي مستقل") ? "```json\n" + JSON.stringify(REVIEW) + "\n```"
       : sys.includes("أنت محرر تقني") ? "قِس زمن أول رمز والزمن الكلي أولًا، ثم فعّل البث خلف مفتاح تبديل يتيح التراجع."
@@ -74,6 +81,7 @@ const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "star
   env: {
     ...process.env, HESSARA_DB_PATH: dbPath, HESSARA_INSECURE_COOKIE: "1",
     ANTHROPIC_BASE_URL: `http://127.0.0.1:${mock.address().port}`, ANTHROPIC_API_KEY: "test-key",
+    HESSARA_FIRST_TEXT_MS: "1500",
     NODE_OPTIONS: "--disable-warning=ExperimentalWarning",
   },
   stdio: ["ignore", "pipe", "pipe"],
@@ -184,27 +192,33 @@ try {
   await page.goto(BASE + "/models");
   check("بعد نجاح إعادة المحاولة تعود حالة النموذج إلى «يعمل»", (await page.locator("article#claude-opus-5-5 .model-row__status .badge").innerText()).includes("يعمل"));
 
-  // ── فشل النموذج: إعادة المحاولة بنموذج آخر يعمل، بضغطة واحدة ──
+  // ── فشل النموذج أو تعلّقه: إعادة المحاولة بنموذج آخر يعمل، بضغطة واحدة ──
   await page.locator("article#claude-sonnet-5-5").getByRole("button", { name: "التفاصيل" }).click();
   await page.getByRole("button", { name: "اختبر الاتصال" }).click();
   await page.getByText("نجح اختبار الاتصال.").waitFor();
-  await page.goto(BASE + "/consult/new");
-  await page.locator("#quick-consult").fill("سؤال يفشل نموذجه أولًا ثم يُعاد بنموذج آخر");
-  failNext = { status: 400, type: "invalid_request_error", message: "Your credit balance is too low to access the Anthropic API." };
-  await page.locator("form.composer").getByRole("button", { name: "أرسل" }).click();
-  await page.waitForURL(/\/consult\/[\w-]{8,}$/);
-  await page.locator(".notice-danger").waitFor({ timeout: 20000 });
-  const altRetry = page.getByRole("button", { name: /أعد المحاولة بنموذج/ });
-  check("فشل النموذج يعرض إعادة المحاولة بنموذج آخر يعمل", (await altRetry.innerText().catch(() => "")).includes("Claude Sonnet 5.5"));
-  await altRetry.click();
-  await page.getByRole("button", { name: "أعد التوليد" }).waitFor({ timeout: 30000 });
-  check("إعادة المحاولة بالنموذج الآخر تنجح، وتصير الاستشارة على النموذج الجديد",
-    calls.at(-1).body.model === "claude-sonnet-5-5" && (await page.locator(".msg-meta").last().innerText()).includes("Claude Sonnet 5.5"));
-  // فشل Opus سُجّل في حالته؛ يُعاد اختباره كي تبدأ الخطوات التالية من الحالة نفسها
-  await page.goto(BASE + "/models");
-  await page.locator("article#claude-opus-5-5").getByRole("button", { name: "التفاصيل" }).click();
-  await page.getByRole("button", { name: "اختبر الاتصال" }).click();
-  await page.getByText("نجح اختبار الاتصال.").waitFor();
+  for (const [label, trigger, expect] of [
+    ["رفض المفتاح", () => { failNext = { status: 400, type: "invalid_request_error", message: "Your credit balance is too low to access the Anthropic API." }; }, "رصيد حساب Anthropic لا يكفي"],
+    ["لا نص خلال المهلة", () => { hangNext = true; }, "لم يبدأ النموذج الإجابة خلال 2 ثانية"],
+  ]) {
+    await page.goto(BASE + "/consult/new");
+    await page.locator("#quick-consult").fill(`سؤال يفشل نموذجه أولًا ثم يُعاد بنموذج آخر (${label})`);
+    trigger();
+    await page.locator("form.composer").getByRole("button", { name: "أرسل" }).click();
+    await page.waitForURL(/\/consult\/[\w-]{8,}$/);
+    await page.locator(".notice-danger").waitFor({ timeout: 20000 });
+    const altRetry = page.getByRole("button", { name: /أعد المحاولة بنموذج/ });
+    check(`${label}: رسالة واضحة، وإعادة المحاولة بنموذج آخر يعمل معروضة`,
+      (await page.locator(".notice-danger").innerText()).includes(expect) && (await altRetry.innerText().catch(() => "")).includes("Claude Sonnet 5.5"));
+    await altRetry.click();
+    await page.getByRole("button", { name: "أعد التوليد" }).waitFor({ timeout: 30000 });
+    check(`${label}: إعادة المحاولة بالنموذج الآخر تنجح، وتصير الاستشارة عليه`,
+      calls.at(-1).body.model === "claude-sonnet-5-5" && (await page.locator(".msg-meta").last().innerText()).includes("Claude Sonnet 5.5"));
+    // فشل Opus سُجّل في حالته؛ يُعاد اختباره كي تبدأ الخطوات التالية من الحالة نفسها
+    await page.goto(BASE + "/models");
+    await page.locator("article#claude-opus-5-5").getByRole("button", { name: "التفاصيل" }).click();
+    await page.getByRole("button", { name: "اختبر الاتصال" }).click();
+    await page.getByText("نجح اختبار الاتصال.").waitFor();
+  }
 
   // ── وكيل متخصص: تعليماته تصل إلى المزوّد ولا تصل إلى المتصفح ──
   await page.goto(BASE + "/consult/new?agent=coding");

@@ -18,6 +18,9 @@ const MAX_CONCURRENT = 3; // بثّ متزامن لكل مستخدم
 const g = globalThis as typeof globalThis & { __hessaraStreams?: Map<string, number> };
 const inflight = (g.__hessaraStreams ??= new Map());
 const MAX_GENERATION_MS = 5 * 60_000; // سقف زمني حتى لا يحتجز مزوّد معلّق الاتصال إلى ما لا نهاية
+// مهلة أول نص: مزوّد بدأ الاتصال ولم يرسل حرفًا يُوقف قبل السقف الكلي بكثير، فيُعرض على المستخدم نموذج آخر.
+// على الموقع الحي بقي Gemini دقيقة ونصفًا «يكتب الإجابة…» بلا حرف. المتغير للاختبار وحده.
+const FIRST_TEXT_MS = Number(process.env.HESSARA_FIRST_TEXT_MS) || 90_000;
 
 export const POST = authed<Ctx>(async (req, user, ctx) => {
   const lang = langOf(req);
@@ -96,29 +99,45 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
           newId(), user.id, c.id, "model_call", JSON.stringify({ model: model.def.id, agent: c.agent_id, status }), Date.now());
       };
       send({ t: "start", id: assistantId, userMessageId: userMsgId, modelId: c.model_id });
+      const silent = new AbortController();
+      let waiting: ReturnType<typeof setTimeout> | undefined = setTimeout(() => silent.abort(), FIRST_TEXT_MS);
+      const stopWaiting = () => { if (waiting) { clearTimeout(waiting); waiting = undefined; } };
+      // بلوغ إحدى المهلتين ليس اكتمالًا: يُحفظ ما وصل، ويُبلَّغ المستخدم بنوع «مهلة» فيُعرض عليه نموذج آخر.
+      const timedOut = async () => {
+        const started = !!text.trim();
+        await save("stopped");
+        if (!started && model.def.adapter !== "demo")
+          await recordCheck(c.model_id, false, { ar: "لم يبدأ الإجابة خلال المهلة.", en: "Did not start answering within the time limit." });
+        const secs = Math.round(FIRST_TEXT_MS / 1000);
+        send({ t: "error", kind: "timeout", partial: started, id: assistantId, message: started
+          ? t("تجاوز التوليد المدة القصوى فأُوقف. الإجابة المحفوظة غير مكتملة.", "Generation exceeded the maximum time and was stopped. The saved answer is incomplete.")
+          : t(`لم يبدأ النموذج الإجابة خلال ${secs} ثانية، فأُوقف الطلب. أعد المحاولة أو جرّب نموذجًا آخر.`, `The model did not start answering within ${secs} seconds, so the request was stopped. Try again or use another model.`) });
+      };
       try {
         for await (const chunk of model.adapter.stream({
           model: model.apiModel,
           system: systemPrompt(c.agent_id, lang),
           messages: history.map((m) => ({ role: m.role, content: m.content })),
-          signal: AbortSignal.any([abort.signal, timeout]),
+          signal: AbortSignal.any([abort.signal, timeout, silent.signal]),
         })) {
+          if (chunk) stopWaiting();
           text += chunk;
           send({ t: "d", v: chunk });
         }
+        stopWaiting();
         if (abort.signal.aborted) await save("stopped");
-        else if (timeout.aborted) {
-          // بلوغ السقف الزمني ليس اكتمالًا: تُحفظ الإجابة ناقصة ويُبلَّغ المستخدم.
-          await save("stopped");
-          send({ t: "error", kind: "timeout", message: t("تجاوز التوليد المدة القصوى فأُوقف. الإجابة المحفوظة غير مكتملة.", "Generation exceeded the maximum time and was stopped. The saved answer is incomplete."), partial: !!text.trim(), id: assistantId });
-        } else if (!text.trim()) send({ t: "error", kind: "empty", message: t("أعاد النموذج ردًا فارغًا. أعد المحاولة.", "The model returned an empty reply. Try again.") });
+        else if (timeout.aborted || silent.signal.aborted) await timedOut();
+        else if (!text.trim()) send({ t: "error", kind: "empty", message: t("أعاد النموذج ردًا فارغًا. أعد المحاولة.", "The model returned an empty reply. Try again.") });
         else {
           await save("complete");
           if (model.def.adapter !== "demo") await recordCheck(c.model_id, true);
           send({ t: "done", id: assistantId, status: "complete", left: quota?.left != null ? Math.max(0, quota.left - 1) : null });
         }
       } catch (e) {
+        stopWaiting();
         if (abort.signal.aborted) await save("stopped");
+        // المحوّلات المبنية على fetch ترمي عند بلوغ المهلة بدل أن تعود؛ تُعامل كما لو عادت.
+        else if (timeout.aborted || silent.signal.aborted) await timedOut();
         else {
           const message = e instanceof ProviderError ? e.text(lang) : t("حدث خطأ غير متوقع أثناء توليد الإجابة.", "An unexpected error occurred while generating the answer.");
           if (!(e instanceof ProviderError)) {
@@ -132,6 +151,7 @@ export const POST = authed<Ctx>(async (req, user, ctx) => {
           send({ t: "error", kind: e instanceof ProviderError ? e.kind : "unexpected", message, partial: !!text.trim(), id: assistantId });
         }
       } finally {
+        stopWaiting();
         release();
         closed = true;
         try { controller.close(); } catch { /* أُغلق مسبقًا */ }
