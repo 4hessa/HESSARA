@@ -8,6 +8,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { chromium, firefox, webkit } = require("playwright");
+const { INSIGHTS } = await import("../content/insights.ts");
 // E2E_BROWSER=webkit|firefox يشغّل الاختبار نفسه على محرك Safari أو Firefox (الافتراضي Chromium).
 const ENGINE = process.env.E2E_BROWSER || "chromium";
 const ENGINES = { chromium, firefox, webkit };
@@ -126,6 +127,12 @@ try {
     await noOverflow(page, `${n}/حاسب`);
     if (["agents-visitor", "insight-article", "resources", "how-built", "privacy"].includes(n)) await axe(page, `${n} (عربي)`);
     if (n === "agents-visitor") await shot(page, "01b-agents-visitor-ar", true);
+    if (n === "insights") {
+      // الأنواع المعروضة هي المنشورة فعلًا: «تقارير ميدانية» لا تظهر قبل أول تقرير، ولا زر تصفّح بالنوع.
+      const field = INSIGHTS.some((e) => e.format === "field");
+      check("رؤى: لا زر «تصفّح حسب النوع»، ولا وعد بنوع لم يُنشر فيه شيء",
+        (await page.getByText("تصفّح حسب النوع").count()) === 0 && ((await page.getByText("تقارير ميدانية").count()) > 0) === field);
+    }
   }
   // الصفحات المحذوفة أو المدموجة تحوّل تحويلًا دائمًا، فلا ينتهي رابط قديم بصفحة غير موجودة.
   for (const [old, to] of [["/careers", "/about"], ["/programs", "/about"], ["/platform", "/"], ["/consulting", "/agents"]]) {

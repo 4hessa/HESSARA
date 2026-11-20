@@ -269,7 +269,7 @@ Models are enabled by environment variables on the server, such as \`ANTHROPIC_A
 
 ## When to use it
 
-Use it for decisions with real tension: competing goals, uncertain outcomes, or a costly mistake. For routine questions, one consultation and a quick review are enough. The reasoning is set out in [How multi-agent deliberation changes the shape of a strategy review](/insights/multi-agent-deliberation).
+Use it for decisions with real tension: competing goals, uncertain outcomes, or a costly mistake. For routine questions, one consultation and a quick review are enough. The reasoning is set out in [How multi-agent deliberation changes the review of a technical decision](/insights/multi-agent-deliberation).
 
 ## Roles
 
@@ -331,7 +331,7 @@ Stop and read carefully at three moments:
 
 ## متى تستخدمه
 
-استخدمه للقرارات التي تحمل توترًا حقيقيًا: أهداف متنافسة، أو نتائج غير مؤكدة، أو خطأ مكلف. أما الأسئلة الروتينية فتكفيها استشارة واحدة ومراجعة سريعة. وتجد الحجة وراء ذلك في مقالة [كيف تغيّر المداولة متعددة الوكلاء شكل المراجعة الاستراتيجية](/insights/multi-agent-deliberation).
+استخدمه للقرارات التي تحمل توترًا حقيقيًا: أهداف متنافسة، أو نتائج غير مؤكدة، أو خطأ مكلف. أما الأسئلة الروتينية فتكفيها استشارة واحدة ومراجعة سريعة. وتجد الحجة وراء ذلك في مقالة [كيف تغيّر المداولة متعددة الوكلاء مراجعة القرار التقني](/insights/multi-agent-deliberation).
 
 ## الأدوار
 

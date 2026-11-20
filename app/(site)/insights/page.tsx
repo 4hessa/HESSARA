@@ -1,50 +1,50 @@
 import type { Metadata } from "next";
-import { INSIGHTS } from "@/content/insights";
+import { FORMATS, formatList, INSIGHTS, publishedFormats } from "@/content/insights";
 import { Cta, Rows, SectionHead, Tiles } from "@/components/site/Blocks";
 import { MarketingPage } from "@/components/site/Page";
 import { getLang } from "@/lib/i18n-server";
+import type { Lang } from "@/lib/i18n";
 import { pageMeta } from "@/lib/meta";
 
+// أنواع المقالات المعروضة تُستخرج من المقالات المنشورة فعلًا (content/insights.ts)، فلا تَعِد الصفحة بنوع
+// لم يُنشر فيه شيء. أول «تقرير ميداني» يُنشر يُظهر بطاقته وحده.
 const C = {
   en: {
-    meta: "Insights", desc: "Research notes, field reports, and briefings on AI-assisted advisory, reasoning, and decision-making.",
-    h1: "Insights That Light the Way", sub: "Research Notes, Field Reports & Briefings",
+    meta: "Insights", about: "on AI-assisted advisory, reasoning, and decision-making.",
+    h1: "Insights That Light the Way",
     copy: "Considered writing on AI-assisted advisory: how specialized models reason, where they fall short, and how to turn their output into decisions you can defend.",
-    b1: "Read the Latest", b2: "Browse by Format",
-    e1: "Formats", t1: "Three Ways to Read HESSARA",
-    tiles: [
-      { icon: "quill", title: "Research Notes", text: "Longer studies of method, evidence, and limits." },
-      { icon: "telescope", title: "Field Reports", text: "Practical notes on how models behave in real tasks." },
-      { icon: "lantern", title: "Briefings", text: "Short guidance for leaders who must decide." },
-    ],
+    b1: "Read the Latest",
+    e1: "Formats", ways: ["", "One Way to Read HESSARA", "Two Ways to Read HESSARA", "Three Ways to Read HESSARA"],
     e2: "Latest", t2: "Recent Thinking",
     cta: "Ready to turn insight into action?", c1: "Start a Consultation", c2: "Meet the Agents",
   },
   ar: {
-    meta: "رؤى", desc: "مذكرات بحثية وتقارير ميدانية وإحاطات في الاستشارة بمساعدة الذكاء الاصطناعي والاستدلال واتخاذ القرار.",
-    h1: "رؤى تُنير الطريق", sub: "مذكرات بحثية وتقارير ميدانية وإحاطات",
+    meta: "رؤى", about: "في الاستشارة بمساعدة الذكاء الاصطناعي والاستدلال واتخاذ القرار.",
+    h1: "رؤى تُنير الطريق",
     copy: "كتابة متأنية في الاستشارة بمساعدة الذكاء الاصطناعي: كيف تستدل النماذج، وأين تقصّر، وكيف تحوّل مخرجاتها إلى قرارات تستطيع الدفاع عنها.",
-    b1: "اقرأ الأحدث", b2: "تصفّح حسب النوع",
-    e1: "الأنواع", t1: "ثلاث طرق لقراءة هسّارة",
-    tiles: [
-      { icon: "quill", title: "مذكرات بحثية", text: "دراسات أطول في المنهج والدليل والحدود." },
-      { icon: "telescope", title: "تقارير ميدانية", text: "ملاحظات عملية عن سلوك النماذج في المهام الحقيقية." },
-      { icon: "lantern", title: "إحاطات", text: "إرشاد موجز لمن عليه أن يقرر." },
-    ],
+    b1: "اقرأ الأحدث",
+    e1: "الأنواع", ways: ["", "طريقة واحدة لقراءة هسّارة", "طريقتان لقراءة هسّارة", "ثلاث طرق لقراءة هسّارة"],
     e2: "الأحدث", t2: "أحدث ما كتبنا",
     cta: "مستعد لتحويل الرؤية إلى فعل؟", c1: "ابدأ استشارة", c2: "تعرّف على الوكلاء",
   },
 };
 
+/** وصف الصفحة لمحركات البحث: الأنواع المنشورة في جملة تبدأ بحرف كبير بالإنجليزية. */
+function description(lang: Lang) {
+  const list = formatList(lang, publishedFormats(), "lower");
+  return lang === "ar" ? `${list} ${C.ar.about}` : `${list.charAt(0).toUpperCase()}${list.slice(1)} ${C.en.about}`;
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getLang();
-  const c = C[lang];
-  return pageMeta(lang, c.meta, c.desc, "/insights");
+  return pageMeta(lang, C[lang].meta, description(lang), "/insights");
 }
 
 export default async function InsightsPage() {
   const lang = await getLang();
   const c = C[lang];
+  const formats = publishedFormats();
+  const tiles = formats.map((f) => ({ icon: FORMATS[f].icon, title: FORMATS[f][lang].title, text: FORMATS[f][lang].text }));
   const rows = INSIGHTS.map((e) => ({ kind: e[lang].kicker ?? "", title: e[lang].title, text: e[lang].description, href: `/insights/${e.slug}` }));
   return (
     <MarketingPage
@@ -52,19 +52,20 @@ export default async function InsightsPage() {
       hero={
         <>
           <h1>{c.h1}</h1>
-          <p className="hero__sub">{c.sub}</p>
+          {formats.length > 0 && <p className="hero__sub">{formatList(lang, formats)}</p>}
           <div className="hero__copy"><p>{c.copy}</p></div>
           <div className="btn-row">
             <a className="btn" href="#latest">{c.b1}</a>
-            <a className="btn btn--ghost" href="#formats">{c.b2}</a>
           </div>
         </>
       }
     >
-      <section className="section" id="formats">
-        <SectionHead eyebrow={c.e1} title={c.t1} />
-        <Tiles items={c.tiles} />
-      </section>
+      {tiles.length > 0 && (
+        <section className="section" id="formats">
+          <SectionHead eyebrow={c.e1} title={c.ways[tiles.length] ?? c.ways[3]} />
+          <Tiles items={tiles} />
+        </section>
+      )}
       <section className="section" id="latest">
         <SectionHead eyebrow={c.e2} title={c.t2} />
         <Rows items={rows} rtl={lang === "ar"} />

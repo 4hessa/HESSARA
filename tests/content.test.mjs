@@ -30,6 +30,27 @@ test("مقالات رؤى: كل استشهاد مرقّم له مصدر، وكل
   }
 });
 
+test("رؤى: لكل مقالة نوع، والصفحة لا تعرض إلا الأنواع المنشورة؛ «التقارير الميدانية» تظهر مع أول تقرير", async () => {
+  const { FORMATS, publishedFormats, formatList } = await import("../content/insights.ts");
+  for (const e of INSIGHTS) assert.ok(e.format in FORMATS, `${e.slug}: نوع غير معروف`);
+  assert.equal(publishedFormats().includes("field"), INSIGHTS.some((e) => e.format === "field"));
+  assert.deepEqual(publishedFormats([]), []);
+  const firstReport = { ...INSIGHTS[0], slug: "first-field-report", format: "field" };
+  assert.deepEqual(publishedFormats([...INSIGHTS, firstReport]), ["research", "field", "briefing"], "أول تقرير يُظهر نوعه في موضعه");
+  assert.equal(formatList("ar", ["research", "briefing"]), "مذكرات بحثية وإحاطات");
+  assert.equal(formatList("ar", ["research", "field", "briefing"]), "مذكرات بحثية وتقارير ميدانية وإحاطات");
+  assert.equal(formatList("en", ["research", "briefing"]), "Research Notes & Briefings");
+  assert.equal(formatList("en", ["research", "field", "briefing"]), "Research Notes, Field Reports & Briefings");
+  assert.equal(formatList("en", ["research", "briefing"], "lower"), "research notes and briefings");
+  assert.equal(formatList("en", ["research", "field", "briefing"], "lower"), "research notes, field reports, and briefings");
+});
+
+test("روابط الدليل إلى مقالة المداولة تحمل عنوانها الحالي في اللغتين", () => {
+  const article = INSIGHTS.find((e) => e.slug === "multi-agent-deliberation");
+  const playbook = RESOURCES.find((e) => e.slug === "multi-agent-playbook");
+  for (const lang of ["ar", "en"]) assert.ok(playbook[lang].body.includes(`[${article[lang].title}](/insights/multi-agent-deliberation)`), lang);
+});
+
 test("الروابط الخارجية في المقالات وقائمة القراءة كلها https، والقائمة متطابقة بين اللغتين", () => {
   for (const e of [...INSIGHTS, ...RESOURCES]) {
     for (const lang of ["en", "ar"]) {
