@@ -809,3 +809,12 @@ dialog.drawer.start { margin-inline-start: 0; margin-inline-end: auto; border-in
 @media (max-width: 540px) { .voice-max { display: none; } }
 @keyframes voice-pulse { 50% { opacity: 0.25; } }
 @media (prefers-reduced-motion: reduce) { .voice-rec::before { animation: none; } }
+
+/* شاشة الاستشارة على الهاتف: الحقل الفارغ سطر واحد بلا سطر التنبيه والحصة، فيبقى معظم الشاشة للقراءة.
+   يتسع الحقل ويظهر السطر مع أول حرف. لا يُربط ذلك بالتركيز: انكماش الحقل عند لمس «أرسل» يحرّك الزر تحت الإصبع.
+   ويبقى سطر الحصة ظاهرًا حين تقترب من النفاد (.keep). */
+@media (max-width: 640px) {
+  .ws-compose .composer.is-empty textarea { min-height: 2.75rem; }
+  .ws-compose .composer.is-empty .composer-hint:not(.keep) { display: none; }
+  .ws-compose .composer.is-empty .composer-bar { justify-content: flex-end; }
+}

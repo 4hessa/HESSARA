@@ -25,8 +25,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const signup = sp.mode === "signup";
   return (
     <>
-      <div className="art-band"><Art name="home" kind="fade" fade={{ "--art-h": "30rem", "--f1": "25%", "--f2": "58%", "--f3": "100%" }} /></div>
-      <section className="app-hero app-hero--art" style={{ "--app-top": "15rem" } as React.CSSProperties}>
+      <div className="art-band"><Art name="home" kind="fade" fade={{ "--art-h": "20rem", "--f1": "15%", "--f2": "50%", "--f3": "100%" }} /></div>
+      <section className="app-hero app-hero--art" style={{ "--app-top": "9.5rem" } as React.CSSProperties}>
         <div className="app-hero__inner">
           <p className="eyebrow">{signup ? t("حساب جديد", "New account") : t("الدخول", "Sign in")}</p>
           <h1>{signup ? t("أنشئ حسابك في هسّارة", "Create your HESSARA account") : t("مرحبًا بعودتك", "Welcome back")}</h1>
