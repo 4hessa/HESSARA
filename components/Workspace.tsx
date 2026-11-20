@@ -336,13 +336,13 @@ export function Workspace({ consultation: c0, messages: m0, history, quota, shar
         </div>
 
         <div className="ws-compose">
-          <form className="composer" onSubmit={(e) => { e.preventDefault(); submit(); }}>
+          <form className={`composer${draft.trim() ? "" : " is-empty"}`} onSubmit={(e) => { e.preventDefault(); submit(); }}>
             <label htmlFor="ws-input" className="sr-only">{t("رسالتك", "Your message")}</label>
             <textarea id="ws-input" ref={taRef} rows={1} value={draft} maxLength={12000} placeholder={t("اكتب متابعتك أو سؤالك التالي…", "Write your follow-up or next question…")}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && window.matchMedia("(pointer: fine)").matches) { e.preventDefault(); submit(); } }} />
             <div className="composer-bar">
-              <span className="t-caption grow">
+              <span className={`t-caption grow composer-hint${left !== null && left <= 3 ? " keep" : ""}`}>
                 {t("تحقق من الإجابات قبل الاعتماد عليها.", "Check answers before relying on them.")}
                 {model?.engine === "llm" && left !== null && quota?.limit != null && <> {t(`تبقّى لك اليوم ${left} من ${quota.limit} استدعاء للنماذج الحقيقية.`, `${left} of ${quota.limit} real-model calls left today.`)}</>}
               </span>

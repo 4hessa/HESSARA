@@ -48,8 +48,8 @@ export default async function Home() {
 
   return (
     <AppPage
-      art={{ name: "home", kind: "fade", fade: { "--art-h": "24rem", "--f1": "20%", "--f2": "55%", "--f3": "100%" } }}
-      top="14rem"
+      art={{ name: "home", kind: "fade", fade: { "--art-h": "18rem", "--f1": "15%", "--f2": "50%", "--f3": "100%" } }}
+      top="9rem"
       eyebrow={t("لوحتي", "Dashboard")}
       title={t(`مرحبًا ${user.name}، كيف يمكننا مساعدتك اليوم؟`, `Welcome, ${user.name}. How can we help today?`)}
       copy={pref
