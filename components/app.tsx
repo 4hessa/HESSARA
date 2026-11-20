@@ -1,6 +1,7 @@
 "use client";
 // سياق التطبيق في المتصفح: المستخدم، النماذج، الإشعارات العابرة، وموافقة الإرسال الخارجي (للنص وللصوت).
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { newerUser } from "@/lib/account-sync";
 import type { PublicUser } from "@/lib/auth";
 import { makeT, type Lang, type T } from "@/lib/i18n";
 import { safeTimeZone, TZ_COOKIE } from "@/lib/time";
@@ -78,7 +79,8 @@ export function AppProvider({ lang, user: u0, models: m0, tz: tz0 = "UTC", stt =
   const resolver = useRef<((v: boolean) => void) | null>(null);
   const seq = useRef(0);
 
-  useEffect(() => setUser(u0), [u0]);
+  // لقطة الخادم الأقدم من آخر كتابة في هذا التبويب لا تمحوها (تحديث طُلب قبل الكتابة ووصل بعدها).
+  useEffect(() => setUser((cur) => newerUser(cur, u0)), [u0]);
   useEffect(() => setModels(m0), [m0]);
 
   const toast = useCallback((msg: string) => {

@@ -184,11 +184,32 @@ try {
   await axe(page, "مساحة الاستشارة + لوحة المراجعة");
 
   // ── ٥. حفظ + نموذج مفضل ──
+  // سباق يُعاد عمدًا في كل تشغيل: تحديث الصفحة الذي يطلبه الحفظ يُقرأ على الخادم قبل اختيار النموذج المفضل،
+  // ويُحجز ردّه حتى يُحفظ الاختيار. لقطة الحساب الأقدم هذه لا يجوز أن تمحو النموذج المفضل من الشاشة.
+  const isRefresh = (url) => url.searchParams.has("_rsc");
+  const prefetch = (req) => !!req.headers()["next-router-prefetch"];
+  let release, rendered;
+  const held = new Promise((r) => { release = r; });
+  const wasRendered = new Promise((r) => { rendered = r; });
+  const hold = async (route) => {
+    if (prefetch(route.request())) return route.continue();
+    const res = await route.fetch();
+    rendered();
+    await held;
+    await route.fulfill({ response: res });
+  };
+  await page.route(isRefresh, hold);
   await page.getByRole("button", { name: "حفظ الاستشارة" }).click();
   await page.getByRole("button", { name: "إزالة من المحفوظات" }).waitFor();
+  await Promise.race([wasRendered, new Promise((_, no) => setTimeout(() => no(new Error("لم يُطلب تحديث الصفحة بعد الحفظ")), 15000))]);
   await page.getByRole("button", { name: "اجعله نموذجي المفضل" }).click();
   await page.locator(".account__model").waitFor();
-  check("النموذج المفضل يظهر بجانب اسم المستخدم", await page.locator(".account__btn").innerText().then((t) => t.includes("أحمد") && t.includes("المحرك التجريبي")));
+  const delivered = page.waitForResponse((r) => isRefresh(new URL(r.url())) && !prefetch(r.request()));
+  release();
+  await delivered;
+  await page.unroute(isRefresh, hold);
+  await page.waitForTimeout(1000);
+  check("النموذج المفضل يظهر بجانب اسم المستخدم ويبقى بعد وصول لقطة أقدم من الخادم", await page.locator(".account__btn").innerText().then((t) => t.includes("أحمد") && t.includes("المحرك التجريبي")));
 
   // إيقاف التوليد + إعادة التوليد
   await page.locator("#ws-input").fill("خطة مشروع تخرج من ثمانية أسابيع: ما المراحل والمتطلبات والمخاطر وكيف أقسّم العمل على الفريق خلال المدة المحددة مع معايير قبول واضحة لكل مرحلة؟ " .repeat(2));
