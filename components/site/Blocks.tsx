@@ -1,14 +1,15 @@
 // لبنات الصفحات التعريفية من الموقع المرجعي: بطاقات الأيقونات، الخطوات، القوائم، والدعوة إلى الإجراء.
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { RefIcon } from "./RefIcon";
 
 const two = (i: number) => String(i + 1).padStart(2, "0");
 
 export type TileItem = { icon: string; title: string; text: string; href?: string };
 export function Tiles({ items }: { items: TileItem[] }) {
+  // الأعمدة بعدد البطاقات حتى ثلاثة، وعرض البطاقة ثابت؛ فبطاقتان تتوسطان الصف بدل أن يبقى عمود فارغ.
   return (
-    <ol className="tiles">
+    <ol className="tiles" style={{ "--cols": Math.min(items.length, 3) } as CSSProperties}>
       {items.map((it, i) => {
         const body = (
           <>

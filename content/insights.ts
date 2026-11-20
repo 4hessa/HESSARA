@@ -1,51 +1,94 @@
-// قسم «رؤى»: أربع مقالات منهجية من الموقع المرجعي، بلغتين، مع ملاحظة توضّح ما لا تقدّمه هسّارة فعلًا من الأساليب
-// الموصوفة. لكل مقالة قائمة مصادر مرقّمة، والأرقام بين معقوفين في النص تشير إليها. تحقّقنا من وجود كل مصدر
+// قسم «رؤى»: أربع مقالات منهجية بلغتين، أصلها من الموقع المرجعي، مع ملاحظة توضّح ما لا تقدّمه هسّارة فعلًا من
+// الأساليب الموصوفة. لكل مقالة قائمة مصادر مرقّمة، والأرقام بين معقوفين في النص تشير إليها. تحقّقنا من وجود كل مصدر
 // وعنوانه وما نُسب إليه في ١٩ نوفمبر ٢٠٢٦. وما لم يُسنَد إلى مصدر في النص هو رأي منهجي، لا نتيجة بحثية.
+// في ٢٠ نوفمبر ٢٠٢٦ أُعيدت كتابة مقالتَي المداولة والسيناريوهات لجمهور المنصة (الطلاب والفرق التقنية) بأمثلة
+// تقنية بدل «فرق القيادة» و«المراجعة الاستراتيجية»، دون تغيير مصادرهما ولا ما نُسب إليها.
+import type { Lang } from "../lib/i18n.ts";
 import type { Entry } from "./types";
 
-export const INSIGHTS: Entry[] = [
+/** نوع المقالة: يحدد البطاقة التي تمثّله في صفحة «رؤى». */
+export type InsightFormat = "research" | "field" | "briefing";
+export type Insight = Entry & { format: InsightFormat };
+
+/** أنواع ما يُنشر بترتيب العرض. لا يظهر نوع في الصفحة إلا إذا نُشرت فيه مقالة واحدة على الأقل. */
+export const FORMATS: Record<InsightFormat, { icon: string; ar: { title: string; text: string }; en: { title: string; lower: string; text: string } }> = {
+  research: {
+    icon: "quill",
+    ar: { title: "مذكرات بحثية", text: "دراسات أطول في المنهج والدليل والحدود." },
+    en: { title: "Research Notes", lower: "research notes", text: "Longer studies of method, evidence, and limits." },
+  },
+  field: {
+    icon: "telescope",
+    ar: { title: "تقارير ميدانية", text: "ملاحظات عملية عن سلوك النماذج في المهام الحقيقية." },
+    en: { title: "Field Reports", lower: "field reports", text: "Practical notes on how models behave in real tasks." },
+  },
+  briefing: {
+    icon: "lantern",
+    ar: { title: "إحاطات", text: "إرشاد موجز لمن عليه أن يقرر." },
+    en: { title: "Briefings", lower: "briefings", text: "Short guidance for anyone who has to decide." },
+  },
+};
+
+/** الأنواع التي نُشرت فيها مقالة فعلًا، بترتيب العرض. فلا تَعِد الصفحة بنوع لم يُنشر فيه شيء بعد. */
+export function publishedFormats(list: readonly Insight[] = INSIGHTS): InsightFormat[] {
+  return (Object.keys(FORMATS) as InsightFormat[]).filter((f) => list.some((e) => e.format === f));
+}
+
+/** أسماء الأنواع في جملة: «مذكرات بحثية وإحاطات»، و«Research Notes & Briefings»، و«research notes and briefings». */
+export function formatList(lang: Lang, formats: readonly InsightFormat[], style: "title" | "lower" = "title"): string {
+  if (lang === "ar") return formats.map((f, i) => (i ? "و" : "") + FORMATS[f].ar.title).join(" ");
+  const names = formats.map((f) => FORMATS[f].en[style]);
+  if (names.length < 3) return names.join(style === "title" ? " & " : " and ");
+  const head = names.slice(0, -1).join(", ");
+  return style === "title" ? `${head} & ${names.at(-1)}` : `${head}, and ${names.at(-1)}`;
+}
+
+export const INSIGHTS: Insight[] = [
   {
     slug: "multi-agent-deliberation",
+    format: "research",
     en: {
       kicker: "Research Note",
-      title: "How multi-agent deliberation changes the shape of a strategy review",
-      sub: "Where a council of specialist models helps, and where one careful analyst is still the better tool",
-      description: "When several specialist AI models argue a question from different positions, the review changes shape. A look at where that helps and where it does not.",
+      title: "How multi-agent deliberation changes the review of a technical decision",
+      sub: "Where putting the same question to several specialist agents helps, and where one careful pass is still the better tool",
+      description: "When several specialist agents take on the same technical decision from different angles, such as a system design or a project's scope, the review changes shape. A look at where that helps and where it does not.",
       note: "HESSARA runs one agent per consultation; it does not stage a debate between agents automatically. The method below can be applied by running the same brief in separate consultations and comparing the answers.",
-      body: `A strategy review usually has one voice. Someone writes the paper, others react to it, and the paper's framing quietly decides which objections are ever raised. Multi-agent deliberation changes that starting point: several specialist models are given the same brief and asked to argue it from different positions before anyone writes a conclusion [1][2].
+      body: `A technical decision in a small team usually has one voice. One member proposes the architecture, the framework, or the scope; the others react to that proposal; and its framing quietly decides which objections are ever raised. Multi-agent deliberation changes that starting point: several specialist models are given the same brief and asked to argue it from different positions before anyone settles on an answer [1][2].
 
 ## What actually changes
 
-The value is not that more models produce more text. It is that disagreement appears early, while it is still cheap to act on. A single model asked to reflect on its own answer tends to keep it once it is confident; models assigned opposing positions bring out alternatives it would not reach alone [2].
+The value is not that more models produce more text. It is that disagreement appears early, while acting on it is still cheap: before the database schema is fixed, and before a month of code is written. A single model asked to reflect on its own answer tends to keep it once it is confident; models assigned opposing positions bring out alternatives it would not reach alone [2].
 
-- **Assumptions are stated, not implied.** A strategist model and a risk model asked the same question will rest on different premises. Placing their answers side by side exposes the premises.
-- **Objections arrive before commitment.** In a single-author review, the strongest objection often surfaces in the meeting, after positions have hardened. People are often reluctant to voice reservations while a plan is being made, which is why methods such as the premortem ask for objections explicitly and early [6].
-- **The record is richer.** A deliberation leaves behind who argued what and why. That is more useful six months later than a polished recommendation.
+- **Assumptions are stated, not implied.** A systems-engineering agent and a security agent asked the same question will rest on different premises. Placing their answers side by side exposes those premises.
+- **Objections arrive before commitment.** In a team project, the strongest objection may surface only at the supervisor's review or the final defence, after the work is done. People are often reluctant to voice reservations while a plan is being made, which is why methods such as the premortem ask for objections explicitly and early [6].
+- **The record is richer.** A deliberation leaves behind who argued what and why. When the decision has to be explained months later, in a project report or before an examining committee, that record is more useful than a polished conclusion.
 
 ## Where it helps
 
-Deliberation earns its cost when the question has real tension in it: growth against resilience, speed against control, one market against another. It also helps when the people deciding hold different views and need those views represented fairly rather than averaged away.
+Deliberation earns its cost when the question has real tension in it: delivery speed against code quality, a relational database against a document database, building a component against relying on an existing service, a wider scope against a version that works before the deadline. It also helps when team members hold different views and need those views represented fairly rather than averaged away.
 
 There is published evidence that the structure can improve answers. When several instances of a model proposed answers and then debated them, factual accuracy and reasoning improved over a single model on the tasks tested [1]. Anthropic reports that a lead model coordinating sub-agents working in parallel outperformed a single agent by 90.2% on its internal research evaluation [5].
 
 ## Where it does not
 
-Many questions have no tension worth staging. If the task is to summarise a contract, reconcile figures, or check a calculation, a council adds delay and the appearance of rigour without the substance. A single careful pass, checked by a person, is the better tool. A comparison of debate methods found that, in their current form, they do not reliably outperform simpler strategies such as sampling several answers and keeping the most common one [3], and model developers advise starting with the simplest design that does the job [7].
+Many questions have no tension worth staging. If the task is to fix an error that stops the code from building, convert data from one format to another, or check a calculation, a council adds delay and the appearance of rigour without the substance. A single careful pass, checked by a person, is the better tool. A comparison of debate methods found that, in their current form, they do not reliably outperform simpler strategies such as sampling several answers and keeping the most common one [3], and model developers advise starting with the simplest design that does the job [7].
 
-There is a second limit. Models from the same provider or with the same architecture, given the same brief, can agree for the wrong reasons. In a study of more than 350 models, when two models were both wrong they gave the same wrong answer 60% of the time on one benchmark dataset [4]. Three confident answers that rest on the same unexamined assumption are one answer, not three. Agreement between agents is weak evidence unless they were given different information or different roles.
+There is a second limit. Models from the same provider or with the same architecture, given the same brief, can agree for the wrong reasons. In a study of more than 350 models, when two models were both wrong they gave the same wrong answer 60% of the time on one benchmark dataset [4]. Three confident answers that rest on the same unexamined assumption are one answer, not three. Agreement between agents is weak evidence unless they were given different information or different roles, and it counts for more when the agents run on models from different developers.
 
 ## A working pattern
 
-1. **Frame the question in one sentence** and list the constraints that are not negotiable.
-2. **Assign roles that genuinely conflict.** A strategist, a risk voice, and a systems voice will disagree about different things [2].
-3. **Ask for positions before discussion,** so that later convergence can be seen for what it is [1].
-4. **Have a person decide.** The deliberation informs the decision. It does not make it.
+1. **Frame the decision in one sentence** and list the constraints that are not negotiable: the deadline, the team's size and skills, and any technology the course requires.
+2. **Assign roles that genuinely conflict.** A systems-engineering agent, a security agent, and a technical-planning agent will disagree about different things [2].
+3. **Ask for positions before discussion,** so that later convergence can be seen for what it is [1]. In practice, let each agent answer before you show it another agent's answer.
+4. **Have a person decide.** The deliberation informs the decision; the team, and its supervisor where needed, makes it.
+
+The steps for doing this on HESSARA, together with the Critique Lab, are in [Getting a second opinion](/resources/multi-agent-playbook).
 
 > A council is worth convening when you would otherwise hear only one side of an argument you need to have.
 
 ## What to take away
 
-Use deliberation for decisions with real tension, keep it away from routine analysis, and treat agreement between agents with the same suspicion you would apply to agreement in a room where everyone read the same briefing.
+Use deliberation for decisions with real tension, keep it away from routine fixes, and treat agreement between agents with the same suspicion you would apply to a team in which everyone learned from the same tutorial.
 
 ## Sources
 
@@ -61,44 +104,46 @@ Sources checked on 19 November 2026.`,
     },
     ar: {
       kicker: "مذكرة بحثية",
-      title: "كيف تغيّر المداولة متعددة الوكلاء شكل المراجعة الاستراتيجية",
-      sub: "أين يفيد مجلس من النماذج المتخصصة، وأين يبقى محلل واحد متأنٍّ هو الأداة الأفضل",
-      description: "حين تتناول عدة نماذج متخصصة سؤالًا واحدًا من مواقع مختلفة يتغير شكل المراجعة. نظرة في مواضع النفع وحدوده.",
+      title: "كيف تغيّر المداولة متعددة الوكلاء مراجعة القرار التقني",
+      sub: "أين يفيد عرض السؤال نفسه على أكثر من وكيل متخصص، وأين تبقى مراجعة واحدة متأنية هي الأداة الأفضل",
+      description: "حين يتناول أكثر من وكيل متخصص قرارًا تقنيًا واحدًا من زوايا مختلفة، كتصميم نظام أو تحديد نطاق مشروع، يتغير شكل المراجعة. نظرة في مواضع النفع وحدوده.",
       note: "تشغّل هسّارة وكيلًا واحدًا في كل استشارة، ولا تُجري مناظرة آلية بين الوكلاء. يمكن تطبيق المنهج أدناه بتشغيل الموجز نفسه في استشارات منفصلة ثم مقارنة الإجابات.",
-      body: `المراجعة الاستراتيجية في العادة صوتٌ واحد: يكتب أحدهم الورقة، ويتفاعل الآخرون معها، ويحدّد إطارها بهدوء أيَّ الاعتراضات سيُطرح أصلًا. والمداولة متعددة الوكلاء تغيّر نقطة البداية هذه؛ إذ تُعطى عدة نماذج متخصصة الموجزَ نفسه، ويُطلب منها أن تحاجّ فيه من مواقع مختلفة قبل أن يكتب أحدٌ خلاصة [1][2].
+      body: `القرار التقني في الفريق الصغير صوتٌ واحد في العادة: يقترح أحد الأعضاء البنية أو إطار العمل أو النطاق، ويتفاعل الباقون مع اقتراحه، ويحدّد إطارُ الاقتراح بهدوء أيَّ الاعتراضات سيُطرح أصلًا. والمداولة متعددة الوكلاء تغيّر نقطة البداية هذه؛ إذ تُعطى عدة نماذج متخصصة الموجزَ نفسه، ويُطلب منها أن تحاجّ فيه من مواقع مختلفة قبل أن يستقر أحدٌ على إجابة [1][2].
 
 ## ما الذي يتغير فعلًا
 
-ليست القيمة في أن مزيدًا من النماذج ينتج مزيدًا من النص، بل في أن الخلاف يظهر مبكرًا، حين يكون التصرف بناءً عليه ما يزال قليل الكلفة. فالنموذج الواحد إذا طُلب منه أن يراجع إجابته يميل إلى التمسك بها متى وثق بها، أما نماذج تُعطى مواقف متعارضة فتُخرج بدائل لم يكن ليبلغها وحده [2].
+ليست القيمة في أن مزيدًا من النماذج ينتج مزيدًا من النص، بل في أن الخلاف يظهر مبكرًا، حين يكون التصرف بناءً عليه ما يزال قليل الكلفة: قبل أن يُثبَّت مخطط قاعدة البيانات، وقبل أن يُكتب شهر من الشفرة. فالنموذج الواحد إذا طُلب منه أن يراجع إجابته يميل إلى التمسك بها متى وثق بها، أما نماذج تُعطى مواقف متعارضة فتُخرج بدائل لم يكن ليبلغها وحده [2].
 
-- **تُعلَن الافتراضات بدل أن تُضمَر.** نموذج استراتيجي ونموذج للمخاطر يُسألان السؤال نفسه سيبنيان على مقدمات مختلفة، ووضع إجابتيهما جنبًا إلى جنب يكشف تلك المقدمات.
-- **تصل الاعتراضات قبل الالتزام.** في المراجعة ذات الكاتب الواحد يظهر أقوى اعتراض غالبًا في الاجتماع، بعد أن تكون المواقف قد تصلّبت. وكثيرًا ما يتردد الناس في إبداء تحفظاتهم أثناء وضع الخطة، ولهذا تطلب أساليب مثل «تحليل ما قبل الفشل» الاعتراضاتِ صراحةً وفي وقت مبكر [6].
-- **يصبح السجل أغنى.** تترك المداولة وراءها من حاجّ بماذا ولماذا، وهذا أنفع بعد ستة أشهر من توصية مصقولة.
+- **تُعلَن الافتراضات بدل أن تُضمَر.** وكيل هندسة الأنظمة ووكيل أمن المعلومات إذا سُئلا السؤال نفسه سيبنيان على مقدمات مختلفة، ووضع إجابتيهما جنبًا إلى جنب يكشف تلك المقدمات.
+- **تصل الاعتراضات قبل الالتزام.** في مشروع الفريق قد لا يظهر أقوى اعتراض إلا في مراجعة المشرف أو في المناقشة النهائية، بعد أن يكون العمل قد أُنجز. وكثيرًا ما يتردد الناس في إبداء تحفظاتهم أثناء وضع الخطة، ولهذا تطلب أساليب مثل «تحليل ما قبل الفشل» الاعتراضاتِ صراحةً وفي وقت مبكر [6].
+- **يصبح السجل أغنى.** تترك المداولة وراءها من حاجّ بماذا ولماذا. وحين يلزم شرح القرار بعد أشهر، في تقرير المشروع أو أمام لجنة المناقشة، يكون هذا السجل أنفع من خلاصة مصقولة.
 
 ## أين تفيد
 
-تستحق المداولة كلفتها حين يحمل السؤال توترًا حقيقيًا: النمو مقابل المرونة، والسرعة مقابل السيطرة، وسوقٌ مقابل أخرى. وتفيد كذلك حين يحمل أصحاب القرار آراء مختلفة ويحتاجون إلى تمثيلها بإنصاف بدل أن تذوب في متوسطٍ يرضي الجميع.
+تستحق المداولة كلفتها حين يحمل السؤال توترًا حقيقيًا: سرعة التسليم مقابل جودة الشفرة، وقاعدة بيانات علائقية مقابل قاعدة بيانات مستندية، وبناء مكوّن بنفسك مقابل الاعتماد على خدمة قائمة، ونطاق أوسع مقابل نسخة تعمل فعلًا قبل الموعد. وتفيد كذلك حين يحمل أعضاء الفريق آراء مختلفة ويحتاجون إلى تمثيلها بإنصاف بدل أن تذوب في متوسطٍ يرضي الجميع.
 
 وثمة أدلة منشورة على أن هذا البناء قد يحسّن الإجابات. حين اقترحت عدة نسخ من نموذج إجاباتها ثم تناظرت حولها، تحسّنت الدقة الواقعية والاستدلال مقارنة بنموذج واحد في المهام المختبرة [1]. وتذكر Anthropic أن نموذجًا قائدًا ينسّق وكلاء فرعيين يعملون بالتوازي تفوّق على وكيل منفرد بنسبة 90.2% في تقييمها الداخلي لمهام البحث [5].
 
 ## أين لا تفيد
 
-كثير من الأسئلة لا يحمل توترًا يستحق أن يُمثَّل. إن كانت المهمة تلخيص عقد أو مطابقة أرقام أو التحقق من حساب، فالمجلس يضيف تأخيرًا ومظهرًا من الصرامة بلا جوهر. مرورٌ واحد متأنٍّ يراجعه إنسان هو الأداة الأفضل. وقد وجدت دراسة قارنت أساليب المناظرة أنها بصيغتها الحالية لا تتفوق بثبات على أساليب أبسط، مثل توليد عدة إجابات واختيار الأكثر تكرارًا [3]، ويوصي مطوّرو النماذج بالبدء بأبسط تصميم يؤدي المهمة [7].
+كثير من الأسئلة لا يحمل توترًا يستحق أن يُمثَّل. إن كانت المهمة إصلاح خطأ يمنع بناء الشفرة، أو تحويل بيانات من صيغة إلى أخرى، أو التحقق من حساب، فالمجلس يضيف تأخيرًا ومظهرًا من الصرامة بلا جوهر. مرورٌ واحد متأنٍّ يراجعه إنسان هو الأداة الأفضل. وقد وجدت دراسة قارنت أساليب المناظرة أنها بصيغتها الحالية لا تتفوق بثبات على أساليب أبسط، مثل توليد عدة إجابات واختيار الأكثر تكرارًا [3]، ويوصي مطوّرو النماذج بالبدء بأبسط تصميم يؤدي المهمة [7].
 
-وثمة حدّ ثانٍ: النماذج التي تأتي من المزوّد نفسه أو تتشارك البنية نفسها، إذا أُعطيت الموجز نفسه، قد تتفق لأسباب خاطئة. ففي دراسة شملت أكثر من 350 نموذجًا، حين أخطأ نموذجان معًا أعطيا الإجابة الخاطئة نفسها في 60% من الحالات على إحدى مجموعات الاختبار [4]. ثلاث إجابات واثقة تقوم على الافتراض نفسه غير المفحوص هي إجابة واحدة لا ثلاث. واتفاق الوكلاء دليل ضعيف ما لم يُعطَوا معلومات مختلفة أو أدوارًا مختلفة.
+وثمة حدّ ثانٍ: النماذج التي تأتي من المزوّد نفسه أو تتشارك البنية نفسها، إذا أُعطيت الموجز نفسه، قد تتفق لأسباب خاطئة. ففي دراسة شملت أكثر من 350 نموذجًا، حين أخطأ نموذجان معًا أعطيا الإجابة الخاطئة نفسها في 60% من الحالات على إحدى مجموعات الاختبار [4]. ثلاث إجابات واثقة تقوم على الافتراض نفسه غير المفحوص هي إجابة واحدة لا ثلاث. واتفاق الوكلاء دليل ضعيف ما لم يُعطَوا معلومات مختلفة أو أدوارًا مختلفة، ويزداد وزنه حين تعمل على نماذج من مطوّرين مختلفين.
 
 ## نمط عمل
 
-1. **صُغ السؤال في جملة واحدة** واذكر القيود غير القابلة للتفاوض.
-2. **وزّع أدوارًا تتعارض فعلًا.** صوت استراتيجي وصوت للمخاطر وصوت للأنظمة سيختلفون حول أشياء مختلفة [2].
-3. **اطلب المواقف قبل النقاش،** ليُرى التقارب اللاحق على حقيقته [1].
-4. **دع إنسانًا يقرر.** المداولة تُغني القرار ولا تتخذه.
+1. **صُغ القرار في جملة واحدة** واذكر القيود غير القابلة للتفاوض: الموعد النهائي، وحجم الفريق ومهاراته، وأي تقنية يشترطها المقرر.
+2. **وزّع أدوارًا تتعارض فعلًا.** وكيل هندسة الأنظمة ووكيل أمن المعلومات ووكيل التخطيط التقني سيختلفون حول أشياء مختلفة [2].
+3. **اطلب المواقف قبل النقاش،** ليُرى التقارب اللاحق على حقيقته [1]. وعمليًا: دع كل وكيل يجيب قبل أن تعرض عليه إجابة غيره.
+4. **دع إنسانًا يقرر.** المداولة تُغني القرار ولا تتخذه؛ القرار للفريق، ولمشرفه حين يلزم.
+
+وخطوات تطبيق ذلك في هسّارة، مع مختبر النقد، في [رأي ثانٍ: الوكلاء والنماذج والمراجعة](/resources/multi-agent-playbook).
 
 > يستحق المجلس أن يُعقد حين كنت ستسمع، لولاه، طرفًا واحدًا فقط من جدال تحتاج إلى خوضه.
 
 ## الخلاصة
 
-استخدم المداولة للقرارات التي تحمل توترًا حقيقيًا، وأبعدها عن التحليل الروتيني، وعامل اتفاق الوكلاء بالريبة نفسها التي تعامل بها اتفاقًا في غرفة قرأ فيها الجميع الإحاطة نفسها.
+استخدم المداولة للقرارات التي تحمل توترًا حقيقيًا، وأبعدها عن الإصلاحات الروتينية، وعامل اتفاق الوكلاء بالريبة نفسها التي تعامل بها اتفاق فريق تعلّم أفراده كلهم من الدرس نفسه.
 
 ## المصادر
 
@@ -115,6 +160,7 @@ Sources checked on 19 November 2026.`,
   },
   {
     slug: "citation-first-reasoning",
+    format: "research",
     en: {
       kicker: "Method Note",
       title: "Grounding answers in evidence: what citation-first reasoning looks like",
@@ -214,29 +260,30 @@ Sources checked on 19 November 2026.`,
   },
   {
     slug: "scenario-simulation",
+    format: "briefing",
     en: {
       kicker: "Briefing",
-      title: "Scenario simulation for leadership teams: a working method",
-      sub: "Framing assumptions, ranges, and decision points before any model is asked to forecast",
-      description: "A short working method for leadership teams using AI-assisted scenario simulation, starting with assumptions and decision points.",
+      title: "Scenario planning for a technical project: a working method",
+      sub: "Framing assumptions, ranges, and decision points before any model is asked to predict how the project will go",
+      description: "A short working method for students and technical teams who plan a project with scenarios instead of a single estimate, using AI as a sparring partner.",
       note: "HESSARA does not run simulations or assign probabilities to scenarios. The method below uses a model as a sparring partner, not as a forecaster.",
-      body: `Scenario work fails most often before any modelling begins. A team asks for a forecast, receives a confident number, and argues about the number instead of the assumptions behind it. The method below puts the assumptions first. It draws on scenario practice developed in corporate planning, best known from Shell, where scenarios were used in place of a single forecast [1].
+      body: `Project plans fail most often before any work begins. A team asks how long the project will take, receives a confident estimate, and argues about the estimate instead of the assumptions behind it. The method below puts the assumptions first. It draws on scenario practice developed in corporate planning, best known from Shell, where scenarios were used in place of a single forecast [1]. The same discipline fits a graduation project or a small product team.
 
 ## Start with the decision, not the forecast
 
-Write down the decision the scenarios are meant to inform and the date by which it must be made. If no decision depends on the outcome, the exercise is research, and should be scoped as research.
+Write down the decision the scenarios are meant to inform and the date by which it must be made: which technologies to commit to by the end of week two, whether to build on an external API or a local model, how much to promise in the project proposal. If no decision depends on the outcome, the exercise is research, and should be scoped as research.
 
 ## Name the few things that matter
 
-Most outcomes are driven by a small number of uncertainties. Choose the two or three that would change the decision if they moved, and set the rest aside [2]. For each one, record:
+Most outcomes are driven by a small number of uncertainties. Choose the two or three that would change the decision if they moved, and set the rest aside [2]. In a technical project they are often things like access to the data you need, the limits of a free service tier, or the time team members have during exams. For each one, record:
 
 - the range you consider plausible, with a low and a high case
 - what you would expect to observe first if it began to move; planners call these signposts [3]
-- who in the organisation is closest to that signal
+- who on the team is closest to that signal
 
 ## Build scenarios as stories with numbers
 
-A scenario is a consistent account of how the chosen uncertainties resolve together [2]. Three or four are enough. Each should be plausible, distinct from the others, and uncomfortable in a different way. Avoid a "base case" that everyone quietly treats as the prediction.
+A scenario is a consistent account of how the chosen uncertainties resolve together [2]. Three or four are enough. Each should be plausible, distinct from the others, and uncomfortable in a different way: the data arrives late while the API stays stable, for example, or the data is on time but the free tier proves too small. Avoid a "base case" that everyone quietly treats as the prediction.
 
 ## Where models help
 
@@ -251,11 +298,11 @@ Treat any probability a model attaches to a scenario as a prompt for discussion.
 
 ## Turn scenarios into decision points
 
-For each scenario, agree in advance what you would do and what observation would trigger it [3]. This is the part that pays for the exercise: when the signal appears, the argument has already been had. Public-sector foresight guidance follows the same sequence: test assumptions, build scenarios, stress-test strategies, then plan actions [4].
+For each scenario, agree in advance what you would do and what observation would trigger it [3]: if the data has not arrived by the end of week four, switch to a public dataset; if the free tier's limits stop your testing twice in one week, drop the feature that depends on it. This is the part that pays for the exercise: when the signal appears, the argument has already been had. Public-sector foresight guidance follows the same sequence: test assumptions, build scenarios, stress-test strategies, then plan actions [4].
 
 ## What to take away
 
-Fix the decision, limit the uncertainties, write scenarios that disagree with each other, and agree your triggers before you need them. The simulation is only as good as the framing a leadership team gives it.
+Fix the decision, limit the uncertainties, write scenarios that disagree with each other, and agree your triggers before you need them. A plan is only as good as the assumptions a team is willing to write down.
 
 ## Sources
 
@@ -269,27 +316,27 @@ Sources checked on 19 November 2026.`,
     },
     ar: {
       kicker: "إحاطة",
-      title: "محاكاة السيناريوهات لفرق القيادة: منهج عملي",
-      sub: "صياغة الافتراضات والنطاقات ونقاط القرار قبل أن يُطلب من أي نموذج أن يتنبأ",
-      description: "منهج عملي قصير لفرق القيادة في محاكاة السيناريوهات بمساعدة الذكاء الاصطناعي، يبدأ بالافتراضات ونقاط القرار.",
+      title: "التخطيط بالسيناريوهات لمشروع تقني: منهج عملي",
+      sub: "صياغة الافتراضات والنطاقات ونقاط القرار قبل أن يُطلب من أي نموذج أن يتنبأ بمسار المشروع",
+      description: "منهج عملي قصير للطلاب والفرق التقنية لتخطيط مشروع بالسيناريوهات بدل تقدير واحد، مع استخدام الذكاء الاصطناعي محاورًا ناقدًا.",
       note: "لا تُجري هسّارة محاكاة ولا تمنح السيناريوهات احتمالات. المنهج أدناه يستخدم النموذج محاورًا ناقدًا، لا متنبئًا.",
-      body: `يفشل العمل على السيناريوهات غالبًا قبل أن تبدأ أي نمذجة: يطلب الفريق تنبؤًا، فيتلقى رقمًا واثقًا، ثم يتجادل حول الرقم بدل الافتراضات التي وراءه. والمنهج أدناه يضع الافتراضات أولًا. وهو يستند إلى ممارسة السيناريوهات التي نشأت في التخطيط المؤسسي، وأشهرها تجربة شركة Shell التي استخدمت السيناريوهات بدل تنبؤ واحد [1].
+      body: `تفشل خطط المشاريع غالبًا قبل أن يبدأ العمل: يسأل الفريق كم سيستغرق المشروع، فيتلقى تقديرًا واثقًا، ثم يتجادل حول التقدير بدل الافتراضات التي وراءه. والمنهج أدناه يضع الافتراضات أولًا. وهو يستند إلى ممارسة السيناريوهات التي نشأت في التخطيط المؤسسي، وأشهرها تجربة شركة Shell التي استخدمت السيناريوهات بدل تنبؤ واحد [1]. والانضباط نفسه يناسب مشروع تخرج أو فريق منتج صغيرًا.
 
 ## ابدأ بالقرار لا بالتنبؤ
 
-اكتب القرار الذي يُفترض أن تُغنيه السيناريوهات، والتاريخ الذي يجب أن يُتخذ فيه. إن لم يكن هناك قرار يتوقف على النتيجة، فالتمرين بحث، وينبغي تحديد نطاقه على أنه بحث.
+اكتب القرار الذي يُفترض أن تُغنيه السيناريوهات، والتاريخ الذي يجب أن يُتخذ فيه: أي التقنيات يلتزم بها الفريق بنهاية الأسبوع الثاني، وهل يبني على واجهة برمجية خارجية أم على نموذج محلي، وكم يَعِد في مقترح المشروع. إن لم يكن هناك قرار يتوقف على النتيجة، فالتمرين بحث، وينبغي تحديد نطاقه على أنه بحث.
 
 ## سمِّ القليل الذي يهم
 
-تحرّك أغلبَ النتائج قلةٌ من أوجه عدم اليقين. اختر اثنين أو ثلاثة منها لو تحركت لتغيّر القرار، وضع الباقي جانبًا [2]. ولكلٍّ منها سجّل:
+تحرّك أغلبَ النتائج قلةٌ من أوجه عدم اليقين. اختر اثنين أو ثلاثة منها لو تحركت لتغيّر القرار، وضع الباقي جانبًا [2]. وفي المشروع التقني تكون غالبًا من قبيل: الحصول على البيانات المطلوبة، وحدود الخطة المجانية لخدمة ما، والوقت المتاح لأعضاء الفريق في فترة الاختبارات. ولكلٍّ منها سجّل:
 
 - النطاق الذي تراه معقولًا، بحالة دنيا وحالة عليا
 - ما تتوقع أن تلاحظه أولًا إن بدأ يتحرك، ويسمّيه المخططون «المؤشرات» [3]
-- من في المؤسسة هو الأقرب إلى تلك الإشارة
+- من في الفريق هو الأقرب إلى تلك الإشارة
 
 ## ابنِ السيناريوهات قصصًا بأرقام
 
-السيناريو رواية متسقة لكيفية حسم أوجه عدم اليقين المختارة معًا [2]، وثلاثة أو أربعة منها تكفي. ينبغي أن يكون كلٌّ منها معقولًا، ومتميزًا عن غيره، ومزعجًا بطريقة مختلفة. وتجنّب «حالة أساس» يعاملها الجميع بصمت على أنها التنبؤ.
+السيناريو رواية متسقة لكيفية حسم أوجه عدم اليقين المختارة معًا [2]، وثلاثة أو أربعة منها تكفي. ينبغي أن يكون كلٌّ منها معقولًا، ومتميزًا عن غيره، ومزعجًا بطريقة مختلفة: كأن تتأخر البيانات وتبقى الواجهة البرمجية مستقرة، أو تصل البيانات في موعدها وتضيق الخطة المجانية عن الحاجة. وتجنّب «حالة أساس» يعاملها الجميع بصمت على أنها التنبؤ.
 
 ## أين تفيد النماذج
 
@@ -304,11 +351,11 @@ Sources checked on 19 November 2026.`,
 
 ## حوّل السيناريوهات إلى نقاط قرار
 
-لكل سيناريو اتفقوا مسبقًا على ما ستفعلونه، وعلى الملاحظة التي ستطلق ذلك الفعل [3]. هذا هو الجزء الذي يسدّد كلفة التمرين: حين تظهر الإشارة يكون الجدال قد حُسم مسبقًا. وتتبع إرشادات الاستشراف في القطاع العام التسلسل نفسه: اختبار الافتراضات، ثم بناء السيناريوهات، ثم اختبار الاستراتيجيات تحت الضغط، ثم خطط العمل [4].
+لكل سيناريو اتفقوا مسبقًا على ما ستفعلونه، وعلى الملاحظة التي ستطلق ذلك الفعل [3]: إن لم تصل البيانات بنهاية الأسبوع الرابع فانتقلوا إلى مجموعة بيانات عامة، وإن أوقفت حدودُ الخطة المجانية الاختبارَ مرتين في أسبوع واحد فاحذفوا الميزة التي تعتمد عليها. هذا هو الجزء الذي يسدّد كلفة التمرين: حين تظهر الإشارة يكون الجدال قد حُسم مسبقًا. وتتبع إرشادات الاستشراف في القطاع العام التسلسل نفسه: اختبار الافتراضات، ثم بناء السيناريوهات، ثم اختبار الاستراتيجيات تحت الضغط، ثم خطط العمل [4].
 
 ## الخلاصة
 
-ثبّت القرار، وقلّل أوجه عدم اليقين، واكتب سيناريوهات يخالف بعضها بعضًا، واتفق على محفّزاتك قبل أن تحتاجها. المحاكاة لا تكون أفضل من الإطار الذي يعطيها إياه فريق القيادة.
+ثبّت القرار، وقلّل أوجه عدم اليقين، واكتب سيناريوهات يخالف بعضها بعضًا، واتفق على محفّزاتك قبل أن تحتاجها. الخطة لا تكون أفضل من الافتراضات التي يقبل الفريق أن يكتبها.
 
 ## المصادر
 
@@ -323,6 +370,7 @@ Sources checked on 19 November 2026.`,
   },
   {
     slug: "general-vs-domain-models",
+    format: "research",
     en: {
       kicker: "Research Note",
       title: "Choosing between a general model and a domain-tuned one",
